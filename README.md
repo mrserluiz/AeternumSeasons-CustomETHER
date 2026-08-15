@@ -1,7 +1,6 @@
-            ⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳
+
  ▂▃▅▇█▓▒░۩۞۩ ᴀᴇᴛᴇʀɴᴜᴍꜱᴇᴀꜱᴏɴꜱ ᴇᴛʜᴇʀᴄʀᴀꜰᴛ ۩۞۩░▒▓█▇▅▃▂
-            ⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳-⨳    
-   
+
 > **Projeto de engenharia reversa e estudo técnico do AeternumSeasons 4.5 para desenvolvimento de sistemas próprios do servidor Minecraft EtherCraft.**
 
 ---
