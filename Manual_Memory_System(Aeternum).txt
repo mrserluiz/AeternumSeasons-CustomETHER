@@ -4,10 +4,13 @@
  Ambiente: Minecraft Java 26.2
  Atualizado: 16/08/2026
 ====================================================================
+[0]MANUAL MEMORY SYSTEM
+====================================================================
+Este arquivo server 
 
 
 ====================================================================
-[0] OBJETIVO PRINCIPAL
+[1] OBJETIVO PRINCIPAL
 ====================================================================
 
 OBJETIVO:
@@ -28,7 +31,7 @@ O projeto possui duas frentes principais:
 
 
 ====================================================================
-[1] REGRA FUNDAMENTAL DO PROJETO
+[2] REGRA FUNDAMENTAL DO PROJETO
 ====================================================================
 
 NÃO assumir a implementação.
@@ -52,7 +55,7 @@ Não transformar HYPOTHESIS em FACT sem evidência.
 
 
 ====================================================================
-[2] AMBIENTE ATUAL
+[3] AMBIENTE ATUAL
 ====================================================================
 
 Minecraft:
@@ -75,7 +78,7 @@ Kinkin.aeternum
 
 
 ====================================================================
-[3] DESCOBERTA — CUSTOM MODEL DATA DE ITENS
+[4] DESCOBERTA — CUSTOM MODEL DATA DE ITENS
 ====================================================================
 
 STATUS:
@@ -124,7 +127,7 @@ ITEM BASE + CustomModelData
 
 
 ====================================================================
-[4] SISTEMA DE ITEM MODEL — TESTE CONFIRMADO
+[5] SISTEMA DE ITEM MODEL — TESTE CONFIRMADO
 ====================================================================
 
 STATUS:
@@ -187,7 +190,7 @@ retornando ao modelo vanilla.
 
 
 ====================================================================
-[5] MODELO 2D DO ITEM
+[6] MODELO 2D DO ITEM
 ====================================================================
 
 STATUS:
@@ -227,7 +230,7 @@ Este sistema funciona sem:
 
 
 ====================================================================
-[6] REUTILIZAÇÃO DE CUSTOM MODEL DATA
+[7] REUTILIZAÇÃO DE CUSTOM MODEL DATA
 ====================================================================
 
 STATUS:
@@ -258,7 +261,7 @@ assets/minecraft/items/<item>.json
 
 
 ====================================================================
-[7] DESCOBERTA — PLANTAÇÃO NO MUNDO
+[8] DESCOBERTA — PLANTAÇÃO NO MUNDO
 ====================================================================
 
 STATUS:
@@ -287,7 +290,7 @@ modelos específicos de culturas.
 
 
 ====================================================================
-[8] SISTEMA DE RENDERIZAÇÃO DAS PLANTAÇÕES
+[9] SISTEMA DE RENDERIZAÇÃO DAS PLANTAÇÕES
 ====================================================================
 
 STATUS:
@@ -337,7 +340,7 @@ RENDERIZADO PELO RESOURCE PACK.
 
 
 ====================================================================
-[9] ESTÁGIOS DAS PLANTAÇÕES
+[10] ESTÁGIOS DAS PLANTAÇÕES
 ====================================================================
 
 STATUS:
@@ -366,7 +369,7 @@ mecanismo de seleção do estágio visual.
 
 
 ====================================================================
-[10] MODELO DAS PLANTAÇÕES
+[11] MODELO DAS PLANTAÇÕES
 ====================================================================
 
 STATUS:
@@ -393,7 +396,7 @@ sem necessidade de entidade 3D.
 
 
 ====================================================================
-[11] JAVA — CÓDIGO JÁ IDENTIFICADO
+[12] JAVA — CÓDIGO JÁ IDENTIFICADO
 ====================================================================
 
 PACOTE:
@@ -441,7 +444,7 @@ a plantação.
 
 
 ====================================================================
-[12] IMPORTANTE — STRING / TRIPWIRE
+[13] IMPORTANTE — STRING / TRIPWIRE
 ====================================================================
 
 OBSERVED:
@@ -489,7 +492,7 @@ NÃO assumir nenhum deles sem código/teste.
 
 
 ====================================================================
-[13] RESOURCE PACK OFICIAL
+[14] RESOURCE PACK OFICIAL
 ====================================================================
 
 STATUS:
@@ -520,7 +523,7 @@ e texturas correspondentes.
 
 
 ====================================================================
-[14] DESCOBERTA CRÍTICA
+[15] DESCOBERTA CRÍTICA
 ====================================================================
 
 O arquivo:
@@ -546,7 +549,7 @@ COMO O SERVIDOR/AETERNUM PRODUZ ESSES ESTADOS.
 
 
 ====================================================================
-[15] QUESTÃO EM ABERTO
+[16] QUESTÃO EM ABERTO
 ====================================================================
 
 QUESTION Q001:
@@ -574,7 +577,7 @@ Precisamos encontrar no Java:
 
 
 ====================================================================
-[16] PRÓXIMA INVESTIGAÇÃO JAVA
+[17] PRÓXIMA INVESTIGAÇÃO JAVA
 ====================================================================
 
 CURRENT_TARGET:
@@ -610,7 +613,7 @@ para descobrir quais listeners/serviços são registrados.
 
 
 ====================================================================
-[17] ORDEM RECOMENDADA DE INVESTIGAÇÃO
+[18] ORDEM RECOMENDADA DE INVESTIGAÇÃO
 ====================================================================
 
 1.
@@ -645,7 +648,7 @@ TEXTURE
 
 
 ====================================================================
-[18] OBJETIVO DO ETHERCRAFT
+[19] OBJETIVO DO ETHERCRAFT
 ====================================================================
 
 OBJETIVO FUTURO:
@@ -680,7 +683,7 @@ Primeiro compreender completamente o mecanismo Aeternum.
 
 
 ====================================================================
-[19] O QUE JÁ FOI DESCARTADO
+[20] O QUE JÁ FOI DESCARTADO
 ====================================================================
 
 DESCARTADO:
@@ -697,7 +700,7 @@ Esses mecanismos não foram observados na plantação investigada.
 
 
 ====================================================================
-[20] SEPARAÇÃO DOS SISTEMAS
+[21] SEPARAÇÃO DOS SISTEMAS
 ====================================================================
 
 ITEMS:
@@ -732,7 +735,7 @@ NÃO CONFUNDIR OS DOIS SISTEMAS.
 
 
 ====================================================================
-[21] REGRAS PARA CONTINUAÇÃO EM NOVO CHAT
+[22] REGRAS PARA CONTINUAÇÃO EM NOVO CHAT
 ====================================================================
 
 Ao iniciar uma nova conversa:
@@ -765,7 +768,7 @@ Sempre sugerir o próximo passo após cada investigação.
 
 
 ====================================================================
-[22] CURRENT STATE
+[24] CURRENT STATE
 ====================================================================
 
 CONFIRMED:
@@ -811,7 +814,7 @@ UNKNOWN:
 
 
 ====================================================================
-[23] CURRENT_TARGET
+[25] CURRENT_TARGET
 ====================================================================
 
 M001-AETERNUM-TRIPWIRE
@@ -832,7 +835,7 @@ remover cultura
 
 
 ====================================================================
-[24] NEXT STEP
+[26] NEXT STEP
 ====================================================================
 
 Pesquisar no repositório:
