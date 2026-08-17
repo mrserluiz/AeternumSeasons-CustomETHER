@@ -1,0 +1,48 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 2310,
+        "model": {
+          "type": "minecraft:model",
+          "model": "aeternum:item/coffee"
+        }
+      },
+      {
+        "threshold": 2311,
+        "model": {
+          "type": "minecraft:model",
+          "model": "aeternum:item/herbal_tea"
+        }
+      },
+      {
+        "threshold": 2312,
+        "model": {
+          "type": "minecraft:model",
+          "model": "aeternum:item/energy_drink"
+        }
+      },
+      {
+        "threshold": 2313,
+        "model": {
+          "type": "minecraft:model",
+          "model": "aeternum:item/hot_chocolate"
+        }
+      },
+      {
+        "threshold": 2314,
+        "model": {
+          "type": "minecraft:model",
+          "model": "aeternum:item/vanilla/honey_bottle"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "aeternum:item/vanilla/honey_bottle"
+    }
+  }
+}
