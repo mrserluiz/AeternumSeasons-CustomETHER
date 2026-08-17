@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cross",
+  "ambientocclusion": false,
+  "textures": {
+    "cross": "aeternum:block/crop/onion_stage_0"
+  }
+}
