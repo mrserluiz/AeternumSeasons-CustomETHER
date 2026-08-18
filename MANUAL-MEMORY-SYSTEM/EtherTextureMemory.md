@@ -1,3 +1,179 @@
+================================
+UPDATES SITE:
+Exemplo:
+UPDATE > 00/00/00 - 00:00 - M000A
+[conteúdo]
+<END UPDATE>
+=============================
+
+UPDATE > 18/08/2026 - 18:48 - M002A
+
+#PADRÃO DE CONTINUIDADE E ESTADO DA MEMÓRIA
+
+## STATUS
+
+MEMORY STRUCTURE / ESTABLISHED ✓
+
+---
+
+## STATUS
+
+### CONFIRMED
+
+- Minecraft Java 26.2 é o ambiente atual.
+- `minecraft:custom_model_data` utiliza `floats[0]` nos casos investigados.
+- CustomModelData pode ser utilizado como ponte entre o ItemStack
+  original e uma representação visual própria.
+- A adição do CustomModelData não impediu o funcionamento do item
+  proveniente do Theosis.
+- O EtherTexture pode atender itens provenientes de diferentes
+  plugins.
+- O Resource Pack é responsável pela renderização final.
+- O EtherTexture deve permanecer independente da lógica dos plugins
+  de origem.
+
+---
+
+### DISCOVERED
+
+- AeternumSeasons fornece identidades próprias através de
+  `minecraft:custom_data`.
+- Exemplo:
+
+  `aeternumseasons:food_id = tomato`
+
+- Theosis fornece identidades próprias através de
+  `minecraft:custom_data`.
+- Exemplo:
+
+  `theosis:gem_id = RUBY`
+
+- Essas identidades podem ser utilizadas pelo EtherTexture para
+  determinar qual CustomModelData deve ser aplicado.
+- O Resource Pack pode organizar modelos e texturas em subpastas
+  dentro do namespace `ether`.
+- O sistema visual não precisa conhecer a lógica interna completa
+  do plugin de origem para modificar sua representação visual.
+
+---
+
+### DISCARDED
+
+Até o momento:
+
+- Não foi adotada a substituição completa do ItemStack como método
+  padrão de alteração visual.
+- Não foi adotada a remoção ou reconstrução dos componentes originais
+  do item.
+- Não foi adotada uma arquitetura em que cada plugin possua seu
+  próprio sistema visual isolado.
+- `food_id`, `gem_id`, lore e demais componentes não são utilizados
+  diretamente pelo Minecraft para renderização.
+- A identidade do plugin não deve ser confundida com a identidade
+  visual do Resource Pack.
+
+---
+
+### DECISIONS
+
+1. O EtherTexture pertence ao EtherCraft.
+2. AeternumSeasons, Theosis e futuros plugins são fontes de identidade.
+3. O Resource Pack central pertence ao EtherCraft.
+4. CustomModelData será utilizado como ponte visual.
+5. A alteração padrão deve ser não destrutiva.
+6. O sistema deve preservar a lógica e os componentes originais
+   sempre que possível.
+7. O Registry deverá centralizar a relação:
+
+   `identidade → CustomModelData`
+
+8. Os próximos updates deverão separar explicitamente:
+   - CONFIRMED
+   - DISCOVERED
+   - DISCARDED
+   - DECISIONS
+   - CURRENT STATE
+   - NEXT TARGET
+
+---
+
+## CURRENT STATE
+
+O EtherTexture possui uma arquitetura inicial validada.
+
+Fluxo atual:
+
+Plugin
+  ↓
+Identidade
+  ↓
+Scanner
+  ↓
+CustomModelData
+  ↓
+Resource Pack
+  ↓
+Modelo
+  ↓
+Textura
+
+O sistema já foi validado utilizando itens provenientes de
+AeternumSeasons e Theosis.
+
+O desenvolvimento atual ainda utiliza Skript para parte da lógica
+de identificação e aplicação do CustomModelData.
+
+A arquitetura definitiva do Registry e a implementação central
+do sistema ainda não foram finalizadas.
+
+---
+
+## NEXT TARGET
+
+1. Consolidar o Registry do EtherTexture.
+2. Definir formalmente o formato de identificação dos itens.
+3. Separar identificação, registro e aplicação de CMD.
+4. Expandir o scanner para containers.
+5. Catalogar os CMDs existentes.
+6. Definir uma política permanente para faixas de CMD.
+7. Continuar estruturando o Resource Pack central do EtherCraft.
+8. Avaliar posteriormente uma implementação Java própria para o
+   EtherTexture.
+
+---
+
+## CONTINUITY RULE
+
+Cada novo update do EtherTexture deve registrar claramente:
+
+CONFIRMED
+    ↓
+o que foi comprovado
+
+DISCOVERED
+    ↓
+o que foi descoberto durante a investigação
+
+DISCARDED
+    ↓
+o que foi testado ou considerado e não será utilizado
+
+DECISIONS
+    ↓
+decisões arquiteturais tomadas
+
+CURRENT STATE
+    ↓
+estado real do projeto naquele momento
+
+NEXT TARGET
+    ↓
+próximo objetivo de investigação ou implementação
+
+Esta estrutura existe para permitir que uma nova instância possa
+retomar o projeto sem depender da memória da conversa anterior.
+
+===================================================================
 # ETHER TEXTURE — MEMORY SYSTEM
 
 > Memória técnica permanente do sistema visual EtherTexture.
