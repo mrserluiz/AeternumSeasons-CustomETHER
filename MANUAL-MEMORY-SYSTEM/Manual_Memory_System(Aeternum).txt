@@ -2,13 +2,11 @@
  AETERNUM SEASONS — MANUAL DE CONTINUIDADE / MEMORY SYSTEM
  Projeto: EtherCraft / AeternumSeasons-CustomETHER
  Ambiente: Minecraft Java 26.2
- Atualizado: 16/08/2026
 ====================================================================
 [0]UPDATE
 ====================================================================
-====================================================================
+
 UPDATE > 18/08/26 - M003I
-====================================================================
 
 [PROJETO ETHERCRAFT — ETAPA: ETHERTEXTURE]
 
