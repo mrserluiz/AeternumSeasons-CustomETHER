@@ -6,6 +6,533 @@ UPDATE > 00/00/00 - 00:00 - M000A
 <END UPDATE>
 =============================
 
+UPDATE > 18/08/2026 - M003A
+
+# ETHERCRAFT ITEM SYSTEM / ESTADOS VISUAIS
+
+## STATUS
+
+ITEM INTERACTION / STATE SYSTEM / CONFIRMED ✓
+
+---
+
+## CONFIRMED
+
+- Um item vanilla pode ser utilizado como base para um item
+  próprio do EtherCraft.
+
+- `minecraft:goat_horn` foi utilizado como base para o
+  "Berrante de Cavalo".
+
+- O item vanilla continua funcional após receber:
+  - `minecraft:custom_model_data`
+  - `minecraft:custom_data`
+  - `minecraft:item_model`
+  - `minecraft:custom_name`
+  - `minecraft:lore`
+
+- O componente vanilla `minecraft:instrument` deve utilizar a
+  sintaxe:
+
+  `minecraft:instrument="minecraft:seek_goat_horn"`
+
+- `minecraft:seek_goat_horn` foi confirmado como instrumento
+  válido e funcional.
+
+- O uso do `seek_goat_horn` permite manter o comportamento de
+  som do próprio Minecraft, sem necessidade de criar uma lógica
+  de áudio no Skript.
+
+- O Resource Pack pode utilizar:
+
+  `item_model="ether:horse_horn"`
+
+  para assumir posteriormente a representação visual própria
+  do EtherCraft.
+
+- O item pode possuir:
+
+  `custom_data={ether_item:"horse_toggle"}`
+
+  como identidade lógica permanente do item.
+
+- O item pode possuir:
+
+  `custom_model_data={floats:[1.0f]}`
+
+  e o Skript consegue utilizar o CustomModelData como
+  identificador do estado.
+
+- Foi confirmado em servidor real que o Skript consegue
+  diferenciar o Berrante de Cavalo de outros Goat Horns através
+  do CustomModelData.
+
+- Outros Goat Horns não executam a lógica do Berrante.
+
+- O Skript conseguiu executar:
+
+  `horse summon`
+
+  quando o item possuía CMD 1.
+
+- O Skript conseguiu executar:
+
+  `horse hide`
+
+  quando o item possuía CMD 2.
+
+- O sistema de estados CMD 1 ↔ CMD 2 foi confirmado em servidor
+  real.
+
+---
+
+## DISCOVERED
+
+### 1. CustomModelData pode representar estado lógico
+
+O CustomModelData não precisa representar somente uma textura.
+
+Ele também pode funcionar como uma máquina de estados visual/lógica.
+
+Exemplo:
+
+CMD 1
+    ↓
+Cavalo escondido
+    ↓
+/horse summon
+    ↓
+CMD 2
+
+CMD 2
+    ↓
+Cavalo ativo
+    ↓
+/horse hide
+    ↓
+CMD 1
+
+Portanto:
+
+`CMD = estado atual do item`
+
+e não necessariamente:
+
+`CMD = aparência obrigatoriamente diferente`
+
+---
+
+### 2. Separação entre identidade e estado
+
+Foi estabelecida uma distinção importante:
+
+`custom_data`
+    ↓
+identidade do item
+
+`custom_model_data`
+    ↓
+estado visual/estado operacional
+
+Exemplo:
+
+`ether_item = horse_toggle`
+
+identifica:
+
+"este item pertence ao sistema Berrante de Cavalo"
+
+Enquanto:
+
+`CMD 1`
+
+ou
+
+`CMD 2`
+
+identifica:
+
+"qual estado o Berrante está atualmente?"
+
+---
+
+### 3. O item pode ser nativo e ainda assim pertencer ao EtherCraft
+
+O Berrante de Cavalo não precisa ser um novo Material.
+
+Base:
+
+`minecraft:goat_horn`
+
+Identidade:
+
+`ether_item = horse_toggle`
+
+Estado:
+
+`CMD 1 / CMD 2`
+
+Visual:
+
+`ether:horse_horn`
+
+Comportamento:
+
+Skript + Pet Horse
+
+Isso permite criar itens EtherCraft utilizando itens vanilla
+como base, sem criar um novo ItemStack proprietário.
+
+---
+
+### 4. O Resource Pack não precisa participar da lógica
+
+O Skript não deve precisar alterar:
+
+- textura;
+- modelo;
+- item_model;
+- nome;
+- lore.
+
+O Skript somente controla:
+
+`estado → ação → novo estado`
+
+O EtherTexture/Resource Pack controla:
+
+`CMD → modelo → textura`
+
+---
+
+### 5. A arquitetura do EtherTexture foi ampliada
+
+A visão inicial era:
+
+Plugin
+  ↓
+Identidade
+  ↓
+EtherTexture
+  ↓
+CMD
+  ↓
+Resource Pack
+
+Agora existe também:
+
+EtherCraft Item
+  ↓
+Identidade própria
+  ↓
+Estado
+  ↓
+CMD
+  ↓
+Resource Pack
+
+Portanto o EtherTexture atende dois tipos de origem:
+
+1. itens provenientes de plugins externos;
+2. itens próprios do EtherCraft baseados em materiais vanilla.
+
+---
+
+## DISCARDED
+
+- Não será criado um novo sistema de som para o Berrante.
+
+- Não será utilizado comando separado para reproduzir o som.
+
+- Não será necessário substituir o `minecraft:goat_horn`
+  por outro Material.
+
+- Não será necessário alterar o ItemStack inteiro para alternar
+  entre os estados.
+
+- Não será criada uma textura diferente diretamente pelo Skript.
+
+- Não será criada inicialmente uma lógica manual de cooldown.
+
+- Não será utilizado o `custom_data` como mecanismo de estado.
+
+- O `custom_data` permanecerá como identidade do item.
+
+- O CMD será utilizado como estado.
+
+---
+
+## DECISIONS
+
+### 1. Separação de responsabilidades
+
+Minecraft Vanilla
+    ↓
+comportamento nativo do Goat Horn
+    ↓
+som / instrumento / cooldown
+
+Skript
+    ↓
+lógica do item
+    ↓
+estado CMD
+    ↓
+comandos do Pet Horse
+
+EtherTexture
+    ↓
+representação visual
+
+Resource Pack
+    ↓
+modelo + textura
+
+---
+
+### 2. Estrutura lógica do Berrante
+
+Identidade:
+
+`ether_item = horse_toggle`
+
+Estado inicial:
+
+`CMD 1`
+
+Ação:
+
+`/horse summon`
+
+Novo estado:
+
+`CMD 2`
+
+Segundo uso:
+
+`/horse hide`
+
+Novo estado:
+
+`CMD 1`
+
+Fluxo:
+
+1
+→ summon
+→ 2
+→ hide
+→ 1
+→ summon
+→ 2
+→ ...
+
+---
+
+### 3. O CMD pode ser invisível para o jogador
+
+A troca entre:
+
+`CMD 1`
+
+e
+
+`CMD 2`
+
+não precisa produzir diferença visual.
+
+O Resource Pack pode apontar os dois estados para o mesmo
+modelo/textura.
+
+Ou futuramente:
+
+`CMD 1 → Berrante normal`
+
+`CMD 2 → Berrante ornamentado/brilhante`
+
+A lógica permanece a mesma.
+
+---
+
+## CURRENT STATE
+
+O Berrante de Cavalo está funcional.
+
+Item base:
+
+`minecraft:goat_horn`
+
+Componente de instrumento:
+
+`minecraft:instrument="minecraft:seek_goat_horn"`
+
+Identidade:
+
+`ether_item = horse_toggle`
+
+Modelo:
+
+`ether:horse_horn`
+
+Estado inicial:
+
+`CMD 1`
+
+Comportamento:
+
+`CMD 1 → /horse summon → CMD 2`
+
+`CMD 2 → /horse hide → CMD 1`
+
+O sistema foi testado em servidor real.
+
+Resultado:
+
+✓ Cavalim aparece  
+✓ Cavalim é escondido  
+✓ CMD alterna entre os estados  
+✓ Outros Goat Horns não ativam a lógica  
+✓ Item vanilla continua funcional  
+✓ Som vanilla do Goat Horn pode ser utilizado  
+✓ Visual permanece sob responsabilidade do EtherTexture
+
+---
+
+## COOLDOWN
+
+O Goat Horn possui cooldown vanilla.
+
+Objetivo:
+
+O Berrante deve respeitar a recarga nativa do Minecraft.
+
+Não deve ser criado um timer paralelo no Skript se o cooldown
+vanilla puder ser consultado diretamente.
+
+Testes realizados:
+
+`player's tool is on cooldown`
+
+→ inválido neste ambiente.
+
+`cooldown of player's tool is greater than 0`
+
+→ inválido neste ambiente.
+
+O mecanismo correto para consultar o cooldown no ambiente atual
+ainda está em investigação.
+
+STATUS:
+
+`PENDING`
+
+REGRA:
+
+Não implementar cooldown manual enquanto a possibilidade de
+reutilizar o cooldown vanilla não estiver descartada.
+
+---
+
+## ARCHITECTURE UPDATE
+
+O EtherTexture não deve ser entendido somente como:
+
+"modificador visual de itens de plugins".
+
+A arquitetura correta passa a ser:
+
+                    ETHERCRAFT
+                        │
+          ┌─────────────┴─────────────┐
+          │                           │
+     EXTERNAL ITEMS              OWN ITEMS
+          │                           │
+ Aeternum / Theosis             Vanilla Base
+          │                           │
+          └─────────────┬─────────────┘
+                        ↓
+                   IDENTIDADE
+                        ↓
+                  ETHER SYSTEM
+                        ↓
+               CUSTOM MODEL DATA
+                        ↓
+                 RESOURCE PACK
+                        ↓
+                     VISUAL
+
+Para itens interativos:
+
+IDENTIDADE
+    ↓
+ESTADO
+    ↓
+AÇÃO
+    ↓
+NOVO ESTADO
+    ↓
+CUSTOM MODEL DATA
+    ↓
+VISUAL
+
+---
+
+## NEXT TARGET
+
+1. Encontrar a expressão correta do Skript/SkBee para detectar
+   o cooldown vanilla do Goat Horn.
+
+2. Fazer o Berrante respeitar completamente a recarga nativa.
+
+3. Confirmar que o cooldown funciona igualmente nos estados
+   CMD 1 e CMD 2.
+
+4. Criar a definição visual do:
+
+   `ether:horse_horn`
+
+5. Registrar formalmente o Berrante no Registry do EtherTexture.
+
+6. Definir uma convenção para itens EtherCraft próprios:
+
+   `ether_item = <id>`
+
+7. Definir uma convenção para estados:
+
+   `CMD 1`
+   `CMD 2`
+   `CMD 3`
+   ...
+
+8. Avaliar se o Registry deverá futuramente possuir também
+   definição de estados e ações.
+
+9. Continuar expandindo o EtherTexture como sistema visual
+   central do EtherCraft.
+
+---
+
+## CONTINUITY NOTE
+
+O Berrante de Cavalo representa a primeira validação de que o
+EtherTexture pode trabalhar em conjunto com itens interativos
+próprios do EtherCraft sem assumir a responsabilidade pela
+mecânica do item.
+
+O princípio estabelecido é:
+
+IDENTIDADE
+    ≠
+ESTADO
+    ≠
+VISUAL
+    ≠
+MECÂNICA
+
+Cada camada possui uma responsabilidade própria.
+
+Esta separação deve ser preservada nas próximas implementações.
+
 UPDATE > 18/08/2026 - 18:48 - M002A
 
 #PADRÃO DE CONTINUIDADE E ESTADO DA MEMÓRIA
