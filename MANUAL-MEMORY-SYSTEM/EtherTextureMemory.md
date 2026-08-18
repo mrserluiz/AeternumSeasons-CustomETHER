@@ -709,6 +709,14 @@ STATUS GERAL:
 
 FOUNDATION ESTABLISHED ✓
 
+EtherTextureMemory.md
+│
+├── HISTÓRICO / IDEIA ORIGINAL
+│   └── Start ideia [PROJETO ETHERCRAFT — ETAPA: ETHERTEXTURE]
+│
+└── MEMÓRIA TÉCNICA
+    └── M001A — Arquitetura Base do EtherTexture
+
 ====================================================================
 Start ideia [PROJETO ETHERCRAFT — ETAPA: ETHERTEXTURE]
 ====================================================================
