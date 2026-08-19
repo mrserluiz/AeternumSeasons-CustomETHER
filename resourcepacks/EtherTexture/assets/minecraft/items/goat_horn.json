@@ -17,18 +17,11 @@
           "type": "minecraft:model",
           "model": "ether:item/tools/miscellanea/horn_horse"
         }
-      },
-      {
-        "threshold": 2322,
-        "model": {
-          "type": "minecraft:model",
-          "model": "ether:item//vanilla/goat_horn"
-        }
       }
     ],
-      "fallback": {
+    "fallback": {
       "type": "minecraft:model",
-      "model": "ether:item//vanilla/goat_horn"
+      "model": "minecraft:item/goat_horn"
     }
   }
 }
