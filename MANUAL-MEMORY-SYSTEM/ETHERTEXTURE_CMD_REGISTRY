@@ -27,15 +27,17 @@ AETERNUM SEASONS
 ============================================================
 
 2301 → Tomato
-2302 → Onion
+2302.0 → Onion
+2303 → Rice
 
 ============================================================
 FOODS
 ============================================================
 
+2304 → Tomato Salad
 2305 → Vegetable Bread
 2306 → Meat Sandwich
-2307 → Bread / RESERVED
+2307 → Beef Rice Stew
 
 ============================================================
 DRINKS
@@ -45,7 +47,7 @@ DRINKS
 2311 → Herbal Tea
 2312 → Energy Drink
 2313 → Hot Chocolate
-2314 → Honey Bottle
+2314 → Honey Bottle / RESERVED
 
 ============================================================
 THEOSIS
