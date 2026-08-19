@@ -35,7 +35,7 @@ FOODS
 
 2305 → Vegetable Bread
 2306 → Meat Sandwich
-2307 → Bread
+2307 → Bread / RESERVED
 
 ============================================================
 DRINKS
@@ -52,6 +52,10 @@ THEOSIS
 ============================================================
 
 2315 → Ruby
+2316 → Sapphire
+2317 → Topaz
+2318 → Emerald
+2319 → Echo Shard / RESERVED
 
 ============================================================
 TOOLS / MISCELLANEOUS
