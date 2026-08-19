@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "ether:item/tools/miscellanea/horn_horse"
+    "layer0": "assets/ether/textures/item/tools/miscellanea/horn_horse.png"
   }
 }
