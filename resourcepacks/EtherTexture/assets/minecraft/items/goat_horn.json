@@ -8,14 +8,14 @@
         "threshold": 2320,
         "model": {
           "type": "minecraft:model",
-          "model": "ether:item/tools/miscellanea/horn_horse"
+          "model": "ether:item/horn_horse"
         }
       },
       {
         "threshold": 2321,
         "model": {
           "type": "minecraft:model",
-          "model": "ether:item/tools/miscellanea/horn_horse"
+          "model": "ether:item/horn_horse"
         }
       }
     ],
