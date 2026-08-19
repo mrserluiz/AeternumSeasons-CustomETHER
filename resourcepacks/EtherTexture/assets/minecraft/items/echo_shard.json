@@ -1,0 +1,48 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 2315,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ether:item/ruby"
+        }
+      },
+      {
+        "threshold": 2316,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ether:item/sapphire"
+        }
+      },
+      {
+        "threshold": 2317,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ether:item/topaz"
+        }
+      },
+      {
+        "threshold": 2318,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ether:item/emerald"
+        }
+      },
+      {
+        "threshold": 2319,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ether:item/vanilla/echo_shard"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "ether:item/vanilla/echo_shard"
+    }
+  }
+}

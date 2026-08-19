@@ -1,0 +1,27 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 2302,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ether:item/onion"
+        }
+      },
+      {
+        "threshold": 2303,
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/wheat_seeds"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/wheat_seeds"
+    }
+  }
+}

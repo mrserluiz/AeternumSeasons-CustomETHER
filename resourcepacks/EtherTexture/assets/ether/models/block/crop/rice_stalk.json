@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cross",
+  "ambientocclusion": false,
+  "textures": {
+    "cross": "ether:block/crop/rice_stalk"
+  }
+}
