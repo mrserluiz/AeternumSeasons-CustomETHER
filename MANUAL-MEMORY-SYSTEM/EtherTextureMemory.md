@@ -5,6 +5,426 @@ UPDATE > 00/00/00 - 00:00 - M000A
 [conteúdo]
 <END UPDATE>
 =============================
+UPDATE > 2026-08-19 - 17:36 - M004A
+
+# ============================================================
+# ETHERCRAFT — ETHERTEXTURE CMD REGISTRY
+# MEMORY UPDATE — BERRANTE DE CAVALO
+# ============================================================
+
+STATUS:
+CONFIRMED / TESTED IN-GAME
+
+============================================================
+1. NOVA REGRA OFICIAL — CMD GLOBAL
+============================================================
+
+Foi decidido que o EtherTexture utilizará UM ÚNICO sistema
+global de CustomModelData.
+
+Faixa oficial:
+
+2300+
+
+Não haverá distinção entre:
+
+- CMD global
+- CMD local
+- CMD de estado interno
+
+Todo CMD utilizado pelo EtherCraft deve possuir um significado
+único e registrado neste Registry.
+
+Motivo:
+
+Evitar confusão futura entre IDs visuais locais e globais,
+facilitando manutenção, debugging e expansão do sistema.
+
+============================================================
+2. CMD RESERVADO
+============================================================
+
+2300 → EXEMPLO / RESERVED
+
+O CMD 2300 serve como marcador inicial da faixa e não deve ser
+utilizado por itens reais.
+
+============================================================
+3. BERRANTE DE CAVALO
+============================================================
+
+Item base:
+
+minecraft:goat_horn
+
+Item Model:
+
+ether:horse_horn
+
+Custom Data:
+
+ether_item: "horse_toggle"
+
+CMD inicial:
+
+2320
+
+============================================================
+4. BERRANTE — ESTADOS
+============================================================
+
+2320 → Horse Horn — State 1
+      Estado inicial / cavalo oculto
+      Ação:
+      /horse summon
+
+2321 → Horse Horn — State 2
+      Estado / cavalo ativo
+      Ação:
+      /horse hide
+
+Ciclo:
+
+2320
+ ↓
+horse summon
+ ↓
+2321
+ ↓
+horse hide
+ ↓
+2320
+
+============================================================
+5. SKRIPT — LÓGICA CONFIRMADA
+============================================================
+
+O Skript utiliza o próprio cooldown vanilla do Goat Horn.
+
+Fluxo:
+
+RIGHT CLICK
+    ↓
+GOAT HORN?
+    ↓
+VANILLA COOLDOWN?
+    ├── SIM → STOP
+    └── NÃO
+          ↓
+       verificar CMD
+          ↓
+     ┌────┴────┐
+     ▼         ▼
+   2320      2321
+     │         │
+     ▼         ▼
+  SUMMON      HIDE
+     │         │
+     ▼         ▼
+   2321      2320
+
+O cooldown vanilla não é substituído por um sistema manual.
+
+STATUS:
+
+CONFIRMED / FUNCIONANDO
+
+============================================================
+6. RESOURCE PACK — ARQUITETURA CONFIRMADA
+============================================================
+
+O Berrante utiliza:
+
+minecraft:item_model
+    ↓
+ether:horse_horn
+    ↓
+assets/ether/items/horse_horn.json
+    ↓
+minecraft:range_dispatch
+    ↓
+minecraft:custom_model_data
+    ↓
+CMD 2320 / 2321
+    ↓
+assets/ether/models/item/horse_horn.json
+    ↓
+texture layer
+    ↓
+assets/ether/textures/item/tools/miscellanea/horse_horn.png
+
+STATUS:
+
+CONFIRMED / TEXTURA FUNCIONANDO IN-GAME
+
+============================================================
+7. DESCOBERTA IMPORTANTE — RANGE DISPATCH
+============================================================
+
+Foi confirmado experimentalmente que CustomModelData pode ser
+utilizado como controlador de estado visual de um item.
+
+Exemplo:
+
+CMD 2320 → estado visual A
+CMD 2321 → estado visual B
+
+O modelo pode ser controlado através de:
+
+minecraft:range_dispatch
+
+Isso permite que um mesmo ItemStack possua diferentes
+representações visuais dependendo do CMD atual.
+
+IMPORTANTE:
+
+Os estados continuam utilizando IDs do Registry global.
+
+Não criar CMDs locais fora do Registry.
+
+============================================================
+8. FALLBACK VANILLA
+============================================================
+
+O sistema precisa preservar o comportamento visual vanilla
+quando o item não possui um CMD registrado para o sistema.
+
+Para Goat Horn:
+
+fallback:
+
+minecraft:item/goat_horn
+
+Isso permite que Goat Horns vanilla continuem funcionando
+normalmente mesmo após a personalização do modelo.
+
+STATUS:
+
+CONFIRMED / VANILLA GOAT HORNS PRESERVADOS
+
+============================================================
+9. LIÇÃO SOBRE RESOURCE LOCATION
+============================================================
+
+Referências de textura dentro de modelos Minecraft NÃO devem
+utilizar caminhos físicos contendo:
+
+assets/
+.png
+
+ERRADO:
+
+assets/ether/textures/item/tools/miscellanea/horse_horn.png
+
+CORRETO:
+
+ether:item/tools/miscellanea/horse_horn
+
+O caminho físico:
+
+assets/ether/textures/item/tools/miscellanea/horse_horn.png
+
+é convertido em Resource Location:
+
+ether:item/tools/miscellanea/horse_horn
+
+============================================================
+10. LIÇÃO SOBRE NOMENCLATURA
+============================================================
+
+Foi identificado que nomes inconsistentes como:
+
+horn_horse
+horse_horn
+
+podem criar referências quebradas difíceis de detectar.
+
+Foi adotada nomenclatura unificada:
+
+horse_horn
+
+Quando possível, o mesmo conceito deve utilizar o mesmo nome
+nos arquivos relacionados:
+
+- item model
+- model
+- texture
+- documentação
+
+Evitar duplicações com nomes semelhantes.
+
+============================================================
+11. PRINCÍPIO DE PRESERVAÇÃO DA MECÂNICA
+============================================================
+
+A camada EtherTexture deve modificar prioritariamente a
+representação visual do ItemStack sem substituir sua identidade
+ou mecânica original.
+
+Objetivo:
+
+ITEM ORIGINAL
+    +
+CUSTOM MODEL DATA
+    =
+MESMA MECÂNICA + NOVO VISUAL
+
+Não reconstruir o ItemStack desnecessariamente.
+
+Preservar:
+
+- Material
+- Nome
+- Lore
+- Enchantments
+- Custom Data
+- Persistent Data
+- Componentes
+- Flags
+- Dados utilizados pelo plugin
+
+quando o objetivo for apenas personalização visual.
+
+============================================================
+12. FUTURA APLICAÇÃO — ÍCONES DE MENUS DE PLUGINS
+============================================================
+
+Foi levantada e considerada VIÁVEL a possibilidade de utilizar
+EtherTexture para personalizar visualmente itens presentes em
+inventários/menus criados por outros plugins.
+
+Conceito:
+
+PLUGIN ABRE MENU
+    ↓
+ETHER OBSERVA ITEM
+    ↓
+IDENTIFICA ITEM
+    ↓
+ITEM POSSUI CMD?
+    ├── SIM → preservar
+    └── NÃO
+          ↓
+      identificar função
+          ↓
+      adicionar CMD EtherTexture
+          ↓
+      novo ícone visual
+
+OBJETIVO:
+
+Alterar apenas a apresentação visual dos ícones sem quebrar a
+mecânica interna do plugin.
+
+IMPORTANTE:
+
+Ainda NÃO implementado.
+
+Antes de desenvolver o sistema, deve ser realizado um teste
+experimental com:
+
+on inventory click
+
+para identificar:
+
+- Inventory title
+- Inventory type
+- Slot
+- Material
+- Display Name
+- Lore
+- CustomModelData
+- Custom Data
+- Persistent Data / PDC
+- Componentes disponíveis ao Skript/SkBee
+
+O primeiro teste deve ser SOMENTE DE LEITURA.
+
+Não modificar os ItemStacks até confirmar quais dados podem ser
+acessados com segurança.
+
+============================================================
+13. PRÓXIMO TESTE RECOMENDADO
+============================================================
+
+Criar um Skript experimental de inspeção de menus.
+
+Objetivo:
+
+Ao abrir/interagir com um menu de plugin, identificar o ItemStack
+presente no slot e imprimir seus dados para análise.
+
+Nenhuma alteração visual deve ser realizada nessa etapa.
+
+Somente após descobrir como os plugins estruturam seus itens será
+criado o sistema de adapters EtherTexture.
+
+============================================================
+14. ARQUITETURA ATUAL
+============================================================
+
+EtherTexture
+
+├── CMD Registry Global
+│   └── 2300+
+│
+├── Item Models
+│
+├── Range Dispatch
+│
+├── CustomModelData
+│
+├── Textures
+│
+└── Futuro:
+    └── Menu / Plugin Adapters
+
+============================================================
+15. STATUS GERAL
+============================================================
+
+CMD Registry Global:
+CONFIRMED
+
+Faixa 2300+:
+CONFIRMED
+
+Berrante de Cavalo:
+CONFIRMED
+
+CMD 2320:
+CONFIRMED
+
+CMD 2321:
+CONFIRMED
+
+Range Dispatch:
+CONFIRMED
+
+Item Model:
+CONFIRMED
+
+Modelo:
+CONFIRMED
+
+Textura:
+CONFIRMED
+
+Fallback Vanilla:
+CONFIRMED
+
+Cooldown Vanilla:
+CONFIRMED
+
+Skript SUMMON/HIDE:
+CONFIRMED
+
+Plugin Menu Adapter:
+PLANNED / NOT IMPLEMENTED
+
+============================================================
+END OF MEMORY UPDATE
+============================================================
 
 UPDATE > 18/08/2026 - M003A
 
