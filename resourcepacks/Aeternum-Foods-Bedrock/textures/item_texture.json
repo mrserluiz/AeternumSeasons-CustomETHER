@@ -1,0 +1,61 @@
+{
+  "resource_pack_name": "aeternum_foods",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "aeternum.tomato": {
+      "textures": [
+        "textures/items/tomato"
+      ]
+    },
+    "aeternum.onion": {
+      "textures": [
+        "textures/items/onion"
+      ]
+    },
+    "aeternum.rice": {
+      "textures": [
+        "textures/items/rice"
+      ]
+    },
+    "aeternum.tomato_salad": {
+      "textures": [
+        "textures/items/tomato_salad"
+      ]
+    },
+    "aeternum.vegetable_bread": {
+      "textures": [
+        "textures/items/vegetable_bread"
+      ]
+    },
+    "aeternum.meat_sandwich": {
+      "textures": [
+        "textures/items/meat_sandwich"
+      ]
+    },
+    "aeternum.beef_rice_stew": {
+      "textures": [
+        "textures/items/beef_rice_stew"
+      ]
+    },
+    "aeternum.coffee": {
+      "textures": [
+        "textures/items/coffee"
+      ]
+    },
+    "aeternum.herbal_tea": {
+      "textures": [
+        "textures/items/herbal_tea"
+      ]
+    },
+    "aeternum.energy_drink": {
+      "textures": [
+        "textures/items/energy_drink"
+      ]
+    },
+    "aeternum.hot_chocolate": {
+      "textures": [
+        "textures/items/hot_chocolate"
+      ]
+    }
+  }
+}

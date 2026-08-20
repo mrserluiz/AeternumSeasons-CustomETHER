@@ -1,0 +1,40 @@
+{
+  "format_version": 2,
+  "header": {
+    "description": "Aeternum Foods para jugadores Bedrock mediante Geyser",
+    "name": "Aeternum Foods | Bedrock",
+    "uuid": "33373de8-8cd4-4fae-a943-845f36e03730",
+    "version": [
+      1,
+      1,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      21,
+      0
+    ]
+  },
+  "modules": [
+    {
+      "description": "Texturas de alimentos y cultivos de Aeternum",
+      "type": "resources",
+      "uuid": "a354c51e-0698-4af4-924c-76e9590c7b1f",
+      "version": [
+        1,
+        1,
+        0
+      ]
+    }
+  ],
+  "metadata": {
+    "authors": [
+      "AeternumSeasons"
+    ],
+    "generated_with": {
+      "Aeternum food resource-pack generator": [
+        "1.1.0"
+      ]
+    }
+  }
+}
