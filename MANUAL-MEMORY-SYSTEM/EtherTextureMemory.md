@@ -5,6 +5,36 @@ UPDATE > 00/00/00 - 00:00 - M000A
 [conteúdo]
 <END UPDATE>
 =============================
+UPDATE > 20/08/2026 - 16:02 - M0006A
+# ============================================================
+# ETHER TEXTURE MEMORY — UPDATE
+# VERSÃO DO PROJETO: EtherTexture / v0.1.x
+# ============================================================
+
+## [UPDATE] INVESTIGAÇÃO BEDROCK — HORSEUP / CMD 2330
+
+### CONTEXTO
+
+O sistema EtherTexture utiliza:
+
+- Java Resource Pack `EtherTexture`
+- Bedrock Resource Pack gerado pelo Rainbow
+- GeyserMC como ponte Java → Bedrock
+- Rainbow para geração dos mappings e conversão do Resource Pack
+- Pasta `custom_mappings` contendo os mappings utilizados pelo Geyser
+- CMD Registry centralizado no projeto
+
+O objetivo atual é fazer com que ícones/modelos personalizados criados para menus Java também sejam visualizados corretamente pelos jogadores Bedrock.
+
+---
+
+# 1. HORSEUP — ESTADO JAVA
+
+O primeiro ícone de teste foi:
+
+```text
+horseUp
+
 UPDATE > 2026-08-19 - 22:00 - M005A
 
 # UPDATE — EtherTexture Menu Inspector
