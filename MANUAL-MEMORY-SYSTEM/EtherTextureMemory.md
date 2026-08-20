@@ -5,6 +5,1420 @@ UPDATE > 00/00/00 - 00:00 - M000A
 [conteúdo]
 <END UPDATE>
 =============================
+UPDATE > 2026-08-19 - 22:00 - M005A
+
+# UPDATE — EtherTexture Menu Inspector
+## Marco: v0.1.4 — CMD Injection comprovada
+
+---
+
+# 1. RESUMO
+
+O sistema EtherTexture avançou de um simples scanner de menus para um sistema capaz de **interceptar uma nova instância de inventário criada por um plugin e modificar os ItemStacks daquela GUI em tempo real**.
+
+O teste foi realizado com o menu:
+
+    PetHorse
+    Menu: Horse Stats
+
+O teste utilizou o item:
+
+    EXPERIENCE_BOTTLE
+
+localizado no:
+
+    Slot 10
+
+O CMD utilizado no teste foi:
+
+    2330
+
+O resultado foi confirmado com sucesso.
+
+---
+
+# 2. DESCOBERTA ARQUITETURAL IMPORTANTE
+
+Foi identificado que menus de plugins como o PetHorse não devem ser tratados como inventários persistentes.
+
+O fluxo correto é:
+
+    /horse
+       ↓
+    PetHorse cria uma nova GUI
+       ↓
+    PetHorse cria novos ItemStacks
+       ↓
+    Inventory Open
+       ↓
+    EtherTexture intercepta o evento
+       ↓
+    EtherTexture identifica os itens
+       ↓
+    EtherTexture modifica o ItemStack
+       ↓
+    ItemStack modificado é devolvido ao slot
+       ↓
+    jogador recebe a GUI personalizada
+
+Quando o jogador fecha e executa novamente:
+
+    /horse
+
+o plugin pode criar uma nova instância completa do inventário.
+
+Portanto, o EtherTexture deve executar a transformação **novamente a cada abertura do menu**.
+
+Não é necessário persistir o ItemStack modificado.
+
+---
+
+# 3. ERRO DE ARQUITETURA CORRIGIDO
+
+Inicialmente o sistema estava sendo pensado em torno de um slot específico:
+
+    Slot 10
+    EXPERIENCE_BOTTLE
+    CMD
+
+Isso foi considerado inadequado para o sistema definitivo.
+
+A arquitetura correta deve ser:
+
+    INVENTORY OPEN
+          ↓
+    detectar menu
+          ↓
+    percorrer slots
+          ↓
+    identificar ItemStacks válidos
+          ↓
+    aplicar regras EtherTexture
+          ↓
+    substituir ItemStack na instância atual
+
+O slot pode ser utilizado como critério de uma regra específica, mas não deve ser uma dependência estrutural do scanner.
+
+---
+
+# 4. VERSÃO v0.1.3
+
+A v0.1.3 introduziu o conceito de:
+
+    MENU TRANSFORMER
+
+O scanner passou a:
+
+- detectar Inventory Open;
+- identificar o inventário;
+- percorrer slots;
+- ignorar AIR;
+- identificar Material;
+- ler Custom Model Data;
+- aplicar CMD;
+- devolver o ItemStack ao slot.
+
+Foi identificado um problema com:
+
+    size of {_inventory}
+
+que retornava:
+
+    <none>
+
+neste ambiente.
+
+Por isso, para o teste controlado do PetHorse, foi utilizada a faixa conhecida:
+
+    slots 0 → 26
+
+---
+
+# 5. v0.1.4
+
+A v0.1.4 foi criada especificamente para comprovar a cadeia:
+
+    ITEM ORIGINAL
+       ↓
+    SCAN
+       ↓
+    CMD INJECTION
+       ↓
+    ITEM MODIFICADO
+       ↓
+    RETURN
+
+O teste utilizou:
+
+    Item: EXPERIENCE_BOTTLE
+    Slot: 10
+    CMD: 2330
+
+---
+
+# 6. RESULTADO REAL DO TESTE
+
+Relatório obtido:
+
+    ==================================================
+    [EtherTexture] v0.1.4 SCAN MENU
+    [EtherTexture] MENU: Horse Stats
+    ==================================================
+
+    [EtherTexture] ITEM: EXPERIENCE_BOTTLE
+    [EtherTexture] SLOT: 10
+    [EtherTexture] CMD:
+    [EtherTexture] CMD: <none>
+
+    [EtherTexture] v0.1.4 APPLY CMD
+    [EtherTexture] CMD: 2330
+
+    [EtherTexture] v0.1.4 SCAN MENU RETURNED
+    [EtherTexture] ITEM: EXPERIENCE_BOTTLE
+    [EtherTexture] SLOT: 10
+    [EtherTexture] CMD:
+    [EtherTexture] 2330
+
+    [EtherTexture] RESULTADO ESPERADO: CMD 2330
+
+    --------------------------------------------------
+
+    [EtherTexture] v0.1.4 SCAN FINALIZADO
+    ==================================================
+
+---
+
+# 7. CONCLUSÃO DA PROVA
+
+O teste comprovou:
+
+    CMD BEFORE
+    <none>
+
+    ↓
+
+    EtherTexture
+
+    ↓
+
+    CMD AFTER
+    2330
+
+Portanto:
+
+    PetHorse ItemStack
+          ↓
+    Skript
+          ↓
+    Custom Model Data = 2330
+          ↓
+    ItemStack modificado
+          ↓
+    ItemStack recolocado no inventário
+
+A injeção de Custom Model Data em um ItemStack criado dinamicamente por um plugin está FUNCIONANDO.
+
+---
+
+# 8. COMPONENT COUNT
+
+Anteriormente foi observado que alguns itens apresentavam mudanças no número de componentes:
+
+    Item original:
+    14 componentes
+
+    Após CMD:
+    15 componentes
+
+e o Berrante de Cavalo:
+
+    Original:
+    15 componentes
+
+    Após CMD:
+    16 componentes
+
+Essa observação continua sendo útil como indicador secundário.
+
+Porém, a contagem de componentes NÃO deve ser considerada a prova principal.
+
+A prova definitiva utilizada agora é:
+
+    CMD ORIGINAL
+       ↓
+    CMD INJETADO
+       ↓
+    CMD RETORNADO
+
+No teste v0.1.4:
+
+    <none> → 2330
+
+---
+
+# 9. REGISTRO DE CMD PARA MENUS
+
+Foi definida uma faixa experimental específica para os ícones do menu:
+
+    2330 → 2340
+
+Primeiro CMD validado:
+
+    2330
+
+Planejamento inicial do Horse Stats:
+
+    2330 → EXPERIENCE_BOTTLE → Level
+    2331 → SUGAR → Speed
+    2332 → APPLE → Health
+    2333 → RABBIT_FOOT → Jump Strength
+    2334 → LIME_DYE → Status
+    2335 → FILLED_MAP → Total Blocks
+    2336 → FEATHER → Total Jumps
+
+Esses valores devem ser registrados no:
+
+    ETHERTEXTURE_CMD_REGISTRY
+
+antes de serem reutilizados em outros sistemas.
+
+---
+
+# 10. RELAÇÃO COM O SISTEMA EtherTexture
+
+O fluxo completo planejado agora é:
+
+    Plugin
+       ↓
+    cria ItemStack
+       ↓
+    Menu abre
+       ↓
+    EtherTexture Menu Inspector
+       ↓
+    identifica ItemStack
+       ↓
+    EtherTexture Transformer
+       ↓
+    injeta CMD
+       ↓
+    Minecraft Item Model
+       ↓
+    range_dispatch / item model
+       ↓
+    modelo EtherTexture
+       ↓
+    textura personalizada
+
+O objetivo final é criar ícones personalizados para menus de plugins sem modificar a mecânica ou o código original desses plugins.
+
+---
+
+# 11. PRINCÍPIO FUNDAMENTAL
+
+O EtherTexture NÃO deve substituir a mecânica do plugin.
+
+Ele deve alterar somente a apresentação visual do ItemStack.
+
+Exemplo:
+
+    PetHorse cria:
+
+    EXPERIENCE_BOTTLE
+    nome = Level: 2
+    lore = dados do cavalo
+
+O EtherTexture deve transformar:
+
+    EXPERIENCE_BOTTLE
+    + dados originais
+    + CMD 2330
+
+sem remover:
+
+- nome;
+- lore;
+- quantidade;
+- componentes;
+- NBT;
+- funcionalidade;
+- comportamento esperado pelo plugin.
+
+A intenção é:
+
+    MESMO ITEM
+    MESMA MECÂNICA
+    NOVA APRESENTAÇÃO VISUAL
+
+---
+
+# 12. ESTADO ATUAL
+
+Status:
+
+    [OK] Inventory Open detectado
+    [OK] Menu PetHorse detectado
+    [OK] ItemStack detectado
+    [OK] Material detectado
+    [OK] CMD inexistente identificado
+    [OK] CMD 2330 aplicado
+    [OK] ItemStack devolvido ao slot
+    [OK] CMD 2330 confirmado após transformação
+    [OK] Transformação ocorre sobre a instância atual do menu
+
+Ainda NÃO validado:
+
+    [ ] Textura final do CMD 2330
+    [ ] Modelo final do CMD 2330
+    [ ] Aplicação dos CMD 2331–2336
+    [ ] Regras genéricas para múltiplos menus
+    [ ] Preservação completa de todos os componentes em casos complexos
+    [ ] Sistema definitivo de regras/configuração
+
+---
+
+# 13. PRÓXIMA VERSÃO
+
+Próximo marco:
+
+    EtherTexture Menu Inspector v0.1.5
+
+Objetivo:
+
+    transformar o CMD 2330 em um ícone visual real.
+
+Primeiro:
+
+    EXPERIENCE_BOTTLE
+          ↓
+        CMD 2330
+          ↓
+    EtherTexture Item Model
+          ↓
+    modelo personalizado
+          ↓
+    textura personalizada
+
+Somente depois da validação visual do 2330 devem ser adicionados:
+
+    2331
+    2332
+    2333
+    2334
+    2335
+    2336
+
+---
+
+# 14. OBJETIVO DE LONGO PRAZO
+
+Transformar o EtherTexture em um sistema genérico capaz de personalizar visualmente menus de diferentes plugins.
+
+Arquitetura desejada:
+
+    Menu Detector
+          ↓
+    Menu Identifier
+          ↓
+    Item Scanner
+          ↓
+    Item Classifier
+          ↓
+    EtherTexture Rule
+          ↓
+    CMD Injector
+          ↓
+    ItemStack Return
+
+Exemplo futuro:
+
+    PetHorse
+    ├── Horse Stats
+    ├── Horse Inventory
+    └── outros menus
+
+    Outros plugins
+    ├── menu A
+    ├── menu B
+    └── menu C
+
+Todos utilizando o mesmo motor EtherTexture.
+
+---
+
+# 15. MARCO IMPORTANTE
+
+A v0.1.4 representa a primeira prova funcional de:
+
+    PLUGIN → MENU → ITEMSTACK → SKRIPT → CMD → ITEMSTACK
+
+O sistema não depende mais de alterar diretamente o plugin que cria o menu.
+
+O EtherTexture consegue atuar como uma camada visual externa.
+
+Isso permite avançar para a criação de:
+
+    ÍCONES PERSONALIZADOS DE MENUS
+
+sem alterar a mecânica dos plugins.
+
+UPDATE > 19/08/2026 - 20:41 - M004A
+
+# UPDATE — EtherTexture Menu Inspector / Sistema de Ícones de Menus
+
+Projeto: AeternumSeasons-CustomETHER
+Área: EtherTexture / Menu Inspector
+
+---
+
+# 1. OBJETIVO ATUAL
+
+Desenvolver um sistema chamado:
+
+EtherTexture_Menu_Inspector.sk
+
+Objetivo:
+
+Investigar menus de plugins Bukkit/Paper, identificar os ItemStacks utilizados como ícones e futuramente aplicar Custom Model Data (CMD) para substituir visualmente esses ícones através do resource pack EtherTexture.
+
+IMPORTANTE:
+
+O objetivo NÃO é substituir a mecânica dos plugins.
+
+A ideia é:
+
+PLUGIN
+→ continua criando e controlando seus próprios itens
+→ EtherTexture identifica esses itens
+→ EtherTexture adiciona apenas dados visuais
+→ Resource Pack altera a aparência
+
+A mecânica original deve permanecer intacta.
+
+---
+
+# 2. REGISTRO DE CMD
+
+Foi criado o registro:
+
+ETHERTEXTURE_CMD_REGISTRY
+
+Faixa reservada:
+
+2300–2399 → EtherTexture
+
+A intenção é evitar CMDs aleatórios e manter uma organização centralizada.
+
+Exemplo planejado:
+
+2300 → exemplo/base
+2321 → Berrante de Cavalo
+...
+
+Para itens de menus, os CMDs também deverão ser registrados antes de serem utilizados definitivamente.
+
+---
+
+# 3. BERRANTE DE CAVALO
+
+Foi desenvolvido um item baseado em:
+
+minecraft:goat_horn
+
+O Skript detecta:
+
+player's tool is goat horn
+
+O item utiliza:
+
+minecraft:item_model = ether:horse_horn
+
+e:
+
+minecraft:custom_model_data
+
+O CMD alterna entre:
+
+1 → chamar cavalo
+2 → esconder cavalo
+
+O sistema possui cooldown vanilla do Goat Horn.
+
+O Skript está funcionando corretamente.
+
+A textura passou por problemas de caminho/nome durante o desenvolvimento.
+
+Foi padronizado o nome real do recurso como:
+
+horse_horn
+
+Após a correção dos caminhos do resource pack, a textura passou a funcionar corretamente.
+
+---
+
+# 4. DESCOBERTA SOBRE RANGE_DISPATCH
+
+Foi inicialmente considerado usar CMDs baixos específicos:
+
+1
+2
+3
+
+Depois foi decidido utilizar a faixa:
+
+2300–2399
+
+O CMD pode ser utilizado dentro da cadeia de modelos de um item específico, porém foi decidido manter um REGISTRO GLOBAL de CMD para evitar confusão futura.
+
+Mesmo que um CMD seja tecnicamente usado somente em um determinado item, ele será tratado como identificador reservado do EtherTexture.
+
+---
+
+# 5. INÍCIO DO MENU INSPECTOR
+
+Foi criado:
+
+EtherTexture_Menu_Inspector.sk
+
+Primeiro objetivo:
+
+Descobrir como plugins de GUI constroem seus menus e quais ItemStacks eles utilizam.
+
+Foi utilizado o PetHorse como primeiro caso real.
+
+---
+
+# 6. PRIMEIRA DESCOBERTA — INVENTORY CLICK
+
+Teste:
+
+on inventory click
+
+Resultado:
+
+BAÚ / INVENTÁRIO NORMAL
+→ evento detectado
+
+MENU PET HORSE
+→ clique não era detectado
+
+Conclusão inicial:
+
+O problema não era o Inspector inteiro.
+
+O PetHorse possui tratamento próprio de GUI/clique que impede nosso evento de clique de ser útil para a investigação.
+
+---
+
+# 7. SEGUNDA DESCOBERTA — INVENTORY OPEN
+
+Foi testado:
+
+on inventory open
+
+Resultado:
+
+BAÚ
+→ detectado
+
+PET HORSE
+→ detectado
+
+O PetHorse retornou:
+
+Inventory: inventory of MenuHolder
+Nome: Horse Stats
+
+Posteriormente o tipo apareceu como:
+
+chest inventory
+
+Conclusão:
+
+O PetHorse utiliza um inventário Bukkit normal.
+
+Portanto:
+
+não é uma GUI fora do sistema normal de inventários.
+
+O problema está relacionado principalmente ao tratamento do clique.
+
+---
+
+# 8. ESTRATÉGIA ALTERADA
+
+Como o clique não era necessário para nossa finalidade, decidimos investigar os itens no momento em que o menu é aberto.
+
+Estratégia:
+
+on inventory open
+→ obter event-inventory
+→ percorrer slots
+→ identificar ItemStacks
+→ analisar Material / Name / Lore / CMD / NBT
+
+Isso funcionou.
+
+---
+
+# 9. PRIMEIRO MAPA DO PET HORSE
+
+Menu:
+
+Horse Stats
+
+Slots válidos identificados:
+
+Slot 10
+Material: Bottle o' Enchanting
+Nome: Level: 2
+
+Slot 11
+Material: Sugar
+Nome: Speed: 0.20 (~8.71 b/s)
+
+Slot 12
+Material: Apple
+Nome: Health: 16.5 -
+
+Slot 13
+Material: Rabbit Foot
+Nome: Jump Strength: 0.66
+(1.19 blocks)
+
+Slot 14
+Material: Lime Dye
+Nome: Horse is ready
+
+Slot 16
+Material: Filled Map
+Nome: Total Blocks: 2.1к
+
+Slot 17
+Material: Feather
+Nome: Total Jumps: 17
+
+Os slots 10–17 possuem os itens reais da GUI.
+
+---
+
+# 10. DESCOBERTA DE NBT
+
+Foi utilizado:
+
+set {_nbt} to nbt of {_item}
+
+O SkBee aceitou essa expressão.
+
+O NBT dos itens reais mostrou principalmente:
+
+minecraft:custom_name
+minecraft:lore
+
+Não foi encontrado:
+
+minecraft:custom_model_data
+
+nem:
+
+minecraft:custom_data
+
+nos itens analisados do PetHorse.
+
+Isso é extremamente importante.
+
+Os itens parecem ser ItemStacks comuns, diferenciados principalmente por:
+
+Material
+Custom Name
+Lore
+Slot
+
+---
+
+# 11. IMPLICAÇÃO PARA O ETHERTEXTURE
+
+Isso indica que provavelmente podemos adicionar:
+
+minecraft:custom_model_data
+
+a esses itens sem precisar modificar a mecânica interna do PetHorse.
+
+Exemplo conceitual:
+
+PetHorse:
+
+Slot 10
+EXPERIENCE_BOTTLE
+Nome: Level: 2
+
+EtherTexture futuramente:
+
+Slot 10
+EXPERIENCE_BOTTLE
+Nome: Level: 2
+CMD: 23XX
+
+O plugin continuaria reconhecendo o mesmo ItemStack/material/nome/lore.
+
+O CMD serviria somente para alterar a aparência através do resource pack.
+
+---
+
+# 12. PROBLEMA ENCONTRADO NOS SLOTS VAZIOS
+
+Ao percorrer:
+
+0–53
+
+o Inspector inicialmente tentou filtrar com:
+
+if {_item} is not air
+
+Isso não foi suficiente.
+
+Também foi testado:
+
+if type of {_item} is not air
+
+Também não resolveu completamente.
+
+O relatório revelou que, após os slots reais, determinados slots aparecem como:
+
+Material: <none>
+Name: <none>
+NBT: <none>
+
+Exemplo:
+
+Slot 27+
+Material: <none>
+Name: <none>
+NBT: <none>
+
+Isso indica que o Skript está representando determinados slots como um objeto consultável, porém sem ItemStack/material real.
+
+Conclusão:
+
+AIR e <none> não estão sendo tratados da mesma forma pelo ambiente atual.
+
+---
+
+# 13. v0.0.9
+
+A v0.0.9 foi criada como:
+
+VALID ITEM SCANNER
+
+Objetivo:
+
+Percorrer slots e enviar ao console somente os slots considerados válidos.
+
+Ela melhorou o relatório, mas ainda mostrou slots <none> posteriormente.
+
+Portanto a lógica:
+
+if type of {_item} is not air
+
+não é suficiente para definir "ItemStack válido" nesse contexto.
+
+---
+
+# 14. PRINCIPAL DESCOBERTA ATUAL
+
+Os itens reais possuem dados concretos:
+
+Material
+Name
+Lore
+NBT
+
+Os slots falsos possuem:
+
+Material: <none>
+Name: <none>
+Lore: <none>
+NBT: <none>
+
+Portanto precisamos criar uma definição mais precisa de:
+
+VALID ITEM
+
+O próximo teste deve descobrir a forma correta de diferenciar:
+
+ItemStack real
+
+de:
+
+slot inexistente / vazio representado como <none>
+
+---
+
+# 15. PRÓXIMO TESTE PROPOSTO
+
+Foi proposta a investigação:
+
+v0.1.1 — SLOT EXISTENCE TEST
+
+Objetivo:
+
+Testar diretamente:
+
+if {_item} is set
+
+antes de consultar:
+
+type of {_item}
+display name
+lore
+nbt
+
+A finalidade é descobrir se o Skript diferencia corretamente:
+
+VALID
+→ ItemStack existente
+
+EMPTY
+→ variável/slot inexistente
+
+Ainda NÃO foi confirmado se essa abordagem é a correta.
+
+---
+
+# 16. ESTADO ATUAL DO PROJETO
+
+EtherTexture resource pack
+→ funcionando
+
+CMD Registry
+→ criado
+
+Berrante de Cavalo
+→ funcionando
+
+Skript do Berrante
+→ funcionando
+
+Cooldown vanilla
+→ funcionando
+
+Menu Inspector
+→ funcionando para inventory open
+
+PetHorse menu
+→ detectado
+
+PetHorse inventory
+→ confirmado como chest inventory
+
+PetHorse MenuHolder
+→ identificado como MenuHolder
+
+Horse Stats
+→ identificado
+
+Itens reais
+→ identificados nos slots 10, 11, 12, 13, 14, 16 e 17
+
+NBT
+→ acessível através do SkBee
+
+Custom Model Data dos itens PetHorse
+→ atualmente inexistente
+
+Aplicação de CMD
+→ AINDA NÃO TESTADA
+
+Alteração de mecânica
+→ NUNCA deve ocorrer
+
+---
+
+# 17. PRÓXIMA ETAPA
+
+NÃO aplicar CMD ainda.
+
+Primeiro:
+
+1. Resolver definitivamente a identificação de slots válidos.
+2. Criar um scanner limpo.
+3. Confirmar que somente os slots 10, 11, 12, 13, 14, 16 e 17 aparecem.
+4. Criar relatório estruturado.
+5. Identificar uma forma segura de reconhecer cada botão.
+6. Somente então testar CMD em UM único item.
+7. Reabrir o menu.
+8. Verificar se a aparência mudou.
+9. Verificar se o PetHorse continua funcionando.
+10. Só depois criar o sistema automático de EtherTexture para menus.
+
+---
+
+# 18. PRINCÍPIO FUNDAMENTAL
+
+O EtherTexture_Menu_Inspector deve ser inicialmente:
+
+READ-ONLY
+
+Nenhuma alteração nos ItemStacks deve ocorrer durante a fase de investigação.
+
+Somente depois de conhecer exatamente a estrutura dos menus será permitido adicionar CMD.
+
+Objetivo final:
+
+PLUGIN MECHANICS
+        ↓
+     intactas
+        ↓
+ItemStack original
+        +
+CustomModelData
+        ↓
+EtherTexture Resource Pack
+        ↓
+Ícone personalizado
+
+---
+
+# STATUS
+
+🟢 EtherTexture Resource Pack
+🟢 CMD Registry
+🟢 Berrante de Cavalo
+🟢 Skript / cooldown
+🟢 Inventory Open Detection
+🟢 PetHorse Detection
+🟢 MenuHolder Detection
+🟢 ItemStack Detection
+🟢 NBT Detection
+
+🟡 Slot Validation
+🟡 Menu Identification System
+🟡 Safe Item Identification
+
+🔴 CMD Injection
+🔴 Automatic Menu Skinning
+
+A prioridade atual é resolver o 🟡 SLOT VALIDATION antes de qualquer alteração visual.
+UPDATE > 2026-08-19 - 17:36 - M004A
+
+# ============================================================
+# ETHERCRAFT — ETHERTEXTURE CMD REGISTRY
+# MEMORY UPDATE — BERRANTE DE CAVALO
+# ============================================================
+
+STATUS:
+CONFIRMED / TESTED IN-GAME
+
+============================================================
+1. NOVA REGRA OFICIAL — CMD GLOBAL
+============================================================
+
+Foi decidido que o EtherTexture utilizará UM ÚNICO sistema
+global de CustomModelData.
+
+Faixa oficial:
+
+2300+
+
+Não haverá distinção entre:
+
+- CMD global
+- CMD local
+- CMD de estado interno
+
+Todo CMD utilizado pelo EtherCraft deve possuir um significado
+único e registrado neste Registry.
+
+Motivo:
+
+Evitar confusão futura entre IDs visuais locais e globais,
+facilitando manutenção, debugging e expansão do sistema.
+
+============================================================
+2. CMD RESERVADO
+============================================================
+
+2300 → EXEMPLO / RESERVED
+
+O CMD 2300 serve como marcador inicial da faixa e não deve ser
+utilizado por itens reais.
+
+============================================================
+3. BERRANTE DE CAVALO
+============================================================
+
+Item base:
+
+minecraft:goat_horn
+
+Item Model:
+
+ether:horse_horn
+
+Custom Data:
+
+ether_item: "horse_toggle"
+
+CMD inicial:
+
+2320
+
+============================================================
+4. BERRANTE — ESTADOS
+============================================================
+
+2320 → Horse Horn — State 1
+      Estado inicial / cavalo oculto
+      Ação:
+      /horse summon
+
+2321 → Horse Horn — State 2
+      Estado / cavalo ativo
+      Ação:
+      /horse hide
+
+Ciclo:
+
+2320
+ ↓
+horse summon
+ ↓
+2321
+ ↓
+horse hide
+ ↓
+2320
+
+============================================================
+5. SKRIPT — LÓGICA CONFIRMADA
+============================================================
+
+O Skript utiliza o próprio cooldown vanilla do Goat Horn.
+
+Fluxo:
+
+RIGHT CLICK
+    ↓
+GOAT HORN?
+    ↓
+VANILLA COOLDOWN?
+    ├── SIM → STOP
+    └── NÃO
+          ↓
+       verificar CMD
+          ↓
+     ┌────┴────┐
+     ▼         ▼
+   2320      2321
+     │         │
+     ▼         ▼
+  SUMMON      HIDE
+     │         │
+     ▼         ▼
+   2321      2320
+
+O cooldown vanilla não é substituído por um sistema manual.
+
+STATUS:
+
+CONFIRMED / FUNCIONANDO
+
+============================================================
+6. RESOURCE PACK — ARQUITETURA CONFIRMADA
+============================================================
+
+O Berrante utiliza:
+
+minecraft:item_model
+    ↓
+ether:horse_horn
+    ↓
+assets/ether/items/horse_horn.json
+    ↓
+minecraft:range_dispatch
+    ↓
+minecraft:custom_model_data
+    ↓
+CMD 2320 / 2321
+    ↓
+assets/ether/models/item/horse_horn.json
+    ↓
+texture layer
+    ↓
+assets/ether/textures/item/tools/miscellanea/horse_horn.png
+
+STATUS:
+
+CONFIRMED / TEXTURA FUNCIONANDO IN-GAME
+
+============================================================
+7. DESCOBERTA IMPORTANTE — RANGE DISPATCH
+============================================================
+
+Foi confirmado experimentalmente que CustomModelData pode ser
+utilizado como controlador de estado visual de um item.
+
+Exemplo:
+
+CMD 2320 → estado visual A
+CMD 2321 → estado visual B
+
+O modelo pode ser controlado através de:
+
+minecraft:range_dispatch
+
+Isso permite que um mesmo ItemStack possua diferentes
+representações visuais dependendo do CMD atual.
+
+IMPORTANTE:
+
+Os estados continuam utilizando IDs do Registry global.
+
+Não criar CMDs locais fora do Registry.
+
+============================================================
+8. FALLBACK VANILLA
+============================================================
+
+O sistema precisa preservar o comportamento visual vanilla
+quando o item não possui um CMD registrado para o sistema.
+
+Para Goat Horn:
+
+fallback:
+
+minecraft:item/goat_horn
+
+Isso permite que Goat Horns vanilla continuem funcionando
+normalmente mesmo após a personalização do modelo.
+
+STATUS:
+
+CONFIRMED / VANILLA GOAT HORNS PRESERVADOS
+
+============================================================
+9. LIÇÃO SOBRE RESOURCE LOCATION
+============================================================
+
+Referências de textura dentro de modelos Minecraft NÃO devem
+utilizar caminhos físicos contendo:
+
+assets/
+.png
+
+ERRADO:
+
+assets/ether/textures/item/tools/miscellanea/horse_horn.png
+
+CORRETO:
+
+ether:item/tools/miscellanea/horse_horn
+
+O caminho físico:
+
+assets/ether/textures/item/tools/miscellanea/horse_horn.png
+
+é convertido em Resource Location:
+
+ether:item/tools/miscellanea/horse_horn
+
+============================================================
+10. LIÇÃO SOBRE NOMENCLATURA
+============================================================
+
+Foi identificado que nomes inconsistentes como:
+
+horn_horse
+horse_horn
+
+podem criar referências quebradas difíceis de detectar.
+
+Foi adotada nomenclatura unificada:
+
+horse_horn
+
+Quando possível, o mesmo conceito deve utilizar o mesmo nome
+nos arquivos relacionados:
+
+- item model
+- model
+- texture
+- documentação
+
+Evitar duplicações com nomes semelhantes.
+
+============================================================
+11. PRINCÍPIO DE PRESERVAÇÃO DA MECÂNICA
+============================================================
+
+A camada EtherTexture deve modificar prioritariamente a
+representação visual do ItemStack sem substituir sua identidade
+ou mecânica original.
+
+Objetivo:
+
+ITEM ORIGINAL
+    +
+CUSTOM MODEL DATA
+    =
+MESMA MECÂNICA + NOVO VISUAL
+
+Não reconstruir o ItemStack desnecessariamente.
+
+Preservar:
+
+- Material
+- Nome
+- Lore
+- Enchantments
+- Custom Data
+- Persistent Data
+- Componentes
+- Flags
+- Dados utilizados pelo plugin
+
+quando o objetivo for apenas personalização visual.
+
+============================================================
+12. FUTURA APLICAÇÃO — ÍCONES DE MENUS DE PLUGINS
+============================================================
+
+Foi levantada e considerada VIÁVEL a possibilidade de utilizar
+EtherTexture para personalizar visualmente itens presentes em
+inventários/menus criados por outros plugins.
+
+Conceito:
+
+PLUGIN ABRE MENU
+    ↓
+ETHER OBSERVA ITEM
+    ↓
+IDENTIFICA ITEM
+    ↓
+ITEM POSSUI CMD?
+    ├── SIM → preservar
+    └── NÃO
+          ↓
+      identificar função
+          ↓
+      adicionar CMD EtherTexture
+          ↓
+      novo ícone visual
+
+OBJETIVO:
+
+Alterar apenas a apresentação visual dos ícones sem quebrar a
+mecânica interna do plugin.
+
+IMPORTANTE:
+
+Ainda NÃO implementado.
+
+Antes de desenvolver o sistema, deve ser realizado um teste
+experimental com:
+
+on inventory click
+
+para identificar:
+
+- Inventory title
+- Inventory type
+- Slot
+- Material
+- Display Name
+- Lore
+- CustomModelData
+- Custom Data
+- Persistent Data / PDC
+- Componentes disponíveis ao Skript/SkBee
+
+O primeiro teste deve ser SOMENTE DE LEITURA.
+
+Não modificar os ItemStacks até confirmar quais dados podem ser
+acessados com segurança.
+
+============================================================
+13. PRÓXIMO TESTE RECOMENDADO
+============================================================
+
+Criar um Skript experimental de inspeção de menus.
+
+Objetivo:
+
+Ao abrir/interagir com um menu de plugin, identificar o ItemStack
+presente no slot e imprimir seus dados para análise.
+
+Nenhuma alteração visual deve ser realizada nessa etapa.
+
+Somente após descobrir como os plugins estruturam seus itens será
+criado o sistema de adapters EtherTexture.
+
+============================================================
+14. ARQUITETURA ATUAL
+============================================================
+
+EtherTexture
+
+├── CMD Registry Global
+│   └── 2300+
+│
+├── Item Models
+│
+├── Range Dispatch
+│
+├── CustomModelData
+│
+├── Textures
+│
+└── Futuro:
+    └── Menu / Plugin Adapters
+
+============================================================
+15. STATUS GERAL
+============================================================
+
+CMD Registry Global:
+CONFIRMED
+
+Faixa 2300+:
+CONFIRMED
+
+Berrante de Cavalo:
+CONFIRMED
+
+CMD 2320:
+CONFIRMED
+
+CMD 2321:
+CONFIRMED
+
+Range Dispatch:
+CONFIRMED
+
+Item Model:
+CONFIRMED
+
+Modelo:
+CONFIRMED
+
+Textura:
+CONFIRMED
+
+Fallback Vanilla:
+CONFIRMED
+
+Cooldown Vanilla:
+CONFIRMED
+
+Skript SUMMON/HIDE:
+CONFIRMED
+
+Plugin Menu Adapter:
+PLANNED / NOT IMPLEMENTED
+
+============================================================
+END OF MEMORY UPDATE
+============================================================
 
 UPDATE > 18/08/2026 - M003A
 
