@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "ether:item/icons/horseUp"
+    "layer0": "ether:item/epicJourney"
   }
 }
