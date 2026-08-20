@@ -1,0 +1,14 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "item/disc_fragment_5"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 60010
+      },
+      "model": "ether:item/epicJourney_fragment"
+    }
+  ]
+}
