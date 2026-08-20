@@ -1,0 +1,78 @@
+{
+  "resource_pack_name": "T04",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "ether.item_onion": {
+      "textures": "textures/item/onion"
+    },
+    "ether.item_energy_drink": {
+      "textures": "textures/item/energy_drink"
+    },
+    "ether.item_hot_chocolate": {
+      "textures": "textures/item/hot_chocolate"
+    },
+    "ether.item_gems_sapphire": {
+      "textures": "textures/item/gems/sapphire"
+    },
+    "ether.item_tools_miscellanea_horse_horn": {
+      "textures": "textures/item/tools/miscellanea/horse_horn"
+    },
+    "ether.item_angel-wing_icon": {
+      "textures": "textures/item/angel-wing_icon"
+    },
+    "ether.item_rice": {
+      "textures": "textures/item/rice"
+    },
+    "ether.item_tomato_salad": {
+      "textures": "textures/item/tomato_salad"
+    },
+    "ether.item_vegetable_bread": {
+      "textures": "textures/item/vegetable_bread"
+    },
+    "ether.item_copper_hammer": {
+      "textures": "textures/item/copper_hammer"
+    },
+    "ether.item_gems_emerald": {
+      "textures": "textures/item/gems/emerald"
+    },
+    "ether.item_copper_elite_sword": {
+      "textures": "textures/item/copper_elite_sword"
+    },
+    "ether.item_coffee": {
+      "textures": "textures/item/coffee"
+    },
+    "ether.item_gems_ruby": {
+      "textures": "textures/item/gems/ruby"
+    },
+    "ether.item_beef_rice_stew": {
+      "textures": "textures/item/beef_rice_stew"
+    },
+    "ether.item_cadeira_abeto_icon": {
+      "textures": "textures/item/cadeira_abeto_icon"
+    },
+    "ether.item_gems_topaz": {
+      "textures": "textures/item/gems/topaz"
+    },
+    "ether.item_copper_mace": {
+      "textures": "textures/item/copper_mace"
+    },
+    "ether.item_copper_battle_axe": {
+      "textures": "textures/item/copper_battle_axe"
+    },
+    "ether.item_meat_sandwich": {
+      "textures": "textures/item/meat_sandwich"
+    },
+    "minecraft.item_goat_horn": {
+      "textures": "textures/item/goat_horn"
+    },
+    "ether.item_herbal_tea": {
+      "textures": "textures/item/herbal_tea"
+    },
+    "ether.item_tomato": {
+      "textures": "textures/item/tomato"
+    },
+    "ether.item_icons_horseUp": {
+      "textures": "textures/item/icons/horseUp"
+    }
+  }
+}

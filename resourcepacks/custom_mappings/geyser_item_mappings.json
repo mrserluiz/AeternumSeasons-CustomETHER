@@ -1,0 +1,264 @@
+{
+  "format_version": 2,
+  "items": {
+    "minecraft:rabbit_stew": [
+      {
+        "bedrock_identifier": "ether:item/beef_rice_stew",
+        "bedrock_options": {
+          "icon": "ether.item_beef_rice_stew"
+        },
+        "custom_model_data": 2307,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:cobblestone": [
+      {
+        "bedrock_identifier": "ether:item/cadeira_abeto",
+        "bedrock_options": {
+          "icon": "ether.item_cadeira_abeto_icon"
+        },
+        "components": {
+          "minecraft:equippable": {
+            "slot": "head"
+          }
+        },
+        "model": "ether:cadeira_abeto",
+        "type": "definition"
+      }
+    ],
+    "minecraft:echo_shard": [
+      {
+        "bedrock_identifier": "ether:item/emerald",
+        "bedrock_options": {
+          "icon": "ether.item_gems_emerald"
+        },
+        "custom_model_data": 2318,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/ruby",
+        "bedrock_options": {
+          "icon": "ether.item_gems_ruby"
+        },
+        "custom_model_data": 2315,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/sapphire",
+        "bedrock_options": {
+          "icon": "ether.item_gems_sapphire"
+        },
+        "custom_model_data": 2316,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/topaz",
+        "bedrock_options": {
+          "icon": "ether.item_gems_topaz"
+        },
+        "custom_model_data": 2317,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:wheat_seeds": [
+      {
+        "bedrock_identifier": "ether:item/onion",
+        "bedrock_options": {
+          "icon": "ether.item_onion"
+        },
+        "custom_model_data": 2302,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:copper_axe": [
+      {
+        "bedrock_identifier": "ether:item/angel-wing",
+        "bedrock_options": {
+          "icon": "ether.item_angel-wing_icon"
+        },
+        "components": {
+          "minecraft:equippable": {
+            "slot": "head"
+          }
+        },
+        "model": "ether:angel-wing",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "ether:item/copper_battle_axe",
+        "bedrock_options": {
+          "icon": "ether.item_copper_battle_axe",
+          "display_handheld": true
+        },
+        "model": "ether:copper_battle_axe",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "ether:item/copper_elite_sword",
+        "bedrock_options": {
+          "icon": "ether.item_copper_elite_sword",
+          "display_handheld": true
+        },
+        "model": "ether:copper_elite_sword",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "ether:item/copper_hammer",
+        "bedrock_options": {
+          "icon": "ether.item_copper_hammer",
+          "display_handheld": true
+        },
+        "model": "ether:copper_hammer",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "ether:item/copper_mace",
+        "bedrock_options": {
+          "icon": "ether.item_copper_mace",
+          "display_handheld": true
+        },
+        "model": "ether:copper_mace",
+        "type": "definition"
+      }
+    ],
+    "minecraft:bread": [
+      {
+        "bedrock_identifier": "ether:item/meat_sandwich",
+        "bedrock_options": {
+          "icon": "ether.item_meat_sandwich"
+        },
+        "custom_model_data": 2306,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/vegetable_bread",
+        "bedrock_options": {
+          "icon": "ether.item_vegetable_bread"
+        },
+        "custom_model_data": 2305,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:mushroom_stew": [
+      {
+        "bedrock_identifier": "ether:item/tomato_salad",
+        "bedrock_options": {
+          "icon": "ether.item_tomato_salad"
+        },
+        "custom_model_data": 2304,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:honey_bottle": [
+      {
+        "bedrock_identifier": "ether:item/coffee",
+        "bedrock_options": {
+          "icon": "ether.item_coffee"
+        },
+        "custom_model_data": 2310,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/energy_drink",
+        "bedrock_options": {
+          "icon": "ether.item_energy_drink"
+        },
+        "custom_model_data": 2312,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/herbal_tea",
+        "bedrock_options": {
+          "icon": "ether.item_herbal_tea"
+        },
+        "custom_model_data": 2311,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/hot_chocolate",
+        "bedrock_options": {
+          "icon": "ether.item_hot_chocolate"
+        },
+        "custom_model_data": 2313,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:experience_bottle": [
+      {
+        "bedrock_identifier": "ether:item/icons/horseUp",
+        "bedrock_options": {
+          "icon": "ether.item_icons_horseUp"
+        },
+        "custom_model_data": 2330,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:beetroot_seeds": [
+      {
+        "bedrock_identifier": "ether:item/rice",
+        "bedrock_options": {
+          "icon": "ether.item_rice"
+        },
+        "custom_model_data": 2303,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/tomato",
+        "bedrock_options": {
+          "icon": "ether.item_tomato",
+          "display_handheld": true
+        },
+        "components": {
+          "minecraft:consumable": {},
+          "minecraft:food": {
+            "nutrition": 2,
+            "saturation": 0.1
+          }
+        },
+        "custom_model_data": 2301,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:goat_horn": [
+      {
+        "model": "ether:horse_horn",
+        "definitions": [
+          {
+            "bedrock_identifier": "geyser_mc:item/goat_horn",
+            "bedrock_options": {
+              "icon": "minecraft.item_goat_horn"
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "ether:item/horse_horn",
+            "predicate": {
+              "property": "custom_model_data",
+              "threshold": 2320.0,
+              "scale": 1.0,
+              "type": "range_dispatch"
+            },
+            "bedrock_options": {
+              "icon": "ether.item_tools_miscellanea_horse_horn"
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "ether:item/horse_horn",
+            "predicate": {
+              "property": "custom_model_data",
+              "threshold": 2321.0,
+              "scale": 1.0,
+              "type": "range_dispatch"
+            },
+            "bedrock_options": {
+              "icon": "ether.item_tools_miscellanea_horse_horn"
+            },
+            "type": "definition"
+          }
+        ],
+        "type": "group"
+      }
+    ]
+  }
+}

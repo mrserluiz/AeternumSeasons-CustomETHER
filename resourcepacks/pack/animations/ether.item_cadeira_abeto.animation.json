@@ -1,0 +1,71 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.ether.item_cadeira_abeto.hold_first_person": {
+      "loop": true,
+      "bones": {
+        "bone": {
+          "position": [
+            -0.0,
+            12.5,
+            0.0
+          ],
+          "rotation": [
+            -40.5,
+            180.0,
+            -180.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    "animation.ether.item_cadeira_abeto.head": {
+      "loop": true,
+      "bones": {
+        "bone": {
+          "position": [
+            0.0,
+            0.18625069,
+            0.49124998
+          ],
+          "rotation": [
+            -0.0,
+            -0.0,
+            0.0
+          ],
+          "scale": [
+            1.203818,
+            1.2230093,
+            1.312561
+          ]
+        }
+      }
+    },
+    "animation.ether.item_cadeira_abeto.hold_third_person": {
+      "loop": true,
+      "bones": {
+        "bone": {
+          "position": [
+            6.0,
+            11.25,
+            2.0
+          ],
+          "rotation": [
+            90.0,
+            -0.0,
+            -0.0
+          ],
+          "scale": [
+            1.1582,
+            1.17578,
+            1.15625
+          ]
+        }
+      }
+    }
+  }
+}

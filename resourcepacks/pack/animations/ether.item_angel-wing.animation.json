@@ -1,0 +1,71 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.ether.item_angel-wing.head": {
+      "loop": true,
+      "bones": {
+        "bone": {
+          "position": [
+            -0.3275,
+            4.7712507,
+            3.2749999
+          ],
+          "rotation": [
+            -0.0,
+            -0.0,
+            0.0
+          ],
+          "scale": [
+            1.14625,
+            1.14625,
+            1.14625
+          ]
+        }
+      }
+    },
+    "animation.ether.item_angel-wing.hold_third_person": {
+      "loop": true,
+      "bones": {
+        "bone": {
+          "position": [
+            -0.0,
+            11.25,
+            -0.25
+          ],
+          "rotation": [
+            90.0,
+            -0.0,
+            175.0
+          ],
+          "scale": [
+            0.21,
+            0.21,
+            0.22
+          ]
+        }
+      }
+    },
+    "animation.ether.item_angel-wing.hold_first_person": {
+      "loop": true,
+      "bones": {
+        "bone": {
+          "position": [
+            -0.0,
+            12.5,
+            0.0
+          ],
+          "rotation": [
+            -90.0,
+            -0.0,
+            0.0
+          ],
+          "scale": [
+            0.62,
+            0.62,
+            0.62
+          ]
+        }
+      }
+    }
+  }
+}
