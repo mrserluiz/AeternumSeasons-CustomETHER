@@ -8,7 +8,7 @@
         "threshold": 60010,
         "model": {
           "type": "minecraft:model",
-          "model": "ether:item/epicJourney"
+          "model": "ether:item/epicJourney_fragment"
         }
       }
     ],
