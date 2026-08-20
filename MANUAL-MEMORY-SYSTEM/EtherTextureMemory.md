@@ -5,6 +5,463 @@ UPDATE > 00/00/00 - 00:00 - M000A
 [conteúdo]
 <END UPDATE>
 =============================
+UPDATE > 2026-08-19 - 22:00 - M005A
+
+# UPDATE — EtherTexture Menu Inspector
+## Marco: v0.1.4 — CMD Injection comprovada
+
+---
+
+# 1. RESUMO
+
+O sistema EtherTexture avançou de um simples scanner de menus para um sistema capaz de **interceptar uma nova instância de inventário criada por um plugin e modificar os ItemStacks daquela GUI em tempo real**.
+
+O teste foi realizado com o menu:
+
+    PetHorse
+    Menu: Horse Stats
+
+O teste utilizou o item:
+
+    EXPERIENCE_BOTTLE
+
+localizado no:
+
+    Slot 10
+
+O CMD utilizado no teste foi:
+
+    2330
+
+O resultado foi confirmado com sucesso.
+
+---
+
+# 2. DESCOBERTA ARQUITETURAL IMPORTANTE
+
+Foi identificado que menus de plugins como o PetHorse não devem ser tratados como inventários persistentes.
+
+O fluxo correto é:
+
+    /horse
+       ↓
+    PetHorse cria uma nova GUI
+       ↓
+    PetHorse cria novos ItemStacks
+       ↓
+    Inventory Open
+       ↓
+    EtherTexture intercepta o evento
+       ↓
+    EtherTexture identifica os itens
+       ↓
+    EtherTexture modifica o ItemStack
+       ↓
+    ItemStack modificado é devolvido ao slot
+       ↓
+    jogador recebe a GUI personalizada
+
+Quando o jogador fecha e executa novamente:
+
+    /horse
+
+o plugin pode criar uma nova instância completa do inventário.
+
+Portanto, o EtherTexture deve executar a transformação **novamente a cada abertura do menu**.
+
+Não é necessário persistir o ItemStack modificado.
+
+---
+
+# 3. ERRO DE ARQUITETURA CORRIGIDO
+
+Inicialmente o sistema estava sendo pensado em torno de um slot específico:
+
+    Slot 10
+    EXPERIENCE_BOTTLE
+    CMD
+
+Isso foi considerado inadequado para o sistema definitivo.
+
+A arquitetura correta deve ser:
+
+    INVENTORY OPEN
+          ↓
+    detectar menu
+          ↓
+    percorrer slots
+          ↓
+    identificar ItemStacks válidos
+          ↓
+    aplicar regras EtherTexture
+          ↓
+    substituir ItemStack na instância atual
+
+O slot pode ser utilizado como critério de uma regra específica, mas não deve ser uma dependência estrutural do scanner.
+
+---
+
+# 4. VERSÃO v0.1.3
+
+A v0.1.3 introduziu o conceito de:
+
+    MENU TRANSFORMER
+
+O scanner passou a:
+
+- detectar Inventory Open;
+- identificar o inventário;
+- percorrer slots;
+- ignorar AIR;
+- identificar Material;
+- ler Custom Model Data;
+- aplicar CMD;
+- devolver o ItemStack ao slot.
+
+Foi identificado um problema com:
+
+    size of {_inventory}
+
+que retornava:
+
+    <none>
+
+neste ambiente.
+
+Por isso, para o teste controlado do PetHorse, foi utilizada a faixa conhecida:
+
+    slots 0 → 26
+
+---
+
+# 5. v0.1.4
+
+A v0.1.4 foi criada especificamente para comprovar a cadeia:
+
+    ITEM ORIGINAL
+       ↓
+    SCAN
+       ↓
+    CMD INJECTION
+       ↓
+    ITEM MODIFICADO
+       ↓
+    RETURN
+
+O teste utilizou:
+
+    Item: EXPERIENCE_BOTTLE
+    Slot: 10
+    CMD: 2330
+
+---
+
+# 6. RESULTADO REAL DO TESTE
+
+Relatório obtido:
+
+    ==================================================
+    [EtherTexture] v0.1.4 SCAN MENU
+    [EtherTexture] MENU: Horse Stats
+    ==================================================
+
+    [EtherTexture] ITEM: EXPERIENCE_BOTTLE
+    [EtherTexture] SLOT: 10
+    [EtherTexture] CMD:
+    [EtherTexture] CMD: <none>
+
+    [EtherTexture] v0.1.4 APPLY CMD
+    [EtherTexture] CMD: 2330
+
+    [EtherTexture] v0.1.4 SCAN MENU RETURNED
+    [EtherTexture] ITEM: EXPERIENCE_BOTTLE
+    [EtherTexture] SLOT: 10
+    [EtherTexture] CMD:
+    [EtherTexture] 2330
+
+    [EtherTexture] RESULTADO ESPERADO: CMD 2330
+
+    --------------------------------------------------
+
+    [EtherTexture] v0.1.4 SCAN FINALIZADO
+    ==================================================
+
+---
+
+# 7. CONCLUSÃO DA PROVA
+
+O teste comprovou:
+
+    CMD BEFORE
+    <none>
+
+    ↓
+
+    EtherTexture
+
+    ↓
+
+    CMD AFTER
+    2330
+
+Portanto:
+
+    PetHorse ItemStack
+          ↓
+    Skript
+          ↓
+    Custom Model Data = 2330
+          ↓
+    ItemStack modificado
+          ↓
+    ItemStack recolocado no inventário
+
+A injeção de Custom Model Data em um ItemStack criado dinamicamente por um plugin está FUNCIONANDO.
+
+---
+
+# 8. COMPONENT COUNT
+
+Anteriormente foi observado que alguns itens apresentavam mudanças no número de componentes:
+
+    Item original:
+    14 componentes
+
+    Após CMD:
+    15 componentes
+
+e o Berrante de Cavalo:
+
+    Original:
+    15 componentes
+
+    Após CMD:
+    16 componentes
+
+Essa observação continua sendo útil como indicador secundário.
+
+Porém, a contagem de componentes NÃO deve ser considerada a prova principal.
+
+A prova definitiva utilizada agora é:
+
+    CMD ORIGINAL
+       ↓
+    CMD INJETADO
+       ↓
+    CMD RETORNADO
+
+No teste v0.1.4:
+
+    <none> → 2330
+
+---
+
+# 9. REGISTRO DE CMD PARA MENUS
+
+Foi definida uma faixa experimental específica para os ícones do menu:
+
+    2330 → 2340
+
+Primeiro CMD validado:
+
+    2330
+
+Planejamento inicial do Horse Stats:
+
+    2330 → EXPERIENCE_BOTTLE → Level
+    2331 → SUGAR → Speed
+    2332 → APPLE → Health
+    2333 → RABBIT_FOOT → Jump Strength
+    2334 → LIME_DYE → Status
+    2335 → FILLED_MAP → Total Blocks
+    2336 → FEATHER → Total Jumps
+
+Esses valores devem ser registrados no:
+
+    ETHERTEXTURE_CMD_REGISTRY
+
+antes de serem reutilizados em outros sistemas.
+
+---
+
+# 10. RELAÇÃO COM O SISTEMA EtherTexture
+
+O fluxo completo planejado agora é:
+
+    Plugin
+       ↓
+    cria ItemStack
+       ↓
+    Menu abre
+       ↓
+    EtherTexture Menu Inspector
+       ↓
+    identifica ItemStack
+       ↓
+    EtherTexture Transformer
+       ↓
+    injeta CMD
+       ↓
+    Minecraft Item Model
+       ↓
+    range_dispatch / item model
+       ↓
+    modelo EtherTexture
+       ↓
+    textura personalizada
+
+O objetivo final é criar ícones personalizados para menus de plugins sem modificar a mecânica ou o código original desses plugins.
+
+---
+
+# 11. PRINCÍPIO FUNDAMENTAL
+
+O EtherTexture NÃO deve substituir a mecânica do plugin.
+
+Ele deve alterar somente a apresentação visual do ItemStack.
+
+Exemplo:
+
+    PetHorse cria:
+
+    EXPERIENCE_BOTTLE
+    nome = Level: 2
+    lore = dados do cavalo
+
+O EtherTexture deve transformar:
+
+    EXPERIENCE_BOTTLE
+    + dados originais
+    + CMD 2330
+
+sem remover:
+
+- nome;
+- lore;
+- quantidade;
+- componentes;
+- NBT;
+- funcionalidade;
+- comportamento esperado pelo plugin.
+
+A intenção é:
+
+    MESMO ITEM
+    MESMA MECÂNICA
+    NOVA APRESENTAÇÃO VISUAL
+
+---
+
+# 12. ESTADO ATUAL
+
+Status:
+
+    [OK] Inventory Open detectado
+    [OK] Menu PetHorse detectado
+    [OK] ItemStack detectado
+    [OK] Material detectado
+    [OK] CMD inexistente identificado
+    [OK] CMD 2330 aplicado
+    [OK] ItemStack devolvido ao slot
+    [OK] CMD 2330 confirmado após transformação
+    [OK] Transformação ocorre sobre a instância atual do menu
+
+Ainda NÃO validado:
+
+    [ ] Textura final do CMD 2330
+    [ ] Modelo final do CMD 2330
+    [ ] Aplicação dos CMD 2331–2336
+    [ ] Regras genéricas para múltiplos menus
+    [ ] Preservação completa de todos os componentes em casos complexos
+    [ ] Sistema definitivo de regras/configuração
+
+---
+
+# 13. PRÓXIMA VERSÃO
+
+Próximo marco:
+
+    EtherTexture Menu Inspector v0.1.5
+
+Objetivo:
+
+    transformar o CMD 2330 em um ícone visual real.
+
+Primeiro:
+
+    EXPERIENCE_BOTTLE
+          ↓
+        CMD 2330
+          ↓
+    EtherTexture Item Model
+          ↓
+    modelo personalizado
+          ↓
+    textura personalizada
+
+Somente depois da validação visual do 2330 devem ser adicionados:
+
+    2331
+    2332
+    2333
+    2334
+    2335
+    2336
+
+---
+
+# 14. OBJETIVO DE LONGO PRAZO
+
+Transformar o EtherTexture em um sistema genérico capaz de personalizar visualmente menus de diferentes plugins.
+
+Arquitetura desejada:
+
+    Menu Detector
+          ↓
+    Menu Identifier
+          ↓
+    Item Scanner
+          ↓
+    Item Classifier
+          ↓
+    EtherTexture Rule
+          ↓
+    CMD Injector
+          ↓
+    ItemStack Return
+
+Exemplo futuro:
+
+    PetHorse
+    ├── Horse Stats
+    ├── Horse Inventory
+    └── outros menus
+
+    Outros plugins
+    ├── menu A
+    ├── menu B
+    └── menu C
+
+Todos utilizando o mesmo motor EtherTexture.
+
+---
+
+# 15. MARCO IMPORTANTE
+
+A v0.1.4 representa a primeira prova funcional de:
+
+    PLUGIN → MENU → ITEMSTACK → SKRIPT → CMD → ITEMSTACK
+
+O sistema não depende mais de alterar diretamente o plugin que cria o menu.
+
+O EtherTexture consegue atuar como uma camada visual externa.
+
+Isso permite avançar para a criação de:
+
+    ÍCONES PERSONALIZADOS DE MENUS
+
+sem alterar a mecânica dos plugins.
+
 UPDATE > 19/08/2026 - 20:41 - M004A
 
 # UPDATE — EtherTexture Menu Inspector / Sistema de Ícones de Menus
