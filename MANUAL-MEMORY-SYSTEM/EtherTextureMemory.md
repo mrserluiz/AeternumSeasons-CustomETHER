@@ -47,7 +47,7 @@ JAVA + BEDROCK.
 
 Foi estabelecido um registro central de Custom Model Data:
 
-ETHER TEXTURE CMD REGISTRY
+ETHER TEXTURE CMD REGISTRY : https://github.com/mrserluiz/AeternumSeasons-CustomETHER/blob/main/MANUAL-MEMORY-SYSTEM/ETHERTEXTURE_CMD_REGISTRY
 
 Faixa atualmente utilizada para ícones de menus:
 
