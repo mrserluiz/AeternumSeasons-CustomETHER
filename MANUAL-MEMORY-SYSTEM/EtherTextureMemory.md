@@ -5,6 +5,703 @@ UPDATE > 00/00/00 - 00:00 - M000A
 [conteúdo]
 <END UPDATE>
 =============================
+
+# ============================================================
+# ETHERCRAFT — ETHER TEXTURE MEMORY
+# UPDATE — BEDROCK / GEYSER / RAINBOW
+# DATA: 2026-08-22
+# ============================================================
+
+## 1. OBJETIVO ATUAL
+
+Projeto EtherTexture responsável por criar uma camada visual customizada
+para o servidor EtherCraft, utilizando:
+
+- Java Resource Pack
+- Bedrock Resource Pack
+- GeyserMC
+- Floodgate
+- Rainbow
+- Geyser Custom Item Mappings
+- Skript / SkBee
+
+Objetivo:
+
+Permitir que itens vanilla utilizados por plugins possam receber:
+
+- Ícones personalizados
+- Texturas personalizadas
+- Modelos 3D
+- Diferentes estados visuais
+- Custom Model Data (CMD)
+
+sem alterar a mecânica original dos plugins.
+
+A prioridade atual é garantir que os itens funcionem simultaneamente para:
+
+JAVA + BEDROCK.
+
+---
+
+# 2. SISTEMA CMD
+
+Foi estabelecido um registro central de Custom Model Data:
+
+ETHER TEXTURE CMD REGISTRY
+
+Faixa atualmente utilizada para ícones de menus:
+
+2300–2399
+
+Exemplo:
+
+CMD 2330 = Horse Up / ícone de cavalo
+
+A intenção é manter uma organização centralizada para evitar conflitos
+futuros entre itens e sistemas.
+
+---
+
+# 3. MENU INSPECTOR
+
+Foi desenvolvido:
+
+EtherTexture_Menu_Inspector.sk
+
+Versões de desenvolvimento:
+
+- v0
+- v0.0.9
+- v0.1.2
+- v0.1.3
+- v0.1.4
+
+Objetivo:
+
+Detectar menus/inventários criados dinamicamente por plugins e identificar
+os itens presentes nos slots.
+
+O sistema conseguiu detectar corretamente menus físicos e menus virtuais
+criados por plugins.
+
+Exemplo detectado:
+
+MENU: Horse Stats
+
+Slots:
+
+10 - EXPERIENCE_BOTTLE
+11 - SUGAR
+12 - APPLE
+13 - RABBIT_FOOT
+14 - LIME_DYE
+16 - FILLED_MAP
+17 - FEATHER
+
+Foi confirmado que menus de plugins podem ser inventários virtuais,
+portanto não devemos depender de um bloco físico ou localização.
+
+---
+
+# 4. DESCOBERTA IMPORTANTE — MENUS DINÂMICOS
+
+O menu do PetHorse/Horse Stats é recriado pelo plugin quando o comando
+é executado.
+
+Portanto:
+
+O EtherTexture não deve modificar um inventário físico apenas uma vez.
+
+A transformação deve acontecer toda vez que o menu for criado/aberto.
+
+O sistema deve permanecer genérico para futuros plugins.
+
+Arquitetura desejada:
+
+PLUGIN
+  ↓
+CRIA MENU
+  ↓
+ETHER TEXTURE DETECTA
+  ↓
+IDENTIFICA ITEM
+  ↓
+VERIFICA CMD
+  ↓
+SE NECESSÁRIO APLICA CMD
+  ↓
+ITEM VISUAL PERSONALIZADO
+
+A mecânica original do plugin deve permanecer intacta.
+
+---
+
+# 5. TESTE CMD 2330
+
+Foi criado um item de teste:
+
+minecraft:experience_bottle
+
+com:
+
+minecraft:custom_model_data = 2330
+
+Comando:
+
+/minecraft:give MrSerLuiz minecraft:experience_bottle[minecraft:custom_model_data={floats:[2330.0f]}]
+
+Resultado:
+
+JAVA:
+OK
+
+No Java o item aparece corretamente com o modelo/ícone:
+
+horseUp
+
+Portanto a cadeia Java está funcionando.
+
+---
+
+# 6. HORSE UP — JAVA
+
+O modelo Java utilizado pelo CMD 2330 aponta para:
+
+ether:item/icons/horseUp
+
+A textura Java correspondente:
+
+horseUp.png
+
+A cadeia Java confirmada:
+
+EXPERIENCE_BOTTLE
+  ↓
+CMD 2330
+  ↓
+range_dispatch
+  ↓
+ether:item/icons/horseUp
+  ↓
+horseUp.json
+  ↓
+horseUp.png
+
+Resultado:
+
+JAVA = FUNCIONANDO
+
+---
+
+# 7. RAINBOW
+
+Rainbow está sendo utilizado para gerar automaticamente:
+
+- Bedrock Resource Pack
+- Custom Item Mappings
+- Estruturas necessárias para Geyser
+
+Rainbow já demonstrou funcionar corretamente para diversos itens
+customizados do servidor.
+
+Inclusive já existem itens com:
+
+- Ícones personalizados
+- Modelos 3D
+- Custom Model Data
+- Mappings Bedrock
+
+funcionando para jogadores Java e Bedrock.
+
+Portanto Rainbow é atualmente a referência para a arquitetura Bedrock.
+
+---
+
+# 8. BEDROCK RESOURCE PACK
+
+Diretório atual:
+
+resourcepacks/pack
+
+IMPORTANTE:
+
+O pacote original gerado pelo Rainbow foi restaurado.
+
+Foi anteriormente renomeado para:
+
+EtherTexture-Bedrock
+
+e seu manifest foi alterado.
+
+Depois disso ocorreram problemas de visualização.
+
+Para eliminar a possibilidade de problemas relacionados a:
+
+- manifest
+- UUID
+- version
+- cache do Bedrock
+- identidade do resource pack
+
+o pacote foi restaurado ao nome/estrutura original:
+
+pack
+
+O próximo teste deve utilizar novamente o pacote original do Rainbow.
+
+---
+
+# 9. CUSTOM MAPPINGS
+
+Diretório:
+
+resourcepacks/custom_mappings
+
+Arquivo principal:
+
+geyser_item_mappings.json
+
+Formato:
+
+format_version: 2
+
+O Rainbow gerou corretamente um mapping para:
+
+minecraft:experience_bottle
+CMD 2330
+
+Mapping atual esperado:
+
+{
+  "bedrock_identifier": "ether:item/icons/horseUp",
+  "bedrock_options": {
+    "icon": "ether.item_icons_horseUp"
+  },
+  "custom_model_data": 2330,
+  "type": "legacy"
+}
+
+Portanto:
+
+O mapping EXISTE.
+
+Não é correto afirmar que o Rainbow simplesmente não gerou
+o mapping do EXPERIENCE_BOTTLE.
+
+---
+
+# 10. COMPARAÇÃO COM ITEM FUNCIONAL
+
+Itens Rainbow que já funcionam utilizam arquitetura semelhante.
+
+Exemplo:
+
+minecraft:rabbit_stew
+CMD 2307
+
+Mapping:
+
+{
+  "bedrock_identifier": "ether:item/beef_rice_stew",
+  "bedrock_options": {
+    "icon": "ether.item_beef_rice_stew"
+  },
+  "custom_model_data": 2307,
+  "type": "legacy"
+}
+
+Outro exemplo:
+
+minecraft:bread
+CMD 2306
+
+Também utiliza:
+
+type: legacy
+
+Portanto:
+
+EXPERIENCE_BOTTLE + CMD 2330
+
+não deveria ser automaticamente considerado incompatível apenas por ser
+EXPERIENCE_BOTTLE.
+
+---
+
+# 11. HORSE UP — BEDROCK
+
+O Rainbow criou referência:
+
+bedrock_identifier:
+
+ether:item/icons/horseUp
+
+icon:
+
+ether.item_icons_horseUp
+
+A textura correspondente está registrada na estrutura Bedrock gerada pelo
+Rainbow.
+
+O PNG horseUp.png existe e foi validado como textura 16x16.
+
+Portanto a textura não aparenta estar corrompida.
+
+---
+
+# 12. TESTE REALIZADO — IDENTIFIER ALTERADO
+
+Foi realizado um Teste B.
+
+Mapping original:
+
+ether:item/icons/horseUp
+
+Foi temporariamente alterado para:
+
+ether:item/horseUp
+
+Resultado:
+
+O item desapareceu/não foi renderizado corretamente.
+
+Isso demonstrou que não podemos simplesmente inventar um novo
+bedrock_identifier sem criar toda a estrutura Bedrock correspondente.
+
+Conclusão:
+
+bedrock_identifier NÃO é simplesmente o caminho do PNG.
+
+Ele representa uma identidade/item Bedrock que precisa estar corretamente
+registrada na arquitetura do pack.
+
+O mapping original:
+
+ether:item/icons/horseUp
+
+deve ser restaurado.
+
+---
+
+# 13. ITEM_TEXTURE.JSON
+
+Durante a investigação foi levantada a hipótese de utilização de:
+
+item_texture.json
+
+Porém foi confirmado que o usuário NÃO possui esse arquivo no estado
+atual do pacote.
+
+Portanto:
+
+NÃO criar item_texture.json arbitrariamente.
+
+Devemos respeitar a estrutura real gerada pelo Rainbow.
+
+A estrutura Rainbow existente é a referência.
+
+---
+
+# 14. PROBLEMA ATUAL
+
+Estado confirmado:
+
+JAVA:
+
+EXPERIENCE_BOTTLE + CMD 2330
+        ↓
+HORSE UP
+        ↓
+FUNCIONANDO
+
+BEDROCK:
+
+EXPERIENCE_BOTTLE + CMD 2330
+        ↓
+EXPERIENCE BOTTLE VANILLA
+        ↓
+NÃO FUNCIONANDO
+
+Mesmo existindo:
+
+- mapping CMD 2330
+- bedrock_identifier
+- icon
+- textura
+- pack Rainbow
+
+---
+
+# 15. HIPÓTESES ATUAIS
+
+Hipótese A:
+O .RAR utilizado pelo servidor não corresponde exatamente aos arquivos
+atuais do GitHub.
+
+Hipótese B:
+O Bedrock está utilizando uma versão antiga/cache do resource pack.
+
+Hipótese C:
+O manifest foi alterado anteriormente e o Bedrock/Geyser ficou com
+identidade/cache diferente.
+
+Hipótese D:
+O mapping legacy para EXPERIENCE_BOTTLE + CMD 2330 está sendo ignorado
+ou não selecionado pelo Geyser.
+
+Hipótese E:
+Existe alguma diferença estrutural entre a forma como Rainbow cria os
+itens funcionais e o caso EXPERIENCE_BOTTLE.
+
+Hipótese F:
+O bedrock_identifier:
+
+ether:item/icons/horseUp
+
+possui uma definição/estrutura Bedrock que ainda precisa ser identificada
+e comparada com um item Rainbow funcional.
+
+---
+
+# 16. ESTADO DO MANIFEST
+
+O pacote Bedrock havia sido renomeado/modificado para:
+
+EtherTexture-Bedrock
+
+Depois disso surgiram problemas.
+
+Foi decidido restaurar o pacote para:
+
+pack
+
+que corresponde à estrutura original gerada pelo Rainbow.
+
+Objetivo:
+
+Eliminar como variável:
+
+- nome do pack
+- UUID
+- version
+- cache
+- identidade do resource pack
+
+O próximo teste deve utilizar o pacote original do Rainbow.
+
+---
+
+# 17. REGRA PARA PRÓXIMOS TESTES
+
+NÃO alterar simultaneamente:
+
+- Java resource pack
+- Skript
+- CMD
+- Geyser mapping
+- Bedrock pack
+- manifest
+
+Cada teste deve alterar uma única variável.
+
+Isso é necessário para identificar exatamente onde está a falha.
+
+---
+
+# 18. PRÓXIMO TESTE
+
+Primeiro:
+
+Restaurar/recompactar o pack original do Rainbow.
+
+Garantir que o servidor está usando o mesmo .RAR que está sendo analisado.
+
+Estrutura:
+
+GitHub
+  ↓
+resourcepacks/pack
+  ↓
+RAR
+  ↓
+SERVIDOR
+  ↓
+GEYSER
+  ↓
+BEDROCK
+
+Depois testar:
+
+/minecraft:give MrSerLuiz minecraft:experience_bottle[minecraft:custom_model_data={floats:[2330.0f]}]
+
+Resultado esperado:
+
+BEDROCK = horseUp
+
+Se funcionar:
+
+Problema = manifest/cache/pack utilizado pelo servidor.
+
+Se continuar:
+
+BEDROCK = experience bottle
+
+Então:
+
+manifest/cache será praticamente descartado.
+
+A investigação continuará especificamente no:
+
+experience_bottle
++
+CMD 2330
++
+geyser_item_mappings.json
++
+Bedrock identifier
++
+estrutura interna gerada pelo Rainbow.
+
+---
+
+# 19. ARQUITETURA FUTURA DO ETHER TEXTURE
+
+Objetivo final:
+
+PLUGIN MENU
+    ↓
+ITEM VANILLA
+    ↓
+ETHER MENU INSPECTOR
+    ↓
+IDENTIFICA ITEM
+    ↓
+CONSULTA CMD REGISTRY
+    ↓
+APLICA CMD
+    ↓
+JAVA RESOURCE PACK
+    ↓
+MODELO/ÍCONE JAVA
+
+E paralelamente:
+
+ITEM + CMD
+    ↓
+GEYSER
+    ↓
+CUSTOM MAPPING
+    ↓
+BEDROCK RESOURCE PACK
+    ↓
+ÍCONE / MODELO / TEXTURA BEDROCK
+
+O sistema deverá funcionar genericamente para futuros menus de plugins.
+
+---
+
+# 20. FUTURA INVESTIGAÇÃO — AETERNUM FOODS BEDROCK
+
+Foi separado para uma investigação posterior:
+
+resourcepacks/Aeternum-Foods-Bedrock
+
+Objetivo futuro:
+
+Descobrir como o pacote aplica:
+
+- texturas de blocos
+- modelos de blocos
+- blocos colocados no mundo
+- representação Bedrock de blocos customizados
+
+Esta investigação NÃO deve interferir no diagnóstico atual do HorseUp.
+
+Prioridade atual:
+
+EXPERIENCE_BOTTLE + CMD 2330 → HORSE UP → BEDROCK
+
+---
+
+# 21. ESTADO ATUAL RESUMIDO
+
+JAVA:
+✅ CMD 2330
+✅ HorseUp
+✅ textura
+✅ modelo
+✅ item funcionando
+
+MENU INSPECTOR:
+✅ detecta menus
+✅ detecta itens
+✅ detecta slots
+✅ aplica CMD
+✅ arquitetura dinâmica identificada
+
+RAINBOW:
+✅ gera Bedrock pack
+✅ gera custom mappings
+✅ outros itens funcionando
+✅ modelos 3D funcionando
+
+GEYSER:
+✅ ponte Java → Bedrock funcionando para outros itens
+✅ modelos 3D já comprovadamente funcionando
+⚠️ EXPERIENCE_BOTTLE + CMD 2330 ainda não
+
+HORSE UP BEDROCK:
+✅ PNG existente
+✅ referência de textura existente
+✅ mapping existente
+⚠️ Bedrock ainda mostra EXPERIENCE_BOTTLE
+
+MANIFEST:
+⚠️ foi alterado anteriormente
+✅ pacote restaurado para "pack"
+⚠️ próximo teste deve usar o pack original/recompactado
+
+---
+
+# 22. CONCLUSÃO
+
+O problema do HorseUp NÃO está mais sendo tratado como um simples
+problema de textura.
+
+A investigação comprovou:
+
+1. O CMD 2330 funciona no Java.
+2. O modelo HorseUp funciona no Java.
+3. Rainbow gerou mapping para EXPERIENCE_BOTTLE + CMD 2330.
+4. Outros mappings legacy funcionam no Bedrock.
+5. A textura HorseUp existe.
+6. Alterar arbitrariamente o bedrock_identifier faz o item desaparecer.
+7. Portanto bedrock_identifier depende da estrutura interna do Bedrock pack.
+8. O pacote Rainbow original foi restaurado para eliminar problemas de
+manifest/cache.
+9. O próximo teste deve usar exatamente o RAR que o servidor está
+carregando.
+10. Se o problema persistir, a investigação deverá comparar diretamente
+a estrutura completa de um item Rainbow funcional com:
+EXPERIENCE_BOTTLE + CMD 2330.
+
+PRÓXIMO ALVO:
+
+EXPERIENCE_BOTTLE
+CMD 2330
+        ↓
+Geyser Mapping
+        ↓
+ether:item/icons/horseUp
+        ↓
+Bedrock Resource Pack
+        ↓
+HORSE UP
+
+# ============================================================
+# FIM DO UPDATE
+# ============================================================
+
 UPDATE > 20/08/2026 - 16:02 - M0006A
 # ============================================================
 # ETHER TEXTURE MEMORY — UPDATE
