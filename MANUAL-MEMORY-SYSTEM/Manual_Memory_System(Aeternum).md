@@ -6,6 +6,638 @@
 ====================================================================
 [0]UPDATE
 ====================================================================
+UPDATE > 23/08/26 - 14:57 - M001J
+
+UPDATE > 23/08/2026 - AETERNUM_PORTALS_DIMENSIONS_V01
+
+[TÍTULO]
+Engenharia Reversa AeternumSeasons 4.5 — Portais, Linking e Dimensões
+
+[OBJETIVO]
+Investigar tecnicamente o AeternumSeasons 4.5 para compreender sua arquitetura de:
+
+- Portais
+- Linking entre dimensões
+- Persistência
+- Criação de mundos
+- Geração de dimensões
+
+Com objetivo futuro de desenvolver:
+
+- EtherCraftPortals
+- EtherCraftDimensions
+
+Sem depender permanentemente do Aeternum.
+
+==================================================
+ESTADO DA INVESTIGAÇÃO
+==================================================
+
+STATUS:
+EM ANDAMENTO
+
+FONTE PRINCIPAL:
+
+Repositório:
+
+https://github.com/mrserluiz/AeternumSeasons-CustomETHER
+
+Código analisado diretamente do projeto descompilado.
+
+==================================================
+CLASSES ANALISADAS
+==================================================
+
+CONFIRMED
+
+Portal System:
+
+✓ FrostOverworldPortals
+✓ HeatOverworldPortals
+✓ HeatNetherPortals
+✓ PortalFrameClassifier
+✓ VanillaPortalIsolation
+
+Dimension System:
+
+✓ FrostWorldGenerator
+✓ FrostOnlyBiomeProvider
+✓ HeatWorldGenerator
+✓ HeatBiomeProvider
+✓ HeatRuinsPopulator
+
+Investigação pendente:
+
+□ AeternumSeasonsPlugin
+□ Sistema completo de inicialização
+□ Dependências entre dimensões e portais
+
+==================================================
+FROST PORTAL
+==================================================
+
+CONFIRMED
+
+Classe:
+
+FrostOverworldPortals
+
+Estrutura:
+
+Frame:
+GLOWSTONE
+
+Interior:
+NETHER_PORTAL
+
+Tamanho:
+
+width = 2
+height = 3
+
+Orientações:
+
+Axis.X
+Axis.Z
+
+Classe responsável pela estrutura:
+
+FrostPortalShape
+
+Métodos identificados:
+
+detect()
+detectWithOrientation()
+isValidFrameX()
+isValidFrameZ()
+buildAt()
+
+==================================================
+ATIVAÇÃO DO FROST
+==================================================
+
+CONFIRMED
+
+Itens relacionados:
+
+FLINT_AND_STEEL
+FIRE_CHARGE
+
+Eventos:
+
+PlayerInteractEvent
+ProjectileHitEvent
+
+Descoberta importante:
+
+Snowball participa da ativação.
+
+Fluxo identificado:
+
+Snowball
+     ↓
+FrostPortalShape.detect()
+     ↓
+lightPortal()
+
+Conclusão:
+
+O Frost possui ativação própria e não depende exclusivamente do
+comportamento vanilla.
+
+==================================================
+PORTAL ATIVO
+==================================================
+
+CONFIRMED
+
+O frame NÃO é o portal.
+
+Estrutura:
+
+GLOWSTONE
+      ↓
+frame
+
+NETHER_PORTAL
+      ↓
+portal ativo
+
+lightPortal() cria blocos:
+
+Material.NETHER_PORTAL
+
+com orientação configurada.
+
+==================================================
+PORTALKEY
+==================================================
+
+CONFIRMED
+
+Identificação própria do Aeternum.
+
+Contém:
+
+world
+x
+y
+z
+axis
+
+Objetivo:
+
+Representar um portal de forma única.
+
+==================================================
+LINKING
+==================================================
+
+CONFIRMED
+
+Estrutura identificada:
+
+Map<PortalKey, PortalKey>
+
+Função:
+
+Portal A ↔ Portal B
+
+O Aeternum mantém um sistema próprio de vínculos.
+
+Não depende apenas da lógica vanilla.
+
+==================================================
+PERSISTÊNCIA
+==================================================
+
+CONFIRMED
+
+Frost:
+
+frost_portal_links.yml
+
+Heat:
+
+heat_nether_links.yml
+
+Os vínculos sobrevivem a reinicializações.
+
+==================================================
+RESOLUÇÃO DE DESTINO
+==================================================
+
+CONFIRMED
+
+Fluxo reconstruído:
+
+Portal origem
+      ↓
+PortalKey
+      ↓
+Existe vínculo?
+   ↓       ↓
+ Sim      Não
+ ↓          ↓
+Destino   Procurar portal
+             ↓
+      Encontrou?
+         ↓      ↓
+        Sim    Não
+         ↓       ↓
+      Vincular  Criar portal
+                    ↓
+                 Vincular
+                    ↓
+                 Teleportar
+
+==================================================
+PROCURA DE PORTAIS
+==================================================
+
+CONFIRMED
+
+Raio identificado:
+
+32 blocos
+
+Critérios:
+
+NETHER_PORTAL
++
+frame compatível
+
+==================================================
+PORTALFRAMECLASSIFIER
+==================================================
+
+CONFIRMED
+
+Função:
+
+Classificar portais já existentes.
+
+Tipos encontrados:
+
+OBSIDIAN
+    ↓
+VANILLA
+
+GLOWSTONE
+    ↓
+FROST
+
+NETHER_WART_BLOCK
+    ↓
+HEAT
+
+Combinações:
+CUSTOM_MIXED
+
+Desconhecido:
+UNKNOWN
+
+Observação:
+
+PortalFrameClassifier NÃO substitui FrostPortalShape.
+
+São camadas diferentes.
+
+==================================================
+VANILLAPORTALISOLATION
+==================================================
+
+CONFIRMED
+
+Objetivo:
+
+Evitar interferência entre:
+
+Portais Vanilla
+Portais Frost
+Portais Heat
+
+Eventos identificados:
+
+PlayerPortalEvent
+EntityPortalEvent
+
+Conclusão:
+
+O sistema vanilla não é simplesmente desligado.
+
+O plugin cria isolamento entre os tipos de portal.
+
+==================================================
+HEAT PORTAL
+==================================================
+
+CONFIRMED
+
+Classe:
+
+HeatOverworldPortals
+
+Frame:
+
+NETHER_WART_BLOCK
+
+Interior:
+
+NETHER_PORTAL
+
+Arquitetura muito semelhante ao Frost.
+
+==================================================
+HEAT NETHER
+==================================================
+
+CONFIRMED
+
+Classe:
+
+HeatNetherPortals
+
+Possui:
+
+PortalKey próprio
+Persistência própria
+Sistema de linking próprio
+
+==================================================
+CONCLUSÃO DOS PORTAIS
+==================================================
+
+CONFIRMED
+
+Arquitetura reconstruída:
+
+Portal Shape
+       ↓
+Validação
+       ↓
+Ativação
+       ↓
+PortalKey
+       ↓
+Linking
+       ↓
+Persistência
+       ↓
+Destino
+       ↓
+Teleporte
+
+Camadas auxiliares:
+
+PortalFrameClassifier
+VanillaPortalIsolation
+PortalBuildProtection
+
+==================================================
+DIMENSÕES
+==================================================
+
+CONFIRMED
+
+Aeternum NÃO depende obrigatoriamente de dimensões registradas por datapack.
+
+Foi identificado uso de:
+
+WorldCreator
+
+==================================================
+FROST DIMENSION
+==================================================
+
+CONFIRMED
+
+Mundo:
+
+aeternum_frost
+
+Criação:
+
+WorldCreator
+     ↓
+Environment.NORMAL
+     ↓
+FrostWorldGenerator
+     ↓
+createWorld()
+
+==================================================
+HEAT DIMENSION
+==================================================
+
+CONFIRMED
+
+Mundo:
+
+aeternum_heat
+
+Criação:
+
+WorldCreator
+     ↓
+Environment.NETHER
+     ↓
+HeatWorldGenerator
+     ↓
+createWorld()
+
+==================================================
+FROSTWORLDGENERATOR
+==================================================
+
+CONFIRMED
+
+Extende:
+
+ChunkGenerator
+
+Utiliza:
+
+FrostOnlyBiomeProvider
+
+A geração continua usando mecanismos normais do Minecraft.
+
+==================================================
+FROSTONLYBIOMEPROVIDER
+==================================================
+
+CONFIRMED
+
+Biomas identificados:
+
+SNOWY_PLAINS
+SNOWY_TAIGA
+ICE_SPIKES
+FROZEN_RIVER
+FROZEN_OCEAN
+DEEP_FROZEN_OCEAN
+FROZEN_PEAKS
+JAGGED_PEAKS
+SNOWY_SLOPES
+
+Conclusão:
+
+O Frost Realm é um mundo normal com seleção controlada de biomas frios.
+
+==================================================
+HEATWORLDGENERATOR
+==================================================
+
+CONFIRMED
+
+Utiliza:
+
+HeatBiomeProvider
+
+e
+
+HeatRuinsPopulator
+
+Arquitetura:
+
+Generator
+     ↓
+BiomeProvider
+     ↓
+Populator
+
+==================================================
+BLUE ICE
+==================================================
+
+CONFIRMED
+
+A troca:
+
+GLOWSTONE
+     ↓
+BLUE_ICE
+
+É tecnicamente viável.
+
+Porém exige alterações coordenadas em:
+
+FrostPortalShape
+PortalFrameClassifier
+Detecção
+Construção
+Classificação
+
+Não é uma simples substituição de constante.
+
+==================================================
+ARQUITETURA FUTURA PROPOSTA
+==================================================
+
+PROPOSTA
+
+EtherCraftPortals
+
+Responsável por:
+
+- Frames
+- Detecção
+- Ativação
+- Linking
+- Persistência
+- Destinos
+- Teleporte
+- Isolamento Vanilla
+
+EtherCraftDimensions
+
+Responsável por:
+
+- WorldCreator
+- ChunkGenerator
+- BiomeProvider
+- Estruturas
+- Configuração de mundos
+
+==================================================
+PORTAL FROST FUTURO
+==================================================
+
+PROPOSTA
+
+PortalDefinition
+
+id: FROST
+
+frame:
+BLUE_ICE
+
+activation:
+SNOWBALL
+
+interior:
+NETHER_PORTAL
+
+size:
+2x3
+
+destination:
+ethercraft_frost
+
+==================================================
+OBJETIVO FINAL
+==================================================
+
+AeternumSeasons
+       ↓
+Engenharia Reversa
+       ↓
+Compreensão da Arquitetura
+       ↓
+Seleção das Funcionalidades
+       ↓
+EtherCraft Custom
+       ↓
+EtherCraftPortals
+EtherCraftDimensions
+       ↓
+Frost Realm Próprio
+Heat Realm Próprio
+Aether Próprio
+       ↓
+Controle Total pelo EtherCraft
+
+==================================================
+PRÓXIMA INVESTIGAÇÃO
+==================================================
+
+ALVO:
+
+AeternumSeasonsPlugin
+
+Objetivo:
+
+Mapear a ordem completa de inicialização.
+
+Identificar:
+
+- criação dos mundos
+- registro dos generators
+- registro dos portais
+- registro dos listeners
+- VanillaPortalIsolation
+- dependências internas
+
+Pergunta principal:
+
+É possível desligar seletivamente os sistemas de portal e dimensão
+do Aeternum enquanto o EtherCraft assume essas funções?
+
+STATUS:
+PENDENTE
+
+<END UPDATE>
+
 UPDATE > 17/08/26 - 14:XX - M001I
 
 [PROJETO ETHERCRAFT — ENGENHARIA REVERSA DO AETERNUMSEASONS]
