@@ -1,0 +1,169 @@
+{
+  "format_version": 1,
+  "blocks": {
+    "minecraft:mangrove_propagule": {
+      "name": "ethercraft_crops",
+      "display_name": "Cultivos EtherCraft",
+      "geometry": "minecraft:geometry.cross",
+
+      "material_instances": {
+        "*": {
+          "texture": "ether.block_crop_tomato_stage_0",
+          "render_method": "alpha_test",
+          "face_dimming": false,
+          "ambient_occlusion": false
+        }
+      },
+
+      "collision_box": {
+        "origin": [0, 0, 0],
+        "size": [0, 0, 0]
+      },
+
+      "selection_box": {
+        "origin": [-6, 0, -6],
+        "size": [12, 16, 12]
+      },
+
+      "light_dampening": 0,
+      "place_air": false,
+      "included_in_creative_inventory": false,
+      "only_override_states": true,
+
+      "state_overrides": {
+
+        "age=1,hanging=false,stage=0,waterlogged=false": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_tomato_stage_0",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        },
+
+        "age=2,hanging=false,stage=0,waterlogged=false": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_tomato_stage_1",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        },
+
+        "age=3,hanging=false,stage=0,waterlogged=false": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_tomato_stage_2",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        },
+
+        "age=4,hanging=false,stage=0,waterlogged=false": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_tomato_stage_3",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        },
+
+        "age=1,hanging=false,stage=1,waterlogged=false": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_onion_stage_0",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        },
+
+        "age=2,hanging=false,stage=1,waterlogged=false": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_onion_stage_1",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        },
+
+        "age=3,hanging=false,stage=1,waterlogged=false": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_onion_stage_2",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        },
+
+        "age=4,hanging=false,stage=1,waterlogged=false": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_onion_stage_3",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        },
+
+        "age=0,hanging=true,stage=1,waterlogged=true": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_rice_seedling",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        },
+
+        "age=1,hanging=true,stage=1,waterlogged=true": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_rice_stalk",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        },
+
+        "age=2,hanging=true,stage=1,waterlogged=true": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_rice_young_top",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        },
+
+        "age=3,hanging=true,stage=1,waterlogged=true": {
+          "material_instances": {
+            "*": {
+              "texture": "ether.block_crop_rice_ripe_top",
+              "render_method": "alpha_test",
+              "face_dimming": false,
+              "ambient_occlusion": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -185,7 +185,7 @@
     ],
     "minecraft:experience_bottle": [
       {
-        "bedrock_identifier": "ether:item/horseUp",
+        "bedrock_identifier": "ether:item/icons/horseUp",
         "bedrock_options": {
           "icon": "ether.item_icons_horseUp"
         },
