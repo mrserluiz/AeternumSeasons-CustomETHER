@@ -1,6 +1,9 @@
 {
   "pack": {
-    "description": "EtherCraft_TextureServer",
-    "pack_format": 88.0
+    "pack_format": 15,
+    "supported_formats": [15, 255],
+    "min_format": 15,
+    "max_format": 255,
+    "description": "§2EtherCraft_TextureServer"
   }
 }
