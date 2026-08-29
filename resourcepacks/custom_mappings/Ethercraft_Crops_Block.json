@@ -8,7 +8,7 @@
 
       "material_instances": {
         "*": {
-          "texture": "ether.block_crop_tomato_stage_0",
+          "texture": "mangrove_propagule",
           "render_method": "alpha_test",
           "face_dimming": false,
           "ambient_occlusion": false
@@ -31,7 +31,6 @@
       "only_override_states": true,
 
       "state_overrides": {
-
         "age=1,hanging=false,stage=0,waterlogged=false": {
           "material_instances": {
             "*": {
