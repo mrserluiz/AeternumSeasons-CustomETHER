@@ -1,0 +1,255 @@
+{
+  "resource_pack_name": "T05",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "default.item_topaz_leggings_diamond_trim_icon": {
+      "textures": "textures/item/topaz_leggings_diamond_trim_icon"
+    },
+    "geyser_mc.block_custom_gunpowder_block_icon": {
+      "textures": "textures/block/custom/gunpowder_block_icon"
+    },
+    "minecraft.item_custom_palm_door": {
+      "textures": "textures/item/custom/palm_door"
+    },
+    "default.item_topaz_helmet_netherite_trim_icon": {
+      "textures": "textures/item/topaz_helmet_netherite_trim_icon"
+    },
+    "ether.item_onion": {
+      "textures": "textures/item/onion"
+    },
+    "default.item_topaz_chestplate_amethyst_trim_icon": {
+      "textures": "textures/item/topaz_chestplate_amethyst_trim_icon"
+    },
+    "default.item_topaz_boots_diamond_trim_icon": {
+      "textures": "textures/item/topaz_boots_diamond_trim_icon"
+    },
+    "ether.item_tools_miscellanea_horse_horn": {
+      "textures": "textures/item/tools/miscellanea/horse_horn"
+    },
+    "geyser_mc.block_custom_palm_stairs_icon": {
+      "textures": "textures/block/custom/palm_stairs_icon"
+    },
+    "default.item_topaz_boots_gold_trim_icon": {
+      "textures": "textures/item/topaz_boots_gold_trim_icon"
+    },
+    "minecraft.item_custom_topaz_bow": {
+      "textures": "textures/item/custom/topaz_bow"
+    },
+    "ether.item_rice": {
+      "textures": "textures/item/rice"
+    },
+    "geyser_mc.block_custom_palm_pressure_plate_icon": {
+      "textures": "textures/block/custom/palm_pressure_plate_icon"
+    },
+    "ether.item_copper_hammer": {
+      "textures": "textures/item/copper_hammer"
+    },
+    "ether.item_tomato_salad": {
+      "textures": "textures/item/tomato_salad"
+    },
+    "ether.item_copper_elite_sword": {
+      "textures": "textures/item/copper_elite_sword"
+    },
+    "default.item_topaz_boots_resin_trim_icon": {
+      "textures": "textures/item/topaz_boots_resin_trim_icon"
+    },
+    "default.item_topaz_leggings_amethyst_trim_icon": {
+      "textures": "textures/item/topaz_leggings_amethyst_trim_icon"
+    },
+    "ether.item_copper_battle_axe": {
+      "textures": "textures/item/copper_battle_axe"
+    },
+    "default.item_topaz_boots_lapis_trim_icon": {
+      "textures": "textures/item/topaz_boots_lapis_trim_icon"
+    },
+    "geyser_mc.block_custom_palm_planks_icon": {
+      "textures": "textures/block/custom/palm_planks_icon"
+    },
+    "default.item_topaz_boots_amethyst_trim_icon": {
+      "textures": "textures/item/topaz_boots_amethyst_trim_icon"
+    },
+    "ether.item_herbal_tea": {
+      "textures": "textures/item/herbal_tea"
+    },
+    "default.item_topaz_leggings_iron_trim_icon": {
+      "textures": "textures/item/topaz_leggings_iron_trim_icon"
+    },
+    "default.item_topaz_icon": {
+      "textures": "textures/item/topaz_icon"
+    },
+    "default.item_topaz_leggings_resin_trim_icon": {
+      "textures": "textures/item/topaz_leggings_resin_trim_icon"
+    },
+    "default.item_topaz_boots_copper_trim_icon": {
+      "textures": "textures/item/topaz_boots_copper_trim_icon"
+    },
+    "default.item_topaz_leggings_emerald_trim_icon": {
+      "textures": "textures/item/topaz_leggings_emerald_trim_icon"
+    },
+    "default.item_topaz_chestplate_gold_trim_icon": {
+      "textures": "textures/item/topaz_chestplate_gold_trim_icon"
+    },
+    "default.item_topaz_leggings_lapis_trim_icon": {
+      "textures": "textures/item/topaz_leggings_lapis_trim_icon"
+    },
+    "geyser_mc.block_custom_safe_block_icon": {
+      "textures": "textures/block/custom/safe_block_icon"
+    },
+    "default.item_topaz_boots_quartz_trim_icon": {
+      "textures": "textures/item/topaz_boots_quartz_trim_icon"
+    },
+    "default.item_topaz_chestplate_diamond_trim_icon": {
+      "textures": "textures/item/topaz_chestplate_diamond_trim_icon"
+    },
+    "default.item_topaz_chestplate_redstone_trim_icon": {
+      "textures": "textures/item/topaz_chestplate_redstone_trim_icon"
+    },
+    "default.item_topaz_boots_emerald_trim_icon": {
+      "textures": "textures/item/topaz_boots_emerald_trim_icon"
+    },
+    "default.item_topaz_chestplate_resin_trim_icon": {
+      "textures": "textures/item/topaz_chestplate_resin_trim_icon"
+    },
+    "default.item_topaz_helmet_gold_trim_icon": {
+      "textures": "textures/item/topaz_helmet_gold_trim_icon"
+    },
+    "ether.item_beef_rice_stew": {
+      "textures": "textures/item/beef_rice_stew"
+    },
+    "default.item_topaz_chestplate_lapis_trim_icon": {
+      "textures": "textures/item/topaz_chestplate_lapis_trim_icon"
+    },
+    "default.item_topaz_leggings_redstone_trim_icon": {
+      "textures": "textures/item/topaz_leggings_redstone_trim_icon"
+    },
+    "geyser_mc.block_custom_copper_coil_icon": {
+      "textures": "textures/block/custom/copper_coil_icon"
+    },
+    "geyser_mc.block_custom_chinese_lantern_icon": {
+      "textures": "textures/block/custom/chinese_lantern_icon"
+    },
+    "default.item_topaz_boots_iron_trim_icon": {
+      "textures": "textures/item/topaz_boots_iron_trim_icon"
+    },
+    "default.item_topaz_chestplate_icon": {
+      "textures": "textures/item/topaz_chestplate_icon"
+    },
+    "default.item_topaz_helmet_amethyst_trim_icon": {
+      "textures": "textures/item/topaz_helmet_amethyst_trim_icon"
+    },
+    "minecraft.item_goat_horn": {
+      "textures": "textures/item/goat_horn"
+    },
+    "ether.item_hot_chocolate": {
+      "textures": "textures/item/hot_chocolate"
+    },
+    "ether.item_vegetable_bread": {
+      "textures": "textures/item/vegetable_bread"
+    },
+    "ether.item_copper_mace": {
+      "textures": "textures/item/copper_mace"
+    },
+    "default.item_topaz_helmet_diamond_trim_icon": {
+      "textures": "textures/item/topaz_helmet_diamond_trim_icon"
+    },
+    "default.item_topaz_boots_icon": {
+      "textures": "textures/item/topaz_boots_icon"
+    },
+    "default.item_topaz_boots_redstone_trim_icon": {
+      "textures": "textures/item/topaz_boots_redstone_trim_icon"
+    },
+    "ether.item_coffee": {
+      "textures": "textures/item/coffee"
+    },
+    "default.item_topaz_boots_netherite_trim_icon": {
+      "textures": "textures/item/topaz_boots_netherite_trim_icon"
+    },
+    "ether.item_gems_ruby": {
+      "textures": "textures/item/gems/ruby"
+    },
+    "geyser_mc.block_custom_palm_slab_icon": {
+      "textures": "textures/block/custom/palm_slab_icon"
+    },
+    "minecraft.item_custom_pebble": {
+      "textures": "textures/item/custom/pebble"
+    },
+    "default.item_topaz_helmet_copper_trim_icon": {
+      "textures": "textures/item/topaz_helmet_copper_trim_icon"
+    },
+    "default.item_topaz_chestplate_emerald_trim_icon": {
+      "textures": "textures/item/topaz_chestplate_emerald_trim_icon"
+    },
+    "default.item_topaz_helmet_resin_trim_icon": {
+      "textures": "textures/item/topaz_helmet_resin_trim_icon"
+    },
+    "ether.item_energy_drink": {
+      "textures": "textures/item/energy_drink"
+    },
+    "default.item_topaz_helmet_quartz_trim_icon": {
+      "textures": "textures/item/topaz_helmet_quartz_trim_icon"
+    },
+    "geyser_mc.block_custom_topaz_ore_icon": {
+      "textures": "textures/block/custom/topaz_ore_icon"
+    },
+    "default.item_topaz_helmet_lapis_trim_icon": {
+      "textures": "textures/item/topaz_helmet_lapis_trim_icon"
+    },
+    "ether.item_tomato": {
+      "textures": "textures/item/tomato"
+    },
+    "geyser_mc.item_custom_palm_button_icon": {
+      "textures": "textures/item/custom/palm_button_icon"
+    },
+    "default.item_topaz_chestplate_iron_trim_icon": {
+      "textures": "textures/item/topaz_chestplate_iron_trim_icon"
+    },
+    "default.item_topaz_leggings_copper_trim_icon": {
+      "textures": "textures/item/topaz_leggings_copper_trim_icon"
+    },
+    "default.item_topaz_leggings_gold_trim_icon": {
+      "textures": "textures/item/topaz_leggings_gold_trim_icon"
+    },
+    "geyser_mc.item_custom_sleeper_sofa_icon": {
+      "textures": "textures/item/custom/sleeper_sofa_icon"
+    },
+    "default.item_topaz_leggings_quartz_trim_icon": {
+      "textures": "textures/item/topaz_leggings_quartz_trim_icon"
+    },
+    "default.item_topaz_chestplate_netherite_trim_icon": {
+      "textures": "textures/item/topaz_chestplate_netherite_trim_icon"
+    },
+    "default.item_topaz_leggings_netherite_trim_icon": {
+      "textures": "textures/item/topaz_leggings_netherite_trim_icon"
+    },
+    "minecraft.block_custom_amethyst_torch": {
+      "textures": "textures/block/custom/amethyst_torch"
+    },
+    "geyser_mc.block_custom_palm_trapdoor_bottom_icon": {
+      "textures": "textures/block/custom/palm_trapdoor_bottom_icon"
+    },
+    "default.item_topaz_helmet_redstone_trim_icon": {
+      "textures": "textures/item/topaz_helmet_redstone_trim_icon"
+    },
+    "default.item_topaz_chestplate_copper_trim_icon": {
+      "textures": "textures/item/topaz_chestplate_copper_trim_icon"
+    },
+    "default.item_topaz_helmet_iron_trim_icon": {
+      "textures": "textures/item/topaz_helmet_iron_trim_icon"
+    },
+    "ether.item_custom": {
+      "textures": "textures/item/custom"
+    },
+    "default.item_topaz_chestplate_quartz_trim_icon": {
+      "textures": "textures/item/topaz_chestplate_quartz_trim_icon"
+    },
+    "default.item_topaz_helmet_emerald_trim_icon": {
+      "textures": "textures/item/topaz_helmet_emerald_trim_icon"
+    },
+    "default.item_topaz_helmet_icon": {
+      "textures": "textures/item/topaz_helmet_icon"
+    },
+    "default.item_topaz_leggings_icon": {
+      "textures": "textures/item/topaz_leggings_icon"
+    }
+  }
+}

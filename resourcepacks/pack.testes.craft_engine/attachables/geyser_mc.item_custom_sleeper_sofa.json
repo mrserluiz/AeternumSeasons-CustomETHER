@@ -1,0 +1,40 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "geyser_mc:item/custom/sleeper_sofa",
+      "materials": {
+        "enchanted": "entity_alphatest_glint",
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "enchanted": "textures/misc/enchanted_item_glint",
+        "default": "textures/item/custom/sofa"
+      },
+      "geometry": {
+        "default": "geometry.geyser_mc.item_custom_sleeper_sofa"
+      },
+      "animations": {
+        "first_person": "animation.geyser_mc.item_custom_sleeper_sofa.hold_first_person",
+        "head": "animation.geyser_mc.item_custom_sleeper_sofa.head",
+        "third_person": "animation.geyser_mc.item_custom_sleeper_sofa.hold_third_person"
+      },
+      "scripts": {
+        "animate": [
+          {
+            "first_person": "context.is_first_person == 1.0 && (context.item_slot == 'main_hand' || context.item_slot == 'off_hand')"
+          },
+          {
+            "third_person": "context.is_first_person == 0.0 && (context.item_slot == 'main_hand' || context.item_slot == 'off_hand')"
+          },
+          {
+            "head": "context.is_first_person == 0.0 && context.item_slot == 'head'"
+          }
+        ]
+      },
+      "render_controllers": [
+        "controller.render.item_default"
+      ]
+    }
+  }
+}

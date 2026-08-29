@@ -1,0 +1,73 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.minecraft.item_custom_topaz": {
+      "arrays": {
+        "textures": {
+          "Array.frames": [
+            "Texture.frame_0",
+            "Texture.frame_0",
+            "Texture.frame_0",
+            "Texture.frame_0",
+            "Texture.frame_0",
+            "Texture.frame_0",
+            "Texture.frame_0",
+            "Texture.frame_0",
+            "Texture.frame_0",
+            "Texture.frame_0",
+            "Texture.frame_1",
+            "Texture.frame_1",
+            "Texture.frame_1",
+            "Texture.frame_1",
+            "Texture.frame_1",
+            "Texture.frame_1",
+            "Texture.frame_1",
+            "Texture.frame_1",
+            "Texture.frame_1",
+            "Texture.frame_1",
+            "Texture.frame_2",
+            "Texture.frame_2",
+            "Texture.frame_2",
+            "Texture.frame_2",
+            "Texture.frame_2",
+            "Texture.frame_2",
+            "Texture.frame_2",
+            "Texture.frame_2",
+            "Texture.frame_2",
+            "Texture.frame_2",
+            "Texture.frame_3",
+            "Texture.frame_3",
+            "Texture.frame_3",
+            "Texture.frame_3",
+            "Texture.frame_3",
+            "Texture.frame_3",
+            "Texture.frame_3",
+            "Texture.frame_3",
+            "Texture.frame_3",
+            "Texture.frame_3",
+            "Texture.frame_4",
+            "Texture.frame_4",
+            "Texture.frame_4",
+            "Texture.frame_4",
+            "Texture.frame_4",
+            "Texture.frame_4",
+            "Texture.frame_4",
+            "Texture.frame_4",
+            "Texture.frame_4",
+            "Texture.frame_4"
+          ]
+        }
+      },
+      "materials": [
+        {
+          "*": "variable.is_enchanted ? Material.enchanted : Material.default"
+        }
+      ],
+      "textures": [
+        "Array.frames[math.mod(math.floor(q.life_time * 20.0), 50)]",
+        "Texture.enchanted"
+      ],
+      "geometry": "Geometry.default"
+    }
+  }
+}

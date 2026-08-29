@@ -1,0 +1,71 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.geyser_mc.item_custom_sleeper_sofa.hold_first_person": {
+      "loop": true,
+      "bones": {
+        "bone": {
+          "position": [
+            -0.5,
+            12.5,
+            0.5
+          ],
+          "rotation": [
+            -270.0,
+            -0.0,
+            0.0
+          ],
+          "scale": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      }
+    },
+    "animation.geyser_mc.item_custom_sleeper_sofa.head": {
+      "loop": true,
+      "bones": {
+        "bone": {
+          "position": [
+            0.0,
+            20.0,
+            0.0
+          ],
+          "rotation": [
+            -0.0,
+            -0.0,
+            0.0
+          ],
+          "scale": [
+            0.655,
+            0.655,
+            0.655
+          ]
+        }
+      }
+    },
+    "animation.geyser_mc.item_custom_sleeper_sofa.hold_third_person": {
+      "loop": true,
+      "bones": {
+        "bone": {
+          "position": [
+            0.5,
+            12.75,
+            -3.0
+          ],
+          "rotation": [
+            90.0,
+            -0.0,
+            34.0
+          ],
+          "scale": [
+            0.25,
+            0.25,
+            0.25
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.geyser_mc.block_custom_copper_coil",
+        "visible_bounds_width": 4.0,
+        "visible_bounds_height": 4.0,
+        "visible_bounds_offset": [
+          0.0,
+          0.75,
+          0.0
+        ],
+        "texture_width": 64,
+        "texture_height": 32
+      },
+      "bones": [
+        {
+          "name": "bone",
+          "binding": "q.item_slot_to_bone_name(context.item_slot)",
+          "pivot": [
+            0.0,
+            8.0,
+            0.0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -8.0,
+                0.0,
+                -8.0
+              ],
+              "size": [
+                16.0,
+                16.0,
+                16.0
+              ],
+              "uv": {
+                "down": {
+                  "uv": [
+                    16.0,
+                    16.0
+                  ],
+                  "uv_size": [
+                    -16.0,
+                    -16.0
+                  ],
+                  "material_instance": "bottom_down_0"
+                },
+                "up": {
+                  "uv": [
+                    16.0,
+                    16.0
+                  ],
+                  "uv_size": [
+                    -16.0,
+                    -16.0
+                  ],
+                  "material_instance": "top_up_0"
+                }
+              }
+            },
+            {
+              "origin": [
+                -8.0,
+                0.0,
+                -7.0
+              ],
+              "size": [
+                16.0,
+                16.0,
+                14.0
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    32.0,
+                    0.0
+                  ],
+                  "uv_size": [
+                    16.0,
+                    16.0
+                  ],
+                  "material_instance": "side_north_1"
+                },
+                "south": {
+                  "uv": [
+                    32.0,
+                    0.0
+                  ],
+                  "uv_size": [
+                    16.0,
+                    16.0
+                  ],
+                  "material_instance": "side_south_1"
+                }
+              }
+            },
+            {
+              "origin": [
+                -7.0,
+                0.0,
+                -8.0
+              ],
+              "size": [
+                14.0,
+                16.0,
+                16.0
+              ],
+              "uv": {
+                "west": {
+                  "uv": [
+                    32.0,
+                    0.0
+                  ],
+                  "uv_size": [
+                    16.0,
+                    16.0
+                  ],
+                  "material_instance": "side_west_2"
+                },
+                "east": {
+                  "uv": [
+                    32.0,
+                    0.0
+                  ],
+                  "uv_size": [
+                    16.0,
+                    16.0
+                  ],
+                  "material_instance": "side_east_2"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

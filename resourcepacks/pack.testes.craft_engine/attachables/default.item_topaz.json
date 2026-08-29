@@ -1,0 +1,44 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "default:item/topaz",
+      "materials": {
+        "enchanted": "entity_alphatest_glint",
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "frame_0": "textures/item/custom/topaz_0",
+        "frame_1": "textures/item/custom/topaz_1",
+        "frame_2": "textures/item/custom/topaz_2",
+        "frame_3": "textures/item/custom/topaz_3",
+        "frame_4": "textures/item/custom/topaz_4",
+        "enchanted": "textures/misc/enchanted_item_glint"
+      },
+      "geometry": {
+        "default": "geometry.default.item_topaz_helmet"
+      },
+      "animations": {
+        "first_person": "animation.default.item_topaz.hold_first_person",
+        "head": "animation.default.item_topaz.head",
+        "third_person": "animation.default.item_topaz.hold_third_person"
+      },
+      "scripts": {
+        "animate": [
+          {
+            "first_person": "context.is_first_person == 1.0 && (context.item_slot == 'main_hand' || context.item_slot == 'off_hand')"
+          },
+          {
+            "third_person": "context.is_first_person == 0.0 && (context.item_slot == 'main_hand' || context.item_slot == 'off_hand')"
+          },
+          {
+            "head": "context.is_first_person == 0.0 && context.item_slot == 'head'"
+          }
+        ]
+      },
+      "render_controllers": [
+        "controller.render.minecraft.item_custom_topaz"
+      ]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "resource_pack_name": "T05",
+  "texture_name": "atlas.terrain",
+  "texture_data": {
+    "ether.block_crop_onion_stage_0": {
+      "textures": "textures/block/crop/onion_stage_0"
+    },
+    "ether.block_crop_rice_young_top": {
+      "textures": "textures/block/crop/rice_young_top"
+    },
+    "ether.block_crop_rice_stalk": {
+      "textures": "textures/block/crop/rice_stalk"
+    },
+    "ether.block_crop_tomato_stage_0": {
+      "textures": "textures/block/crop/tomato_stage_0"
+    },
+    "ether.block_crop_tomato_stage_1": {
+      "textures": "textures/block/crop/tomato_stage_1"
+    },
+    "ether.block_crop_tomato_stage_2": {
+      "textures": "textures/block/crop/tomato_stage_2"
+    },
+    "ether.block_crop_tomato_stage_3": {
+      "textures": "textures/block/crop/tomato_stage_3"
+    },
+    "ether.block_crop_rice_seedling": {
+      "textures": "textures/block/crop/rice_seedling"
+    },
+    "ether.block_crop_onion_stage_1": {
+      "textures": "textures/block/crop/onion_stage_1"
+    },
+    "ether.block_crop_onion_stage_2": {
+      "textures": "textures/block/crop/onion_stage_2"
+    },
+    "ether.block_crop_onion_stage_3": {
+      "textures": "textures/block/crop/onion_stage_3"
+    },
+    "ether.block_crop_rice_ripe_top": {
+      "textures": "textures/block/crop/rice_ripe_top"
+    }
+  }
+}

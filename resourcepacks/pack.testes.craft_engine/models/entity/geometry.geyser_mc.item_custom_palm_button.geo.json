@@ -1,0 +1,112 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.geyser_mc.item_custom_palm_button",
+        "visible_bounds_width": 4.0,
+        "visible_bounds_height": 4.0,
+        "visible_bounds_offset": [
+          0.0,
+          0.75,
+          0.0
+        ],
+        "texture_width": 16,
+        "texture_height": 16
+      },
+      "bones": [
+        {
+          "name": "bone",
+          "binding": "q.item_slot_to_bone_name(context.item_slot)",
+          "pivot": [
+            0.0,
+            8.0,
+            0.0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -3.0,
+                6.0,
+                -2.0
+              ],
+              "size": [
+                6.0,
+                4.0,
+                4.0
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    5.0,
+                    12.0
+                  ],
+                  "uv_size": [
+                    6.0,
+                    4.0
+                  ],
+                  "material_instance": "texture_north_0"
+                },
+                "south": {
+                  "uv": [
+                    5.0,
+                    12.0
+                  ],
+                  "uv_size": [
+                    6.0,
+                    4.0
+                  ],
+                  "material_instance": "texture_south_0"
+                },
+                "east": {
+                  "uv": [
+                    6.0,
+                    12.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    4.0
+                  ],
+                  "material_instance": "texture_east_0"
+                },
+                "down": {
+                  "uv": [
+                    11.0,
+                    10.0
+                  ],
+                  "uv_size": [
+                    -6.0,
+                    -4.0
+                  ],
+                  "material_instance": "texture_down_0"
+                },
+                "west": {
+                  "uv": [
+                    6.0,
+                    12.0
+                  ],
+                  "uv_size": [
+                    4.0,
+                    4.0
+                  ],
+                  "material_instance": "texture_west_0"
+                },
+                "up": {
+                  "uv": [
+                    11.0,
+                    6.0
+                  ],
+                  "uv_size": [
+                    -6.0,
+                    4.0
+                  ],
+                  "material_instance": "texture_up_0"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

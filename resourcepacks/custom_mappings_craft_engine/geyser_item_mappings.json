@@ -1,0 +1,1462 @@
+{
+  "format_version": 2,
+  "items": {
+    "minecraft:wheat_seeds": [
+      {
+        "bedrock_identifier": "ether:item/onion",
+        "bedrock_options": {
+          "icon": "ether.item_onion"
+        },
+        "custom_model_data": 2302,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:copper_pickaxe": [
+      {
+        "bedrock_identifier": "ether:item/custom",
+        "display_name": "picareta celeste",
+        "bedrock_options": {
+          "icon": "ether.item_custom",
+          "display_handheld": true
+        },
+        "model": "ether:custom",
+        "type": "definition"
+      }
+    ],
+    "minecraft:chainmail_leggings": [
+      {
+        "model": "default:topaz_leggings",
+        "definitions": [
+          {
+            "bedrock_identifier": "default:item/topaz_leggings",
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_leggings_amethyst_trim",
+            "predicate": {
+              "value": "minecraft:amethyst",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_amethyst_trim_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_leggings_copper_trim",
+            "predicate": {
+              "value": "minecraft:copper",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_copper_trim_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_leggings_diamond_trim",
+            "predicate": {
+              "value": "minecraft:diamond",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_diamond_trim_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_leggings_emerald_trim",
+            "predicate": {
+              "value": "minecraft:emerald",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_emerald_trim_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_leggings_gold_trim",
+            "predicate": {
+              "value": "minecraft:gold",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_gold_trim_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_leggings_iron_trim",
+            "predicate": {
+              "value": "minecraft:iron",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_iron_trim_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_leggings_lapis_trim",
+            "predicate": {
+              "value": "minecraft:lapis",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_lapis_trim_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_leggings_netherite_trim",
+            "predicate": {
+              "value": "minecraft:netherite",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_netherite_trim_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_leggings_quartz_trim",
+            "predicate": {
+              "value": "minecraft:quartz",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_quartz_trim_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_leggings_redstone_trim",
+            "predicate": {
+              "value": "minecraft:redstone",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_redstone_trim_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_leggings_resin_trim",
+            "predicate": {
+              "value": "minecraft:resin",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_leggings_resin_trim_icon",
+              "protection_value": 4,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          }
+        ],
+        "type": "group"
+      }
+    ],
+    "minecraft:bow": [
+      {
+        "bedrock_identifier": "default:item/topaz_bow",
+        "bedrock_options": {
+          "icon": "minecraft.item_custom_topaz_bow"
+        },
+        "model": "default:topaz_bow",
+        "type": "definition"
+      }
+    ],
+    "minecraft:nether_brick": [
+      {
+        "bedrock_identifier": "geyser_mc:block/custom/chinese_lantern",
+        "bedrock_options": {
+          "icon": "geyser_mc.block_custom_chinese_lantern_icon"
+        },
+        "model": "default:chinese_lantern",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "geyser_mc:block/custom/copper_coil",
+        "bedrock_options": {
+          "icon": "geyser_mc.block_custom_copper_coil_icon"
+        },
+        "model": "default:copper_coil",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "geyser_mc:block/custom/gunpowder_block",
+        "bedrock_options": {
+          "icon": "geyser_mc.block_custom_gunpowder_block_icon"
+        },
+        "model": "default:gunpowder_block",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "geyser_mc:block/custom/palm_planks",
+        "bedrock_options": {
+          "icon": "geyser_mc.block_custom_palm_planks_icon"
+        },
+        "model": "default:palm_planks",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "geyser_mc:block/custom/palm_pressure_plate",
+        "bedrock_options": {
+          "icon": "geyser_mc.block_custom_palm_pressure_plate_icon"
+        },
+        "model": "default:palm_pressure_plate",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "geyser_mc:block/custom/palm_slab",
+        "bedrock_options": {
+          "icon": "geyser_mc.block_custom_palm_slab_icon"
+        },
+        "model": "default:palm_slab",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "geyser_mc:block/custom/palm_stairs",
+        "bedrock_options": {
+          "icon": "geyser_mc.block_custom_palm_stairs_icon"
+        },
+        "model": "default:palm_stairs",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "geyser_mc:block/custom/palm_trapdoor_bottom",
+        "bedrock_options": {
+          "icon": "geyser_mc.block_custom_palm_trapdoor_bottom_icon"
+        },
+        "model": "default:palm_trapdoor",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "geyser_mc:block/custom/safe_block",
+        "bedrock_options": {
+          "icon": "geyser_mc.block_custom_safe_block_icon"
+        },
+        "model": "default:safe_block",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "geyser_mc:block/custom/topaz_ore",
+        "bedrock_options": {
+          "icon": "geyser_mc.block_custom_topaz_ore_icon"
+        },
+        "model": "default:topaz_ore",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "default:item/amethyst_torch",
+        "bedrock_options": {
+          "icon": "minecraft.block_custom_amethyst_torch"
+        },
+        "model": "default:amethyst_torch",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "geyser_mc:item/custom/palm_button",
+        "bedrock_options": {
+          "icon": "geyser_mc.item_custom_palm_button_icon"
+        },
+        "model": "default:palm_button",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "geyser_mc:item/custom/sleeper_sofa",
+        "bedrock_options": {
+          "icon": "geyser_mc.item_custom_sleeper_sofa_icon"
+        },
+        "model": "default:sleeper_sofa",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "default:item/palm_door",
+        "bedrock_options": {
+          "icon": "minecraft.item_custom_palm_door"
+        },
+        "model": "default:palm_door",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "default:item/pebble",
+        "bedrock_options": {
+          "icon": "minecraft.item_custom_pebble"
+        },
+        "model": "default:pebble",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "default:item/topaz",
+        "bedrock_options": {
+          "icon": "default.item_topaz_icon"
+        },
+        "model": "default:topaz",
+        "type": "definition"
+      }
+    ],
+    "minecraft:chainmail_helmet": [
+      {
+        "model": "default:topaz_helmet",
+        "definitions": [
+          {
+            "bedrock_identifier": "default:item/topaz_helmet",
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_helmet_amethyst_trim",
+            "predicate": {
+              "value": "minecraft:amethyst",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_amethyst_trim_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_helmet_copper_trim",
+            "predicate": {
+              "value": "minecraft:copper",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_copper_trim_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_helmet_diamond_trim",
+            "predicate": {
+              "value": "minecraft:diamond",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_diamond_trim_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_helmet_emerald_trim",
+            "predicate": {
+              "value": "minecraft:emerald",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_emerald_trim_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_helmet_gold_trim",
+            "predicate": {
+              "value": "minecraft:gold",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_gold_trim_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_helmet_iron_trim",
+            "predicate": {
+              "value": "minecraft:iron",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_iron_trim_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_helmet_lapis_trim",
+            "predicate": {
+              "value": "minecraft:lapis",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_lapis_trim_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_helmet_netherite_trim",
+            "predicate": {
+              "value": "minecraft:netherite",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_netherite_trim_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_helmet_quartz_trim",
+            "predicate": {
+              "value": "minecraft:quartz",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_quartz_trim_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_helmet_redstone_trim",
+            "predicate": {
+              "value": "minecraft:redstone",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_redstone_trim_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_helmet_resin_trim",
+            "predicate": {
+              "value": "minecraft:resin",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_helmet_resin_trim_icon",
+              "protection_value": 2,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          }
+        ],
+        "type": "group"
+      }
+    ],
+    "minecraft:rabbit_stew": [
+      {
+        "bedrock_identifier": "ether:item/beef_rice_stew",
+        "bedrock_options": {
+          "icon": "ether.item_beef_rice_stew"
+        },
+        "custom_model_data": 2307,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:mushroom_stew": [
+      {
+        "bedrock_identifier": "ether:item/tomato_salad",
+        "bedrock_options": {
+          "icon": "ether.item_tomato_salad"
+        },
+        "custom_model_data": 2304,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:chainmail_chestplate": [
+      {
+        "model": "default:topaz_chestplate",
+        "definitions": [
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate",
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate_amethyst_trim",
+            "predicate": {
+              "value": "minecraft:amethyst",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_amethyst_trim_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate_copper_trim",
+            "predicate": {
+              "value": "minecraft:copper",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_copper_trim_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate_diamond_trim",
+            "predicate": {
+              "value": "minecraft:diamond",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_diamond_trim_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate_emerald_trim",
+            "predicate": {
+              "value": "minecraft:emerald",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_emerald_trim_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate_gold_trim",
+            "predicate": {
+              "value": "minecraft:gold",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_gold_trim_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate_iron_trim",
+            "predicate": {
+              "value": "minecraft:iron",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_iron_trim_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate_lapis_trim",
+            "predicate": {
+              "value": "minecraft:lapis",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_lapis_trim_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate_netherite_trim",
+            "predicate": {
+              "value": "minecraft:netherite",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_netherite_trim_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate_quartz_trim",
+            "predicate": {
+              "value": "minecraft:quartz",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_quartz_trim_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate_redstone_trim",
+            "predicate": {
+              "value": "minecraft:redstone",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_redstone_trim_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_chestplate_resin_trim",
+            "predicate": {
+              "value": "minecraft:resin",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_chestplate_resin_trim_icon",
+              "protection_value": 5,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          }
+        ],
+        "type": "group"
+      }
+    ],
+    "minecraft:chainmail_boots": [
+      {
+        "model": "default:topaz_boots",
+        "definitions": [
+          {
+            "bedrock_identifier": "default:item/topaz_boots",
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_boots_amethyst_trim",
+            "predicate": {
+              "value": "minecraft:amethyst",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_amethyst_trim_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_boots_copper_trim",
+            "predicate": {
+              "value": "minecraft:copper",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_copper_trim_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_boots_diamond_trim",
+            "predicate": {
+              "value": "minecraft:diamond",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_diamond_trim_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_boots_emerald_trim",
+            "predicate": {
+              "value": "minecraft:emerald",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_emerald_trim_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_boots_gold_trim",
+            "predicate": {
+              "value": "minecraft:gold",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_gold_trim_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_boots_iron_trim",
+            "predicate": {
+              "value": "minecraft:iron",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_iron_trim_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_boots_lapis_trim",
+            "predicate": {
+              "value": "minecraft:lapis",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_lapis_trim_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_boots_netherite_trim",
+            "predicate": {
+              "value": "minecraft:netherite",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_netherite_trim_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_boots_quartz_trim",
+            "predicate": {
+              "value": "minecraft:quartz",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_quartz_trim_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_boots_redstone_trim",
+            "predicate": {
+              "value": "minecraft:redstone",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_redstone_trim_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "default:item/topaz_boots_resin_trim",
+            "predicate": {
+              "value": "minecraft:resin",
+              "property": "trim_material",
+              "type": "match"
+            },
+            "bedrock_options": {
+              "icon": "default.item_topaz_boots_resin_trim_icon",
+              "protection_value": 1,
+              "tags": [
+                "minecraft:is_armor",
+                "minecraft:trimmable_armors"
+              ]
+            },
+            "components": {
+              "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "default:topaz"
+              }
+            },
+            "type": "definition"
+          }
+        ],
+        "type": "group"
+      }
+    ],
+    "minecraft:copper_axe": [
+      {
+        "bedrock_identifier": "ether:item/copper_battle_axe",
+        "bedrock_options": {
+          "icon": "ether.item_copper_battle_axe",
+          "display_handheld": true
+        },
+        "model": "ether:copper_battle_axe",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "ether:item/copper_elite_sword",
+        "bedrock_options": {
+          "icon": "ether.item_copper_elite_sword",
+          "display_handheld": true
+        },
+        "model": "ether:copper_elite_sword",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "ether:item/copper_hammer",
+        "bedrock_options": {
+          "icon": "ether.item_copper_hammer",
+          "display_handheld": true
+        },
+        "model": "ether:copper_hammer",
+        "type": "definition"
+      },
+      {
+        "bedrock_identifier": "ether:item/copper_mace",
+        "bedrock_options": {
+          "icon": "ether.item_copper_mace",
+          "display_handheld": true
+        },
+        "model": "ether:copper_mace",
+        "type": "definition"
+      }
+    ],
+    "minecraft:honey_bottle": [
+      {
+        "bedrock_identifier": "ether:item/coffee",
+        "bedrock_options": {
+          "icon": "ether.item_coffee"
+        },
+        "custom_model_data": 2310,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/energy_drink",
+        "bedrock_options": {
+          "icon": "ether.item_energy_drink"
+        },
+        "custom_model_data": 2312,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/herbal_tea",
+        "bedrock_options": {
+          "icon": "ether.item_herbal_tea"
+        },
+        "custom_model_data": 2311,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/hot_chocolate",
+        "bedrock_options": {
+          "icon": "ether.item_hot_chocolate"
+        },
+        "custom_model_data": 2313,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:echo_shard": [
+      {
+        "bedrock_identifier": "ether:item/ruby",
+        "bedrock_options": {
+          "icon": "ether.item_gems_ruby"
+        },
+        "custom_model_data": 2315,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:goat_horn": [
+      {
+        "model": "ether:horse_horn",
+        "definitions": [
+          {
+            "bedrock_identifier": "geyser_mc:item/goat_horn",
+            "bedrock_options": {
+              "icon": "minecraft.item_goat_horn"
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "ether:item/horse_horn",
+            "predicate": {
+              "property": "custom_model_data",
+              "threshold": 2320.0,
+              "scale": 1.0,
+              "type": "range_dispatch"
+            },
+            "bedrock_options": {
+              "icon": "ether.item_tools_miscellanea_horse_horn"
+            },
+            "type": "definition"
+          },
+          {
+            "bedrock_identifier": "ether:item/horse_horn",
+            "predicate": {
+              "property": "custom_model_data",
+              "threshold": 2321.0,
+              "scale": 1.0,
+              "type": "range_dispatch"
+            },
+            "bedrock_options": {
+              "icon": "ether.item_tools_miscellanea_horse_horn"
+            },
+            "type": "definition"
+          }
+        ],
+        "type": "group"
+      }
+    ],
+    "minecraft:beetroot_seeds": [
+      {
+        "bedrock_identifier": "ether:item/rice",
+        "bedrock_options": {
+          "icon": "ether.item_rice"
+        },
+        "custom_model_data": 2303,
+        "type": "legacy"
+      },
+      {
+        "bedrock_identifier": "ether:item/tomato",
+        "bedrock_options": {
+          "icon": "ether.item_tomato",
+          "display_handheld": true
+        },
+        "components": {
+          "minecraft:food": {
+            "nutrition": 2,
+            "saturation": 0.1
+          },
+          "minecraft:consumable": {}
+        },
+        "custom_model_data": 2301,
+        "type": "legacy"
+      }
+    ],
+    "minecraft:bread": [
+      {
+        "bedrock_identifier": "ether:item/vegetable_bread",
+        "bedrock_options": {
+          "icon": "ether.item_vegetable_bread"
+        },
+        "custom_model_data": 2305,
+        "type": "legacy"
+      }
+    ]
+  }
+}
