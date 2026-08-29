@@ -6,6 +6,466 @@ UPDATE > 00/00/00 - 00:00 - M000A
 <END UPDATE>
 =============================
 
+# UPDATE — EtherTexture + CraftEngine + Rainbow + Geyser
+
+**Data:** 29/08/2026
+
+## OBJETIVO
+
+Integrar o CraftEngine ao pipeline visual do EtherCraft, mantendo o EtherTexture como sistema principal de resource pack/mapeamentos e utilizando o Rainbow apenas como ferramenta de conversão Java → Bedrock/Geyser.
+
+O objetivo operacional é evitar a necessidade de realizar uma varredura completa de todos os itens a cada nova conversão pelo Rainbow.
+
+---
+
+# DECISÃO DE ARQUITETURA — CONFIRMADO
+
+O arquivo:
+
+`resourcepacks/custom_mappings/geyser_item_mappings.json`
+
+é o **mapping principal e cumulativo do EtherTexture**.
+
+Ele NÃO deve ser considerado um arquivo antigo ou legado.
+
+O diretório:
+
+`resourcepacks/custom_mappings_craft_engine/`
+
+é uma saída temporária/de referência gerada pelo Rainbow após converter o resource pack contendo CraftEngine + EtherTexture.
+
+Portanto:
+
+```text
+EtherTexture mappings
+        ↓
+ARQUIVO MESTRE
+
+Rainbow mappings
+        ↓
+FONTE DE NOVOS REGISTROS
+
+Merge
+        ↓
+EtherTexture atualizado
+```
+
+---
+
+# REGRA DE ATUALIZAÇÃO — CONFIRMADO
+
+Ao registrar/converter novos itens usando Rainbow:
+
+1. Não substituir diretamente o `geyser_item_mappings.json` principal pelo arquivo recém-gerado pelo Rainbow.
+
+2. Comparar o arquivo gerado pelo Rainbow com o mapping principal do EtherTexture.
+
+3. Adicionar apenas os novos registros encontrados.
+
+4. Quando um mesmo material Java já existir nos dois arquivos, comparar as listas internas.
+
+5. Preservar os registros já existentes no EtherTexture.
+
+6. Acrescentar somente novas definições que ainda não estejam registradas.
+
+7. Nunca remover automaticamente itens do mapping principal somente porque uma nova conversão Rainbow deixou de detectá-los.
+
+---
+
+# MOTIVO
+
+O Rainbow converte aquilo que consegue detectar na execução atual.
+
+Uma nova conversão não necessariamente reproduz todos os registros que já existiam anteriormente.
+
+Foi confirmado que o novo `geyser_item_mappings.json` do CraftEngine/Rainbow possuía vários itens novos, porém também deixou de registrar alguns itens EtherTexture que já estavam presentes e funcionando no mapping principal.
+
+Portanto, substituir o arquivo integralmente poderia provocar regressões no Bedrock/Geyser.
+
+---
+
+# COMPARAÇÃO CONFIRMADA
+
+O mapping principal EtherTexture já continha registros como:
+
+```text
+minecraft:rabbit_stew
+minecraft:cobblestone
+minecraft:echo_shard
+minecraft:wheat_seeds
+minecraft:copper_axe
+minecraft:bread
+minecraft:mushroom_stew
+minecraft:honey_bottle
+minecraft:experience_bottle
+minecraft:beetroot_seeds
+minecraft:goat_horn
+```
+
+Entre os conteúdos EtherTexture preservados estão:
+
+```text
+beef_rice_stew
+cadeira_abeto
+
+emerald
+ruby
+sapphire
+topaz
+
+onion
+
+angel-wing
+copper_battle_axe
+copper_elite_sword
+copper_hammer
+copper_mace
+
+meat_sandwich
+vegetable_bread
+tomato_salad
+
+coffee
+energy_drink
+herbal_tea
+hot_chocolate
+
+horseUp CMD 2330
+
+rice
+tomato
+
+horse_horn
+```
+
+---
+
+# NOVOS REGISTROS DETECTADOS PELO RAINBOW/CRAFTENGINE
+
+A conversão nova trouxe registros que ainda não existiam no mapping principal.
+
+Foram incorporados:
+
+## Copper Pickaxe
+
+```text
+minecraft:copper_pickaxe
+└── ether:item/custom
+    └── "picareta celeste"
+```
+
+---
+
+## Topaz Bow
+
+```text
+minecraft:bow
+└── default:item/topaz_bow
+```
+
+---
+
+## CraftEngine — Nether Brick carrier
+
+O material:
+
+```text
+minecraft:nether_brick
+```
+
+passou a conter 16 definições detectadas pelo Rainbow:
+
+```text
+chinese_lantern
+copper_coil
+gunpowder_block
+palm_planks
+palm_pressure_plate
+palm_slab
+palm_stairs
+palm_trapdoor
+safe_block
+topaz_ore
+amethyst_torch
+palm_button
+sleeper_sofa
+palm_door
+pebble
+topaz
+```
+
+Namespaces observados:
+
+```text
+default:
+geyser_mc:
+```
+
+---
+
+# ARMADURA TOPAZ
+
+Foram adicionadas as quatro peças:
+
+```text
+minecraft:chainmail_helmet
+minecraft:chainmail_chestplate
+minecraft:chainmail_leggings
+minecraft:chainmail_boots
+```
+
+Cada peça utiliza modelos:
+
+```text
+default:topaz_helmet
+default:topaz_chestplate
+default:topaz_leggings
+default:topaz_boots
+```
+
+e `asset_id`:
+
+```text
+default:topaz
+```
+
+Também foram preservadas as variantes de trim geradas pelo Rainbow:
+
+```text
+amethyst
+copper
+diamond
+emerald
+gold
+iron
+lapis
+netherite
+quartz
+redstone
+resin
+```
+
+---
+
+# NOVO GEYSER ITEM MAPPING
+
+Foi gerado um novo:
+
+`geyser_item_mappings.json`
+
+com:
+
+```text
+format_version: 2
+18 materiais Java registrados
+```
+
+O arquivo foi validado como JSON após a geração.
+
+Estratégia utilizada:
+
+```text
+EtherTexture existente
+        +
+novidades da conversão CraftEngine/Rainbow
+        ↓
+geyser_item_mappings.json unificado
+```
+
+---
+
+# CRAFTENGINE — ESTADO ATUAL
+
+CraftEngine está sendo investigado como novo sistema para:
+
+```text
+custom items
+custom blocks
+furniture
+modelos
+receitas
+```
+
+Objetivo futuro:
+
+utilizar modelos próprios do EtherCraft através do CraftEngine e manter compatibilidade Java + Bedrock.
+
+O CraftEngine gera seu próprio resource pack Java.
+
+O Rainbow conseguiu interpretar parte significativa desse resource pack e gerar:
+
+```text
+resourcepacks/pack.testes.craft_engine/
+```
+
+e:
+
+```text
+resourcepacks/custom_mappings_craft_engine/
+```
+
+---
+
+# BEDROCK RESOURCE PACK
+
+Diretórios atuais importantes:
+
+```text
+resourcepacks/EtherTexture
+    → Resource pack Java principal
+
+resourcepacks/EtherTexture Bedrock
+    → Resource pack Bedrock principal
+
+resourcepacks/pack.testes.craft_engine
+    → Nova saída Bedrock gerada pelo Rainbow
+
+resourcepacks/custom_mappings
+    → Mappings principais do EtherTexture/Geyser
+
+resourcepacks/custom_mappings_craft_engine
+    → Mappings temporários gerados pela nova conversão Rainbow
+```
+
+---
+
+# CROPS
+
+O novo Rainbow também gerou:
+
+`custom_mappings_craft_engine/geyser_block_mappings.json`
+
+contendo os estados especiais do:
+
+```text
+minecraft:mangrove_propagule
+```
+
+utilizados pelas plantações:
+
+```text
+Tomato
+Onion
+Rice
+```
+
+O mapping gerado utiliza:
+
+```text
+only_override_states: true
+```
+
+e redefine somente os estados usados pelas crops.
+
+Esta parte deve continuar sendo testada separadamente dos item mappings.
+
+---
+
+# REGRA FUTURA PARA O RAINBOW
+
+Fluxo recomendado para novos modelos:
+
+```text
+1. Criar/adicionar novo item ou modelo no Java.
+
+2. Registrar/configurar no CraftEngine ou EtherTexture.
+
+3. Executar Rainbow.
+
+4. Rainbow gera:
+   pack Bedrock
+   custom mappings
+
+5. Comparar NOVO mapping com:
+   resourcepacks/custom_mappings/geyser_item_mappings.json
+
+6. Extrair apenas:
+   - materiais novos;
+   - definições novas dentro de materiais existentes.
+
+7. Mesclar no mapping principal.
+
+8. Nunca substituir cegamente o mapping principal.
+
+9. Testar no Bedrock.
+
+10. Após confirmação, considerar a definição parte permanente do EtherTexture.
+```
+
+---
+
+# OBJETIVO DE AUTOMAÇÃO FUTURA
+
+Criar um processo de atualização incremental capaz de:
+
+```text
+mapping_principal.json
+        +
+mapping_novo_rainbow.json
+        ↓
+comparador
+        ↓
+detectar novos registros
+        ↓
+merge sem apagar registros antigos
+        ↓
+mapping_principal_atualizado.json
+```
+
+Isto elimina a necessidade de conferir manualmente todos os itens novamente a cada execução do Rainbow.
+
+---
+
+# STATUS
+
+## CONFIRMADO
+
+* EtherTexture continua sendo o mapping principal.
+* Rainbow é utilizado como conversor/detector de novos registros.
+* Mapping novo do Rainbow não deve substituir automaticamente o principal.
+* Alguns registros EtherTexture não apareceram na nova conversão.
+* CraftEngine gerou diversos novos itens reconhecidos pelo Rainbow.
+* Armadura Topaz e trims foram convertidos.
+* Vários custom blocks/items CraftEngine foram convertidos.
+* Foi produzido um `geyser_item_mappings.json` unificado.
+* JSON final foi validado.
+
+## A TESTAR
+
+* Carregamento do novo mapping unificado pelo Geyser.
+* Renderização dos itens CraftEngine no Bedrock.
+* Armadura Topaz no Bedrock.
+* Modelos/itens baseados em `nether_brick`.
+* Picareta Celeste.
+* Topaz Bow.
+* Compatibilidade entre os mappings de item e o novo pack Bedrock.
+* Menu do CraftEngine no cliente Bedrock.
+
+---
+
+# PRÓXIMO PASSO
+
+Instalar o novo:
+
+`geyser_item_mappings.json`
+
+no diretório de `custom_mappings` do Geyser junto ao resource pack Bedrock atualizado.
+
+Depois realizar testes mínimos:
+
+```text
+1. Item EtherTexture antigo
+2. Horse Horn
+3. Gemas
+4. Item CraftEngine novo
+5. Topaz
+6. Armadura Topaz
+7. Custom block CraftEngine
+```
+
+Se esses grupos funcionarem simultaneamente, a integração incremental EtherTexture + CraftEngine + Rainbow + Geyser estará confirmada.
+
+
 # ============================================================
 # ETHERCRAFT — ETHER TEXTURE MEMORY
 # UPDATE — BEDROCK / GEYSER / RAINBOW
