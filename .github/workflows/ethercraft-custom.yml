@@ -1,0 +1,26 @@
+name: EtherCraft Custom build
+on:
+  push:
+    paths: ['ethercraft-custom/**', '.github/workflows/ethercraft-custom.yml']
+  pull_request:
+    paths: ['ethercraft-custom/**', '.github/workflows/ethercraft-custom.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+          cache-dependency-path: ethercraft-custom/pom.xml
+      - run: mvn --batch-mode --file ethercraft-custom/pom.xml clean verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EtherCraftCustom-0.2.0-Paper26.2
+          path: ethercraft-custom/target/ethercraft-custom-0.2.0.jar
+          if-no-files-found: error

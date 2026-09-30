@@ -1,0 +1,10 @@
+# No world is created or loaded automatically by this plugin.
+# Restart after editing configuration. Initial release: Paper 26.2, Java 25.
+frost:
+  world: ethercraft_frost
+  seed: 0
+# Portal blocks/items/routes live in portal-types.yaml.
+# Protection hooks are not implemented yet. Activation fails closed when any
+# listed protection plugin is installed. Opt in only in an isolated test server.
+allow-unintegrated-protections: false
+protection-plugins: [WorldGuard, GriefPrevention, Residence, Lands, Towny]

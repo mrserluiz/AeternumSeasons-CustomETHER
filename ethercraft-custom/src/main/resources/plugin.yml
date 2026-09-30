@@ -1,0 +1,19 @@
+name: EtherCraftCustom
+version: '0.2.0'
+main: io.github.mrserluiz.ethercraft.EtherCraftPlugin
+api-version: '26.2'
+author: Mrserluiz
+description: Independent Frost worlds and configurable custom portals.
+softdepend: [AeternumSeasons]
+commands:
+  ethercraft:
+    description: EtherCraft world and portal administration
+    usage: /ethercraft status|create|visit|select|link|unlink|remove|reload|types
+    permission: ethercraft.admin
+permissions:
+  ethercraft.admin:
+    default: op
+  ethercraft.portal.use:
+    default: true
+  ethercraft.portal.activate:
+    default: op

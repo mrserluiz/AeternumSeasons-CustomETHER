@@ -1,0 +1,34 @@
+# Add a unique section below portals to create another portal type.
+# Reload with /ethercraft reload. Destination worlds must already be loaded.
+# Names of materials: Bukkit Material (e.g. BLUE_ICE, GLOWSTONE, AMETHYST_SHARD).
+# Full 4x5 frame including corners; 2x3 NETHER_PORTAL interior, X/Z axes.
+schema: 1
+portals:
+  frost:
+    enabled: true
+    frame-block: BLUE_ICE
+    activation:
+      item: SNOWBALL
+      mode: PROJECTILE
+    # Insert the exact names of your source worlds here; empty means no source authorized.
+    source-worlds: []
+    destination-world: ethercraft_frost
+
+  # Examples disabled by default. Enabling these defines portals only, not world generators.
+  heat:
+    enabled: false
+    frame-block: NETHER_WART_BLOCK
+    activation:
+      item: FLINT_AND_STEEL
+      mode: INTERACT
+    source-worlds: []
+    destination-world: ethercraft_heat
+
+  aether:
+    enabled: false
+    frame-block: GLOWSTONE
+    activation:
+      item: AMETHYST_SHARD
+      mode: INTERACT
+    source-worlds: []
+    destination-world: ethercraft_aether
