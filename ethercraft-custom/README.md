@@ -131,8 +131,11 @@ Referência: https://docs.papermc.io/paper/dev/project-setup/
 - YAML padrão lido e validado estruturalmente; parser Java passou em todos os arquivos.
 - Geometria 4×5/2×3 validada; `git diff --check` sem erros.
 - Há testes JUnit no projeto para execução pelo Maven.
-- Build completo/API Paper, testes JUnit e servidor real ainda não executados.
-  Ambiente local disponível: Java 17, sem Maven; sem JAR compilado.
+- Build completo com API Paper 26.2 e Java 25 passou no GitHub Actions em 30/09/2026.
+  Os 5 testes JUnit passaram sem falhas; JAR v0.2.0 gerado e disponível no artifact abaixo.
+  Teste dentro de servidor Paper real ainda pendente.
+  Build: https://github.com/mrserluiz/AeternumSeasons-CustomETHER/actions/runs/36789921527
+  JAR (ZIP): https://github.com/mrserluiz/AeternumSeasons-CustomETHER/actions/runs/36789921527/artifacts/11131811145
 - Entidades não jogadoras ficam bloqueadas nesses portais.
 - Construção automática de destinos, geradores Heat/Aether e hooks de proteção pendentes.
 - Ativação bloqueia quando uma proteção listada no config está habilitada.
