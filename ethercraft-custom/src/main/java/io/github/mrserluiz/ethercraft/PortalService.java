@@ -208,17 +208,21 @@ public final class PortalService implements Listener {
     }
     private boolean activate(Player player, Block hit, Material item, PortalTypeSpec.ActivationMode mode) throws IOException {
         PortalFrame frame = null;
+        String rejected = null;
         for (var type : definitions.all()) {
             if (type.item() != item || type.spec().mode() != mode) continue;
             PortalFrame found = PortalFrame.detect(hit, type.spec().id(), type.frame());
             if (found != null) {
-                if (!type.spec().enabled()) { player.sendPlainMessage("Tipo " + type.spec().id() + " desativado: configure enabled: true e use /acp reload."); return true; }
-                if (!allowed(type, hit.getWorld())) { player.sendPlainMessage("Tipo " + type.spec().id() + ": mundo " + hit.getWorld().getName() + " não autorizado. Origens no YAML: " + type.spec().sourceWorlds()); return true; }
+                if (!type.spec().enabled()) { rejected = "Tipo " + type.spec().id() + " desativado: configure enabled: true e use /acp reload."; continue; }
+                if (!allowed(type, hit.getWorld())) { rejected = "Tipo " + type.spec().id() + ": mundo " + hit.getWorld().getName() + " não autorizado. Origens no YAML: " + type.spec().sourceWorlds(); continue; }
                 if (frame != null) throw new IllegalArgumentException("Estrutura de ativação ambígua.");
                 frame = found;
             }
         }
-        if (frame == null) return false;
+        if (frame == null) {
+            if (rejected != null) { player.sendPlainMessage(rejected); return true; }
+            return false;
+        }
         if (!player.hasPermission("aeternumcustomportal.portal.activate")) {
             player.sendPlainMessage("Sem permissão aeternumcustomportal.portal.activate."); return true;
         }
