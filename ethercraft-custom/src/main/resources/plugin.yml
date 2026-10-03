@@ -1,19 +1,32 @@
-name: EtherCraftCustom
-version: '0.2.1'
-main: io.github.mrserluiz.ethercraft.EtherCraftPlugin
+name: AeternumCustomPortal
+version: '0.3.0'
+main: io.github.mrserluiz.ethercraft.AeternumCustomPortalPlugin
 api-version: '26.2'
 author: Mrserluiz
-description: Independent Frost worlds and configurable custom portals.
-softdepend: [AeternumSeasons, WorldGuard, WorldEdit, GriefPrevention]
+description: Configurable portals to loaded worlds, with optional AeternumSeasons integration.
+softdepend: [EtherCraftCustom, AeternumSeasons, WorldGuard, WorldEdit, GriefPrevention]
 commands:
-  ethercraft:
-    description: EtherCraft world and portal administration
-    usage: /ethercraft status|create|visit|select|link|unlink|remove|reload|types
-    permission: ethercraft.admin
+  aeternumportal:
+    aliases: [acp, ethercraft]
+    description: Administra portais customizados e destinos carregados
+    usage: /aeternumportal status|worlds|select|link|unlink|remove|reload|types
+    permission: aeternumcustomportal.admin
 permissions:
+  aeternumcustomportal.admin:
+    default: op
+  aeternumcustomportal.portal.use:
+    default: true
+  aeternumcustomportal.portal.activate:
+    default: op
   ethercraft.admin:
     default: op
+    children:
+      aeternumcustomportal.admin: true
   ethercraft.portal.use:
-    default: true
+    default: false
+    children:
+      aeternumcustomportal.portal.use: true
   ethercraft.portal.activate:
     default: op
+    children:
+      aeternumcustomportal.portal.activate: true

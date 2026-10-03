@@ -42,4 +42,29 @@ class PortalTypeSpecTest {
         var spec = type("frost", true, "world", "frost");
         assertThrows(IllegalArgumentException.class, () -> PortalTypeSpec.validateDistinct(List.of(spec, spec)));
     }
+    @Test void loadedDimensionKeysWorkAlongsideLegacyNames() {
+        var spec = type("frost", true, "minecraft:overworld", "aeternum:frost");
+        assertTrue(spec.acceptsWorld("aeternum_frost", "aeternum:frost"));
+        assertTrue(spec.permitsPair("world", "minecraft:overworld", "aeternum_frost", "aeternum:frost"));
+        assertTrue(spec.permitsPair("aeternum_frost", "aeternum:frost", "world", "minecraft:overworld"));
+        assertFalse(spec.acceptsWorld("aeternum_heat", "aeternum:heat"));
+    }
+    @Test void unlinkedPortalsTravelToConfiguredWorldAndReturnToSingleSource() {
+        var spec = type("frost", true, "world", "aeternum_frost");
+        assertEquals("aeternum_frost", spec.unlinkedTarget("world", "minecraft:overworld"));
+        assertEquals("world", spec.unlinkedTarget("aeternum_frost", "aeternum:frost"));
+        assertNull(spec.unlinkedTarget("world_nether", "minecraft:the_nether"));
+    }
+    @Test void ambiguousReturnAndAliasedSelfRouteAreBlocked() {
+        var spec = new PortalTypeSpec("frost", true, "BLUE_ICE", "SNOWBALL", PROJECTILE,
+            List.of("world", "survival"), "aeternum_frost");
+        assertNull(spec.unlinkedTarget("aeternum_frost", "aeternum:frost"));
+        var self = type("frost", true, "aeternum_frost", "aeternum:frost");
+        assertNull(self.unlinkedTarget("aeternum_frost", "aeternum:frost"));
+    }
+    @Test void disabledOrUnauthorisedPortalsHaveNoSpawnFallback() {
+        assertNull(type("heat", false, "world", "aeternum_heat").unlinkedTarget("world", "minecraft:overworld"));
+        var empty = new PortalTypeSpec("heat", true, "NETHER_WART_BLOCK", "FLINT_AND_STEEL", INTERACT, List.of(), "aeternum_heat");
+        assertNull(empty.unlinkedTarget("aeternum_heat", "aeternum:heat"));
+    }
 }

@@ -8,19 +8,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public final class PortalDefinitions {
     public record Definition(PortalTypeSpec spec, Material frame, Material item) {}
     private Map<String, Definition> types = Map.of();
-    private final EtherCraftPlugin plugin;
-    public PortalDefinitions(EtherCraftPlugin plugin) throws Exception {
+    private final AeternumCustomPortalPlugin plugin;
+    public PortalDefinitions(AeternumCustomPortalPlugin plugin) throws Exception {
         this.plugin = plugin;
         var file = new java.io.File(plugin.getDataFolder(), "portal-types.yaml");
-        if (!file.exists()) {
-            plugin.saveResource("portal-types.yaml", false);
-            // Preserve the explicitly authorized sources and world name from v0.1 on first migration.
-            YamlConfiguration defaults = new YamlConfiguration(); defaults.load(file);
-            defaults.set("portals.frost.destination-world", plugin.getConfig().getString("frost.world", "ethercraft_frost"));
-            if (plugin.getConfig().isList("portal-source-worlds"))
-                defaults.set("portals.frost.source-worlds", plugin.getConfig().getStringList("portal-source-worlds"));
-            defaults.save(file);
-        }
+        if (!file.exists()) plugin.saveResource("portal-types.yaml", false);
         reload();
     }
     public int size() { return types.size(); }

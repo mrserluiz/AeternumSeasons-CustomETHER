@@ -9,8 +9,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 public final class ProtectionService {
-    private final EtherCraftPlugin plugin;
-    public ProtectionService(EtherCraftPlugin plugin) { this.plugin = plugin; }
+    private final AeternumCustomPortalPlugin plugin;
+    public ProtectionService(AeternumCustomPortalPlugin plugin) { this.plugin = plugin; }
     public String denial(Player player, PortalFrame frame, boolean removing) {
         List<Block> points = new ArrayList<>();
         for (var c : FrameGeometry.interior()) points.add(frame.block(c.u(), c.v()));

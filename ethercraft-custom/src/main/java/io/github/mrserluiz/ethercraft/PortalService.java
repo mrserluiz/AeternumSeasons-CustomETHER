@@ -19,16 +19,15 @@ import org.bukkit.event.player.*;
 
 /** Registered frames only. No world creation or destination construction during teleport. */
 public final class PortalService implements Listener {
-    private final EtherCraftPlugin plugin;
-    private final DimensionService dimensions;
+    private final AeternumCustomPortalPlugin plugin;
     private final PortalDefinitions definitions;
     private final ProtectionService protections;
     private final Map<String, PortalFrame> frames = new LinkedHashMap<>();
     private final Map<String, String> links = new HashMap<>();
     private final Map<UUID, String> selected = new HashMap<>();
     private final Map<UUID, Long> cooldown = new HashMap<>();
-    public PortalService(EtherCraftPlugin plugin, DimensionService dimensions, PortalDefinitions definitions) throws Exception {
-        this.plugin = plugin; this.dimensions = dimensions; this.definitions = definitions; this.protections = new ProtectionService(plugin);
+    public PortalService(AeternumCustomPortalPlugin plugin, PortalDefinitions definitions) throws Exception {
+        this.plugin = plugin; this.definitions = definitions; this.protections = new ProtectionService(plugin);
         var file = plugin.getDataFolder().toPath().resolve("portals.yml");
         if (!Files.exists(file)) return;
         YamlConfiguration y = new YamlConfiguration(); y.load(file.toFile());
@@ -62,15 +61,15 @@ public final class PortalService implements Listener {
         return type != null && type.spec().enabled() && type.frame() == frame.frameMaterial() ? type : null;
     }
     private boolean allowed(PortalDefinitions.Definition type, World world) {
-        if (type == null || world == null || !type.spec().acceptsWorld(world.getName())) return false;
-        return !world.getName().equals(dimensions.name()) || dimensions.owns(world);
+        return type != null && world != null && type.spec().acceptsWorld(world.getName(), world.getKey().toString());
     }
     private boolean route(PortalFrame a, PortalFrame b) {
-        if (!a.typeId().equals(b.typeId()) || definition(a) == null || definition(b) == null) return false;
-        var type = definition(a);
+        if (a.worldId().equals(b.worldId()) || !a.typeId().equals(b.typeId()) || definition(a) == null || definition(b) == null) return false;
         World origin = Bukkit.getWorld(a.worldId()), dest = Bukkit.getWorld(b.worldId());
-        return allowed(type, origin) && allowed(type, dest) && type.spec().permitsPair(origin.getName(), dest.getName());
+        return origin != null && dest != null && definition(a).spec().permitsPair(
+            origin.getName(), origin.getKey().toString(), dest.getName(), dest.getKey().toString());
     }
+
     private void save() throws IOException {
         YamlConfiguration y = new YamlConfiguration(); y.set("schema", 2);
         List<Map<String, Object>> rows = new ArrayList<>();
@@ -150,7 +149,7 @@ public final class PortalService implements Listener {
         selected.values().removeIf(frame.key()::equals);
     }
     private boolean activate(Player player, Block hit, Material item, PortalTypeSpec.ActivationMode mode) throws IOException {
-        if (!player.hasPermission("ethercraft.portal.activate")) return false;
+        if (!player.hasPermission("aeternumcustomportal.portal.activate")) return false;
         PortalFrame frame = null;
         for (var type : definitions.all()) {
             if (type.item() != item || type.spec().mode() != mode || !allowed(type, hit.getWorld())) continue;
@@ -162,6 +161,8 @@ public final class PortalService implements Listener {
         }
         if (frame == null) return false;
         if (frames.containsKey(frame.key())) return true;
+        if (LoadedWorlds.resolve(definitions.get(frame.typeId()).spec().destinationWorld()) == null)
+            throw new IllegalArgumentException("Mundo de destino não carregado; carregue-o pelo Aeternum ou gerenciador de mundos.");
         String denied = protections.denial(player, frame, false);
         if (denied != null) {
             player.sendPlainMessage("Ativação bloqueada: " + denied); return true;
@@ -174,7 +175,7 @@ public final class PortalService implements Listener {
         try { save(); } catch (IOException e) { frames.remove(frame.key()); throw e; }
         Orientable data = (Orientable) Bukkit.createBlockData(Material.NETHER_PORTAL); data.setAxis(frame.axis());
         for (var c : FrameGeometry.interior()) frame.block(c.u(), c.v()).setBlockData(data, false);
-        player.sendPlainMessage("Portal " + frame.typeId() + " ativado. Use /ethercraft select e /ethercraft link para vincular.");
+        player.sendPlainMessage("Portal " + frame.typeId() + " ativado. Destino definido no YAML; select/link permitem vincular um portal específico.");
         return true;
     }
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -211,6 +212,20 @@ public final class PortalService implements Listener {
             }
         return null;
     }
+    // Unregistered custom interiors must never fall through to vanilla Nether routing.
+    private boolean unmanagedCustom(Location loc) {
+        for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++) {
+            Block block = loc.clone().add(dx, 0, dz).getBlock();
+            if (block.getType() != Material.NETHER_PORTAL) continue;
+            for (int down = 0; down < 64 && block.getY() > block.getWorld().getMinHeight(); down++) {
+                Block below = block.getRelative(0, -1, 0);
+                if (below.getType() != Material.NETHER_PORTAL) return below.getType() != Material.OBSIDIAN;
+                block = below;
+            }
+            return true;
+        }
+        return false;
+    }
     private Location safeExit(PortalFrame frame, Location from) {
         for (int side : new int[]{1, -1}) for (int u = 0; u < 2; u++) {
             Block inside = frame.block(u, 0);
@@ -232,32 +247,40 @@ public final class PortalService implements Listener {
     public void portal(PlayerPortalEvent e) {
         PortalFrame source = near(e.getFrom());
         if (source == null) {
-            if (e.getTo() != null && near(e.getTo()) != null) { e.setCancelled(true); e.setCanCreatePortal(false); }
+            if (unmanagedCustom(e.getFrom()) || (e.getTo() != null && (near(e.getTo()) != null || unmanagedCustom(e.getTo())))) { e.setCancelled(true); e.setCanCreatePortal(false); }
             return;
         }
         e.setCancelled(true); e.setCanCreatePortal(false);
         Player player = e.getPlayer();
-        if (!player.hasPermission("ethercraft.portal.use") || cooldown.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) return;
-        PortalFrame dest = frames.get(links.get(source.key()));
-        if (!source.valid(true) || dest == null || !dest.valid(true)
-            || !route(source, dest)) {
-            player.sendPlainMessage("Portal sem destino ativo/carregado e autorizado."); return;
+        if (!player.hasPermission("aeternumcustomportal.portal.use") || cooldown.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) return;
+        if (!source.valid(true) || definition(source) == null || !allowed(definition(source), e.getFrom().getWorld())) {
+            player.sendPlainMessage("Portal desativado ou não autorizado pelo YAML."); return;
         }
-        Location exit = safeExit(dest, e.getFrom());
-        if (exit == null) { player.sendPlainMessage("Prepare uma saída segura nos dois lados do portal de destino."); return; }
-        // Next tick permits later protection handlers to run. TeleportEvent remains cancellable.
+        Location exit = destination(source, e.getFrom());
+        if (exit == null) { player.sendPlainMessage("Destino não carregado, vínculo inválido ou saída insegura. Verifique /aeternumportal worlds e o YAML."); return; }
         Bukkit.getScheduler().runTask(plugin, () -> {
-            if (!player.isOnline() || !source.valid(true) || !dest.valid(true)
-                || near(player.getLocation()) != source || !route(source, dest)
-                || !dest.key().equals(links.get(source.key()))) return;
-            Location checked = safeExit(dest, player.getLocation());
+            if (!player.isOnline() || !source.valid(true) || near(player.getLocation()) != source) return;
+            Location checked = destination(source, player.getLocation());
             if (checked != null && player.teleport(checked, PlayerTeleportEvent.TeleportCause.PLUGIN))
                 cooldown.put(player.getUniqueId(), System.currentTimeMillis() + 5000);
         });
     }
+    private Location destination(PortalFrame source, Location from) {
+        var type = definition(source);
+        if (!allowed(type, from.getWorld())) return null;
+        if (links.containsKey(source.key())) {
+            PortalFrame dest = frames.get(links.get(source.key()));
+            return dest != null && dest.valid(true) && route(source, dest) ? safeExit(dest, from) : null;
+        }
+        String target = type.spec().unlinkedTarget(from.getWorld().getName(), from.getWorld().getKey().toString());
+        World world = target == null ? null : LoadedWorlds.resolve(target);
+        if (world == null || world.getUID().equals(source.worldId())) return null;
+        return LoadedWorlds.safeSpawn(world, from);
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void entityPortal(EntityPortalEvent e) {
-        if (near(e.getFrom()) != null || (e.getTo() != null && near(e.getTo()) != null)) e.setCancelled(true);
+        if (near(e.getFrom()) != null || unmanagedCustom(e.getFrom()) || (e.getTo() != null && (near(e.getTo()) != null || unmanagedCustom(e.getTo())))) e.setCancelled(true);
     }
     // Registered frames remain protected until explicitly removed by an admin.
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

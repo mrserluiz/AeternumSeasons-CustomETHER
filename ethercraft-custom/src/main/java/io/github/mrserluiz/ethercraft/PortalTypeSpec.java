@@ -25,6 +25,22 @@ public record PortalTypeSpec(String id, boolean enabled, String frameBlock, Stri
         return enabled && ((sourceWorlds.contains(a) && destinationWorld.equals(b))
             || (sourceWorlds.contains(b) && destinationWorld.equals(a)));
     }
+    public boolean acceptsWorld(String name, String key) {
+        return acceptsWorld(name) || acceptsWorld(key);
+    }
+    private boolean source(String name, String key) { return sourceWorlds.contains(name) || sourceWorlds.contains(key); }
+    private boolean destination(String name, String key) { return destinationWorld.equals(name) || destinationWorld.equals(key); }
+    public boolean permitsPair(String aName, String aKey, String bName, String bKey) {
+        return enabled && ((source(aName, aKey) && destination(bName, bKey))
+            || (source(bName, bKey) && destination(aName, aKey)));
+    }
+    /** Multiple sources need an explicit link for the return journey. */
+    public String unlinkedTarget(String name, String key) {
+        if (!enabled) return null;
+        if (source(name, key) && !destination(name, key)) return destinationWorld;
+        if (destination(name, key) && !source(name, key) && sourceWorlds.size() == 1) return sourceWorlds.getFirst();
+        return null;
+    }
     public static void validateDistinct(Collection<PortalTypeSpec> specs) {
         if (specs.size() > 64) throw new IllegalArgumentException("Limite de 64 tipos de portal.");
         List<PortalTypeSpec> all = new ArrayList<>(specs);

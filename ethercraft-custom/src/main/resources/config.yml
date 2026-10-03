@@ -1,10 +1,8 @@
-# No world is created or loaded automatically by this plugin.
-# Restart after editing configuration. Initial release: Paper 26.2, Java 25.
-frost:
-  world: ethercraft_frost
-  seed: 0
-# Portal blocks/items/routes live in portal-types.yaml.
-# WorldGuard/GriefPrevention are queried automatically, even with an older config.
-# This opt-in applies only to other protection plugins listed below.
+# Paper 26.2 / Java 25. World generation/loading is owned by Aeternum or another manager.
+# Portals, activation and loaded world destinations: portal-types.yaml.
+aeternum:
+  # Disable only the known Aeternum portal listeners, preserving generation/seasons/mobs.
+  # Keep Aeternum frost/heat features enabled so its worlds are loaded.
+  take-over-portals: true
 allow-unintegrated-protections: false
 protection-plugins: [WorldGuard, GriefPrevention, Residence, Lands, Towny]

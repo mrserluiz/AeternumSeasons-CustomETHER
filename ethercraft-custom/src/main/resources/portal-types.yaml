@@ -1,5 +1,5 @@
 # Add a unique section below portals to create another portal type.
-# Reload with /ethercraft reload. Destination worlds must already be loaded.
+# Reload with /aeternumportal reload. Destination worlds must already be loaded.
 # Names of materials: Bukkit Material (e.g. BLUE_ICE, GLOWSTONE, AMETHYST_SHARD).
 # Full 4x5 frame including corners; 2x3 NETHER_PORTAL interior, X/Z axes.
 schema: 1
@@ -11,8 +11,8 @@ portals:
       item: SNOWBALL
       mode: PROJECTILE
     # Insert the exact names of your source worlds here; empty means no source authorized.
-    source-worlds: []
-    destination-world: ethercraft_frost
+    source-worlds: [world]
+    destination-world: aeternum_frost
 
   # Examples disabled by default. Enabling these defines portals only, not world generators.
   heat:
@@ -22,7 +22,7 @@ portals:
       item: FLINT_AND_STEEL
       mode: INTERACT
     source-worlds: []
-    destination-world: ethercraft_heat
+    destination-world: aeternum_heat
 
   aether:
     enabled: false
