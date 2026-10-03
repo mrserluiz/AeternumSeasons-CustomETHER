@@ -256,14 +256,72 @@ public final class PortalService implements Listener {
         if (!source.valid(true) || definition(source) == null || !allowed(definition(source), e.getFrom().getWorld())) {
             player.sendPlainMessage("Portal desativado ou não autorizado pelo YAML."); return;
         }
-        Location exit = destination(source, e.getFrom());
-        if (exit == null) { player.sendPlainMessage("Destino não carregado, vínculo inválido ou saída insegura. Verifique /aeternumportal worlds e o YAML."); return; }
         Bukkit.getScheduler().runTask(plugin, () -> {
             if (!player.isOnline() || !source.valid(true) || near(player.getLocation()) != source) return;
+            try { ensureReturnPortal(source, player); }
+            catch (Exception error) { player.sendPlainMessage("Retorno não criado: " + error.getMessage()); return; }
             Location checked = destination(source, player.getLocation());
+            if (checked == null) { player.sendPlainMessage("Destino não carregado, vínculo inválido ou saída insegura."); return; }
             if (checked != null && player.teleport(checked, PlayerTeleportEvent.TeleportCause.PLUGIN))
                 cooldown.put(player.getUniqueId(), System.currentTimeMillis() + 5000);
         });
+    }
+    private void ensureReturnPortal(PortalFrame source, Player player) throws IOException {
+        if (links.containsKey(source.key()) || !plugin.getConfig().getBoolean("auto-return-portal", true)) return;
+        if (safeExit(source, player.getLocation()) == null) throw new IOException("Prepare uma saída segura ao lado do portal de origem para permitir a volta.");
+        var type = definition(source);
+        if (!allowed(type, player.getWorld())) throw new IOException("Tipo desativado ou mundo não autorizado.");
+        // Resolve target by loaded identity; explicit links make return unambiguous even with multiple sources.
+        String reference = type.spec().unlinkedTarget(player.getWorld().getName(), player.getWorld().getKey().toString());
+        World world = reference == null ? null : LoadedWorlds.resolve(reference);
+        if (world == null || world.getUID().equals(source.worldId())) throw new IOException("Destino não carregado ou retorno ambíguo; configure/vincule os portais.");
+        for (PortalFrame candidate : frames.values()) {
+            if (!links.containsKey(candidate.key()) && candidate.valid(true) && route(source, candidate)
+                && safeExit(candidate, player.getLocation()) != null) {
+                bind(source, candidate); return;
+            }
+        }
+        String denied = null;
+        Location spawn = world.getSpawnLocation();
+        for (int radius = 0; radius <= 8; radius++)
+            for (int dx = -radius; dx <= radius; dx++) for (int dz = -radius; dz <= radius; dz++) {
+                if (Math.max(Math.abs(dx), Math.abs(dz)) != radius) continue;
+                int x = spawn.getBlockX() + dx, z = spawn.getBlockZ() + dz;
+                int y = world.getHighestBlockYAt(x, z) + 2;
+                PortalFrame target = new PortalFrame(world.getUID(), x, y, z, source.axis(), source.typeId(), type.frame());
+                if (y <= world.getMinHeight() || y + 3 >= world.getMaxHeight()) continue;
+                List<Block> edits = ReturnPortalGeometry.edits().stream().map(c -> returnBlock(target, c)).toList();
+                if (edits.stream().anyMatch(b -> !b.getType().isAir() || !world.getWorldBorder().isInside(b.getLocation()) || at(b, true) != null)
+                    || ReturnPortalGeometry.clearance().stream().map(c -> returnBlock(target, c)).anyMatch(b -> !b.getType().isAir() || at(b, true) != null)) continue;
+                denied = protections.denial(player, edits, false, type.frame());
+                if (denied != null) continue;
+                var snapshots = edits.stream().map(Block::getBlockData).toList();
+                frames.put(target.key(), target);
+                links.put(source.key(), target.key()); links.put(target.key(), source.key());
+                try { save(); }
+                catch (IOException error) { frames.remove(target.key()); links.remove(source.key()); links.remove(target.key()); throw error; }
+                try {
+                    Orientable data = (Orientable) Bukkit.createBlockData(Material.NETHER_PORTAL); data.setAxis(target.axis());
+                    for (var c : ReturnPortalGeometry.edits()) returnBlock(target, c).setType(type.frame(), false);
+                    for (var c : FrameGeometry.interior()) target.block(c.u(), c.v()).setBlockData(data, false);
+                    if (safeExit(target, player.getLocation()) == null) throw new IllegalStateException("Saída inválida após montagem.");
+                } catch (RuntimeException error) {
+                    for (int i = 0; i < edits.size(); i++) edits.get(i).setBlockData(snapshots.get(i), false);
+                    frames.remove(target.key()); links.remove(source.key()); links.remove(target.key());
+                    try { save(); } catch (IOException rollback) { error.addSuppressed(rollback); }
+                    throw new IOException("Falha ao montar portal; alterações revertidas.", error);
+                }
+                player.sendPlainMessage("Portal de retorno " + target.typeId() + " criado e vinculado à origem.");
+                return;
+            }
+        throw new IOException(denied == null ? "Nenhum local livre e seguro próximo ao spawn. Prepare uma área ou use select/link." : "Proteção do destino: " + denied);
+    }
+    private Block returnBlock(PortalFrame frame, ReturnPortalGeometry.Cell cell) {
+        return frame.block(cell.u(), cell.v()).getRelative(frame.axis() == Axis.X ? 0 : cell.side(), 0, frame.axis() == Axis.X ? cell.side() : 0);
+    }
+    private void bind(PortalFrame source, PortalFrame target) throws IOException {
+        links.put(source.key(), target.key()); links.put(target.key(), source.key());
+        try { save(); } catch (IOException error) { links.remove(source.key()); links.remove(target.key()); throw error; }
     }
     private Location destination(PortalFrame source, Location from) {
         var type = definition(source);

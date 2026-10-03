@@ -15,6 +15,12 @@ public final class ProtectionService {
         List<Block> points = new ArrayList<>();
         for (var c : FrameGeometry.interior()) points.add(frame.block(c.u(), c.v()));
         if (!removing) for (var c : FrameGeometry.border()) points.add(frame.block(c.u(), c.v()));
+        return denial(player, points, removing);
+    }
+    public String denial(Player player, List<Block> points, boolean removing) {
+        return denial(player, points, removing, Material.NETHER_PORTAL);
+    }
+    public String denial(Player player, List<Block> points, boolean removing, Material frameMaterial) {
         List<ProtectionGate.Provider<Block>> providers = new ArrayList<>();
         var worldGuard = Bukkit.getPluginManager().getPlugin("WorldGuard");
         if (worldGuard != null && worldGuard.isEnabled()) {
@@ -34,9 +40,12 @@ public final class ProtectionService {
                     ? griefPrevention.getClass().getMethod("allowBreak", Player.class, Block.class, Location.class)
                     : griefPrevention.getClass().getMethod("allowBuild", Player.class, Location.class, Material.class);
                 if (method.getReturnType() != String.class) return "GriefPrevention: assinatura de API incompatível.";
-                providers.add(new ProtectionGate.Provider<>("GriefPrevention", b -> (String) (removing
-                    ? method.invoke(griefPrevention, player, b, b.getLocation())
-                    : method.invoke(griefPrevention, player, b.getLocation(), Material.NETHER_PORTAL))));
+                providers.add(new ProtectionGate.Provider<>("GriefPrevention", b -> {
+                    if (removing) return (String) method.invoke(griefPrevention, player, b, b.getLocation());
+                    String denied = (String) method.invoke(griefPrevention, player, b.getLocation(), frameMaterial);
+                    return denied != null || frameMaterial == Material.NETHER_PORTAL ? denied
+                        : (String) method.invoke(griefPrevention, player, b.getLocation(), Material.NETHER_PORTAL);
+                }));
             } catch (ReflectiveOperationException | RuntimeException | LinkageError error) {
                 plugin.getLogger().log(java.util.logging.Level.WARNING, "Falha na integração GriefPrevention.", error);
                 return "GriefPrevention: API indisponível/incompatível; operação bloqueada.";

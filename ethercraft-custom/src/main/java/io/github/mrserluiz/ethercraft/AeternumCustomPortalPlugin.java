@@ -23,7 +23,7 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
             bridge.reconcile();
             getServer().getPluginManager().registerEvents(bridge, this);
             getServer().getScheduler().runTaskTimer(this, bridge::reconcile, 20L, 20L);
-            getLogger().info("AeternumCustomPortal 0.3.0: mundos existentes, portais controlados por portal-types.yaml.");
+            getLogger().info("AeternumCustomPortal 0.3.1: mundos existentes, portais controlados por portal-types.yaml.");
         } catch (Exception error) {
             getLogger().log(java.util.logging.Level.SEVERE, "Inicialização bloqueada; dados preservados.", error);
             getServer().getPluginManager().disablePlugin(this);
@@ -46,7 +46,7 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
         if (args.length != 1) return false;
         try {
             switch (args[0].toLowerCase(java.util.Locale.ROOT)) {
-                case "status" -> sender.sendMessage("AeternumCustomPortal 0.3.0; tipos: " + definitions.size() + "; portais: " + portals.size());
+                case "status" -> sender.sendMessage("AeternumCustomPortal 0.3.1; tipos: " + definitions.size() + "; portais: " + portals.size());
                 case "worlds" -> getServer().getWorlds().forEach(w -> sender.sendMessage(w.getName() + " | " + w.getKey() + " | " + w.getUID() + " | " + w.getWorldPath()));
                 case "types" -> portals.describe(sender);
                 case "reload" -> { portals.reloadTypes(); sender.sendMessage("Tipos de portal recarregados: " + definitions.size()); }

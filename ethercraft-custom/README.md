@@ -1,4 +1,4 @@
-# AeternumCustomPortal 0.3.0
+# AeternumCustomPortal 0.3.1
 
 Addon independente de portais para Paper 26.2 / Java 25. AeternumSeasons é opcional: o addon usa mundos já carregados por ele ou por outro gerenciador. Não cria, carrega, renomeia nem migra dimensões. O módulo permanece na pasta `ethercraft-custom` para preservar o histórico do repositório.
 
@@ -6,7 +6,7 @@ Addon independente de portais para Paper 26.2 / Java 25. AeternumSeasons é opci
 
 1. Pare o servidor e faça backup das configurações e registros de portais.
 2. Remova o JAR `ethercraft-custom-*.jar` antigo. Mantenha o AeternumSeasons instalado e suas features Frost/Heat habilitadas para ele carregar os mundos.
-3. Instale `aeternum-custom-portal-0.3.0.jar` e reinicie.
+3. Instale `aeternum-custom-portal-0.3.1.jar` e reinicie.
 4. Configure `plugins/AeternumCustomPortal/portal-types.yaml`; use `/aeternumportal worlds` para conferir nomes, chaves, UUIDs e caminhos reais.
 5. Execute `/aeternumportal reload`.
 
@@ -20,7 +20,7 @@ Cada seção em `portals` define um tipo. `enabled: false` bloqueia ativação e
 
 Nomes exatos e chaves completas (`namespace:key`) são aceitos. A chave real de um mundo não é inferida do nome: consulte `/aeternumportal worlds`. Os registros de portais usam o UUID fornecido pelo Paper. Nenhuma busca em pastas antigas, manifesto de mundo ou leitura direta de uid.dat é feita.
 
-Portais sem vínculo levam a uma posição segura próxima ao spawn do destino configurado. No destino, um portal do mesmo tipo retorna à única fonte; com várias fontes, é necessário vincular o par. Nenhum portal/plataforma é construído automaticamente. Sem destino carregado ou saída segura, o teleporte é bloqueado. Para conectar dois portais específicos, olhe para a origem, use `select`, vá ao destino e use `link`. Vínculos inválidos não caem silenciosamente no spawn.
+Com `auto-return-portal: true` (padrão, inclusive em configs antigas), a primeira travessia reutiliza um portal registrado compatível sem vínculo ou cria o portal de retorno próximo ao spawn do destino, vinculando os dois sentidos. A construção procura até 8 blocos ao redor do spawn, acima do terreno, aceita somente ar nos 24 blocos alterados (frame/interior e quatro pisos de saída), respeita a borda e consulta proteções. Não escava/substitui blocos existentes. Sem área/proteção permitida, bloqueia a travessia com motivo. Com `auto-return-portal: false`, portais sem vínculo levam a uma posição segura próxima ao spawn do destino configurado. No destino, um portal do mesmo tipo retorna à única fonte; com várias fontes, é necessário vincular o par. O retorno automático inclui o frame e quatro blocos de piso para saída segura, usando o material do tipo. É necessário manter uma saída segura também na origem. Sem destino carregado ou saída segura, o teleporte é bloqueado. Para conectar dois portais específicos, olhe para a origem, use `select`, vá ao destino e use `link`. Vínculos inválidos não caem silenciosamente no spawn.
 
 Comandos: `/aeternumportal status|worlds|types|reload|select|link|unlink|remove`. Aliases `/acp` e `/ethercraft`. Os comandos antigos create/visit foram removidos. Permissões: `aeternumcustomportal.admin`, `.portal.activate` (OP) e `.portal.use` (todos); os nós antigos `ethercraft.*` são aliases positivos de compatibilidade. Revise negações explícitas no LuckPerms para os novos nós.
 
@@ -36,4 +36,4 @@ WorldGuard 7 e GriefPrevention são consultados na ativação/remoção; falhas 
 
 `mvn --batch-mode --file ethercraft-custom/pom.xml clean verify`
 
-Workflow `.github/workflows/ethercraft-custom.yml` usa Java 25 e publica o artefato `AeternumCustomPortal-0.3.0-Paper26.2` contendo o JAR. Testes cobrem geometria, autorização, conflitos, nomes/chaves, ida/volta sem vínculo e falhas nas proteções. A execução real com Paper/Aeternum/WorldGuard deve ser validada no servidor: criar um portal Frost, testar ida/volta, desativá-lo e conferir que o portal antigo do Aeternum não assume a rota.
+Workflow `.github/workflows/ethercraft-custom.yml` usa Java 25 e publica o artefato `AeternumCustomPortal-0.3.1-Paper26.2` contendo o JAR. Testes cobrem geometria, autorização, conflitos, nomes/chaves, ida/volta sem vínculo e falhas nas proteções. A execução real com Paper/Aeternum/WorldGuard deve ser validada no servidor: criar um portal Frost, testar ida/volta, desativá-lo e conferir que o portal antigo do Aeternum não assume a rota.

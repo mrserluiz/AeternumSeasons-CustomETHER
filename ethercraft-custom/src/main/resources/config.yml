@@ -6,3 +6,6 @@ aeternum:
   take-over-portals: true
 allow-unintegrated-protections: false
 protection-plugins: [WorldGuard, GriefPrevention, Residence, Lands, Towny]
+
+# First crossing builds/links a return portal near destination spawn, without excavating.
+auto-return-portal: true
