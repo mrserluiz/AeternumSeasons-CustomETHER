@@ -1,4 +1,4 @@
-# EtherCraft Custom 0.2.0 — Portais configuráveis
+# EtherCraft Custom 0.2.1 — Portais configuráveis
 
 Plugin independente do Aeternum, com Frost próprio e motor de portais definido em YAML.
 O código descompilado original permanece intacto. Versão experimental para Paper 26.2 e Java 25.
@@ -120,7 +120,7 @@ Java 25 e Maven 3.9+:
 mvn --batch-mode --file ethercraft-custom/pom.xml clean verify
 ```
 
-Saída: `ethercraft-custom/target/ethercraft-custom-0.2.0.jar`.
+Saída: `ethercraft-custom/target/ethercraft-custom-0.2.1.jar`.
 O workflow GitHub Actions configura build e artifact após publicação da branch.
 Referência: https://docs.papermc.io/paper/dev/project-setup/
 
@@ -131,15 +131,19 @@ Referência: https://docs.papermc.io/paper/dev/project-setup/
 - YAML padrão lido e validado estruturalmente; parser Java passou em todos os arquivos.
 - Geometria 4×5/2×3 validada; `git diff --check` sem erros.
 - Há testes JUnit no projeto para execução pelo Maven.
-- Build completo com API Paper 26.2 e Java 25 passou no GitHub Actions em 30/09/2026.
-  Os 5 testes JUnit passaram sem falhas; JAR v0.2.0 gerado e disponível no artifact abaixo.
+- O build anterior v0.2.0 passou no GitHub Actions em 30/09/2026 com 5 testes.
+  A correção v0.2.1 acrescenta 5 testes de autorização; consultar o workflow atual para seu resultado.
   Teste dentro de servidor Paper real ainda pendente.
   Build: https://github.com/mrserluiz/AeternumSeasons-CustomETHER/actions/runs/36789921527
-  JAR (ZIP): https://github.com/mrserluiz/AeternumSeasons-CustomETHER/actions/runs/36789921527/artifacts/11131811145
+  Histórico do JAR anterior: https://github.com/mrserluiz/AeternumSeasons-CustomETHER/actions/runs/36789921527/artifacts/11131811145
 - Entidades não jogadoras ficam bloqueadas nesses portais.
-- Construção automática de destinos, geradores Heat/Aether e hooks de proteção pendentes.
-- Ativação bloqueia quando uma proteção listada no config está habilitada.
-  `allow-unintegrated-protections` permite opt-in para testes isolados; coexistência não validada.
+- WorldGuard 7: consulta BUILD/BLOCK_PLACE para o frame completo, respeitando o bypass da sessão.
+  A presença do WorldGuard não bloqueia automaticamente. /remove consulta BLOCK_BREAK no interior.
+- GriefPrevention: consulta allowBuild/allowBreak para os pontos previstos.
+- APIs incompatíveis/indisponíveis bloqueiam a operação com mensagem específica.
+- Residence/Lands/Towny continuam sem integração; a opção
+  `allow-unintegrated-protections` vale somente para proteções ainda sem hook.
+- Construção automática de destinos e geradores Heat/Aether pendentes.
 - `/visit` é exploração administrativa e não constrói plataforma de spawn.
 - Não migra mundos/links do Aeternum. Não há suporte Folia nem 26.3 validado.
 
@@ -150,3 +154,13 @@ antes dos grupos Frost/Heat. Frost registra portais antes de `ensureFrostWorld`;
 Heat cria/carrega antes dos listeners específicos. As flags Frost/Heat desligam
 os respectivos grupos, mas não todas as instanciações nem VanillaPortalIsolation.
 Coexistência precisa de teste separado antes de uso em produção.
+
+## Atualizar da versão 0.2.0
+
+Pare o servidor, remova o JAR v0.2.0 da pasta plugins, instale somente o JAR v0.2.1
+e inicie novamente. Preserve a pasta `plugins/EtherCraftCustom` e seus YAMLs.
+As consultas WorldGuard/GriefPrevention funcionam também com o config antigo.
+Mantenha `allow-unintegrated-protections: false`; essa correção não exige liberar
+proteções globalmente. Ative o frame com a bola de neve conforme seu YAML.
+
+API WorldGuard: https://worldguard.enginehub.org/en/latest/developer/regions/protection-query/

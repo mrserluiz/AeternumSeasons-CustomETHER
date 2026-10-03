@@ -17,7 +17,7 @@ public final class EtherCraftPlugin extends JavaPlugin implements CommandExecuto
             portals = new PortalService(this, dimensions, definitions);
             Objects.requireNonNull(getCommand("ethercraft")).setExecutor(this);
             getServer().getPluginManager().registerEvents(portals, this);
-            getLogger().info("EtherCraft Custom 0.2.0: nenhuma criação automática de mundo.");
+            getLogger().info("EtherCraft Custom 0.2.1: nenhuma criação automática de mundo.");
         } catch (Exception error) {
             getLogger().log(java.util.logging.Level.SEVERE, "Inicialização bloqueada; dados preservados.", error);
             getServer().getPluginManager().disablePlugin(this);

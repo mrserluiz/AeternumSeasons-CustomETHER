@@ -1,10 +1,10 @@
 name: EtherCraftCustom
-version: '0.2.0'
+version: '0.2.1'
 main: io.github.mrserluiz.ethercraft.EtherCraftPlugin
 api-version: '26.2'
 author: Mrserluiz
 description: Independent Frost worlds and configurable custom portals.
-softdepend: [AeternumSeasons]
+softdepend: [AeternumSeasons, WorldGuard, WorldEdit, GriefPrevention]
 commands:
   ethercraft:
     description: EtherCraft world and portal administration

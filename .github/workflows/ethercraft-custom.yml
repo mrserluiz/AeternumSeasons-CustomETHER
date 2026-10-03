@@ -21,6 +21,6 @@ jobs:
       - run: mvn --batch-mode --file ethercraft-custom/pom.xml clean verify
       - uses: actions/upload-artifact@v4
         with:
-          name: EtherCraftCustom-0.2.0-Paper26.2
-          path: ethercraft-custom/target/ethercraft-custom-0.2.0.jar
+          name: EtherCraftCustom-0.2.1-Paper26.2
+          path: ethercraft-custom/target/ethercraft-custom-0.2.1.jar
           if-no-files-found: error

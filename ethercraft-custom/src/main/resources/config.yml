@@ -4,7 +4,7 @@ frost:
   world: ethercraft_frost
   seed: 0
 # Portal blocks/items/routes live in portal-types.yaml.
-# Protection hooks are not implemented yet. Activation fails closed when any
-# listed protection plugin is installed. Opt in only in an isolated test server.
+# WorldGuard/GriefPrevention are queried automatically, even with an older config.
+# This opt-in applies only to other protection plugins listed below.
 allow-unintegrated-protections: false
 protection-plugins: [WorldGuard, GriefPrevention, Residence, Lands, Towny]

@@ -22,12 +22,13 @@ public final class PortalService implements Listener {
     private final EtherCraftPlugin plugin;
     private final DimensionService dimensions;
     private final PortalDefinitions definitions;
+    private final ProtectionService protections;
     private final Map<String, PortalFrame> frames = new LinkedHashMap<>();
     private final Map<String, String> links = new HashMap<>();
     private final Map<UUID, String> selected = new HashMap<>();
     private final Map<UUID, Long> cooldown = new HashMap<>();
     public PortalService(EtherCraftPlugin plugin, DimensionService dimensions, PortalDefinitions definitions) throws Exception {
-        this.plugin = plugin; this.dimensions = dimensions; this.definitions = definitions;
+        this.plugin = plugin; this.dimensions = dimensions; this.definitions = definitions; this.protections = new ProtectionService(plugin);
         var file = plugin.getDataFolder().toPath().resolve("portals.yml");
         if (!Files.exists(file)) return;
         YamlConfiguration y = new YamlConfiguration(); y.load(file.toFile());
@@ -132,6 +133,8 @@ public final class PortalService implements Listener {
         Block target = player.getTargetBlockExact(8);
         PortalFrame frame = target == null ? null : at(target, true);
         if (frame == null) throw new IllegalArgumentException("Olhe para um portal registrado.");
+        String denied = protections.denial(player, frame, true);
+        if (denied != null) throw new IllegalArgumentException("Remoção bloqueada: " + denied);
         String partner = links.remove(frame.key());
         if (partner != null) links.remove(partner);
         frames.remove(frame.key());
@@ -159,11 +162,10 @@ public final class PortalService implements Listener {
         }
         if (frame == null) return false;
         if (frames.containsKey(frame.key())) return true;
-        if (!plugin.getConfig().getBoolean("allow-unintegrated-protections"))
-            for (String name : plugin.getConfig().getStringList("protection-plugins"))
-                if (Bukkit.getPluginManager().isPluginEnabled(name)) {
-                    player.sendPlainMessage("Ativação bloqueada: integração de proteção pendente (" + name + ")."); return true;
-                }
+        String denied = protections.denial(player, frame, false);
+        if (denied != null) {
+            player.sendPlainMessage("Ativação bloqueada: " + denied); return true;
+        }
         for (PortalFrame existing : frames.values())
             for (var c : FrameGeometry.interior()) if (existing.contains(frame.block(c.u(), c.v()), true))
                 throw new IllegalArgumentException("Portal sobreposto a outro registro.");
