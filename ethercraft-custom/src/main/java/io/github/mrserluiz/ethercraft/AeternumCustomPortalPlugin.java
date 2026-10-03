@@ -17,13 +17,14 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
             saveDefaultConfig();
             definitions = new PortalDefinitions(this);
             portals = new PortalService(this, definitions);
+            portals.reconcileAll();
             Objects.requireNonNull(getCommand("aeternumportal")).setExecutor(this);
             getServer().getPluginManager().registerEvents(portals, this);
             var bridge = new AeternumPortalBridge(this);
             bridge.reconcile();
             getServer().getPluginManager().registerEvents(bridge, this);
             getServer().getScheduler().runTaskTimer(this, bridge::reconcile, 20L, 20L);
-            getLogger().info("AeternumCustomPortal 0.3.1: mundos existentes, portais controlados por portal-types.yaml.");
+            getLogger().info("AeternumCustomPortal 0.3.2: mundos existentes, portais controlados por portal-types.yaml.");
         } catch (Exception error) {
             getLogger().log(java.util.logging.Level.SEVERE, "Inicialização bloqueada; dados preservados.", error);
             getServer().getPluginManager().disablePlugin(this);
@@ -46,10 +47,14 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
         if (args.length != 1) return false;
         try {
             switch (args[0].toLowerCase(java.util.Locale.ROOT)) {
-                case "status" -> sender.sendMessage("AeternumCustomPortal 0.3.1; tipos: " + definitions.size() + "; portais: " + portals.size());
+                case "status" -> sender.sendMessage("AeternumCustomPortal 0.3.2; tipos: " + definitions.size() + "; portais: " + portals.size());
                 case "worlds" -> getServer().getWorlds().forEach(w -> sender.sendMessage(w.getName() + " | " + w.getKey() + " | " + w.getUID() + " | " + w.getWorldPath()));
                 case "types" -> portals.describe(sender);
-                case "reload" -> { portals.reloadTypes(); sender.sendMessage("Tipos de portal recarregados: " + definitions.size()); }
+                case "reload" -> {
+                    portals.reloadTypes(); reloadConfig(); new AeternumPortalBridge(this).reconcile();
+                    sender.sendMessage("YAML recarregado: " + getDataFolder().toPath().resolve("portal-types.yaml"));
+                    portals.describe(sender);
+                }
                 case "select" -> { portals.select(player(sender)); sender.sendMessage("Origem selecionada."); }
                 case "link" -> { portals.link(player(sender)); sender.sendMessage("Par de portais vinculado nos dois sentidos."); }
                 case "remove" -> { portals.remove(player(sender)); sender.sendMessage("Portal removido; frame liberado para edição."); }

@@ -67,4 +67,13 @@ class PortalTypeSpecTest {
         var empty = new PortalTypeSpec("heat", true, "NETHER_WART_BLOCK", "FLINT_AND_STEEL", INTERACT, List.of(), "aeternum_heat");
         assertNull(empty.unlinkedTarget("aeternum_heat", "aeternum:heat"));
     }
+    @Test void reloadRoutingChangesInvalidateOldPairsButItemChangesDoNot() {
+        var before = type("heat", true, "world", "aeternum_heat");
+        assertTrue(PortalTypeSpec.routingChanged(before, type("heat", true, "survival", "aeternum_heat")));
+        assertTrue(PortalTypeSpec.routingChanged(before, type("heat", true, "world", "new_heat")));
+        assertTrue(PortalTypeSpec.routingChanged(before, type("heat", false, "world", "aeternum_heat")));
+        assertTrue(PortalTypeSpec.routingChanged(before, null));
+        var newItem = new PortalTypeSpec("heat", true, "BLUE_ICE", "EGG", PROJECTILE, List.of("world"), "aeternum_heat");
+        assertFalse(PortalTypeSpec.routingChanged(before, newItem));
+    }
 }

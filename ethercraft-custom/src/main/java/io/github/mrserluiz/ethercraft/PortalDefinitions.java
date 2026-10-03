@@ -15,6 +15,8 @@ public final class PortalDefinitions {
         if (!file.exists()) plugin.saveResource("portal-types.yaml", false);
         reload();
     }
+    Map<String, Definition> snapshot() { return types; }
+    void restore(Map<String, Definition> snapshot) { types = snapshot; }
     public int size() { return types.size(); }
     public Collection<Definition> all() { return types.values(); }
     public Definition get(String id) { return types.get(id); }

@@ -26,6 +26,8 @@ public final class PortalService implements Listener {
     private final Map<String, String> links = new HashMap<>();
     private final Map<UUID, String> selected = new HashMap<>();
     private final Map<UUID, Long> cooldown = new HashMap<>();
+    private final Set<String> pendingChecks = new HashSet<>();
+    private boolean cleanupScheduled;
     public PortalService(AeternumCustomPortalPlugin plugin, PortalDefinitions definitions) throws Exception {
         this.plugin = plugin; this.definitions = definitions; this.protections = new ProtectionService(plugin);
         var file = plugin.getDataFolder().toPath().resolve("portals.yml");
@@ -53,9 +55,65 @@ public final class PortalService implements Listener {
     public int size() { return frames.size(); }
     public void describe(org.bukkit.command.CommandSender sender) {
         for (var type : definitions.all()) sender.sendMessage(type.spec().id() + " [" + (type.spec().enabled() ? "ativo" : "desativado")
-            + "]: " + type.frame() + " / " + type.item() + " / " + type.spec().mode() + " -> " + type.spec().destinationWorld());
+            + "]: " + type.frame() + " / " + type.item() + " / " + type.spec().mode()
+            + " | origens: " + type.spec().sourceWorlds() + " -> " + type.spec().destinationWorld()
+            + " [" + (LoadedWorlds.resolve(type.spec().destinationWorld()) == null ? "destino não carregado" : "carregado") + "]");
     }
-    public void reloadTypes() throws Exception { definitions.reload(); selected.clear(); }
+    public void reloadTypes() throws Exception {
+        var oldDefinitions = definitions.snapshot();
+        try {
+            definitions.reload();
+            Set<String> changedRoutes = new HashSet<>(oldDefinitions.keySet());
+            changedRoutes.addAll(definitions.snapshot().keySet());
+            changedRoutes.removeIf(id -> {
+                var before = oldDefinitions.get(id); var after = definitions.get(id);
+                return !PortalTypeSpec.routingChanged(before == null ? null : before.spec(), after == null ? null : after.spec());
+            });
+            reconcileAll(changedRoutes);
+        }
+        catch (Exception error) { definitions.restore(oldDefinitions); throw error; }
+        selected.clear();
+    }
+    public void reconcileAll() throws IOException { reconcileAll(Set.of()); }
+    private void reconcileAll(Set<String> changedRoutes) throws IOException {
+        reconcile(frame -> {
+            World world = Bukkit.getWorld(frame.worldId());
+            return world != null && (definition(frame) == null || !allowed(definition(frame), world) || !frame.valid(true));
+        }, changedRoutes);
+    }
+    private void reconcile(java.util.function.Predicate<PortalFrame> remove) throws IOException { reconcile(remove, Set.of()); }
+    private void reconcile(java.util.function.Predicate<PortalFrame> remove, Set<String> changedRoutes) throws IOException {
+        Map<String, PortalFrame> oldFrames = new LinkedHashMap<>(frames);
+        Map<String, String> oldLinks = new HashMap<>(links);
+        links.entrySet().removeIf(entry -> frames.containsKey(entry.getKey()) && changedRoutes.contains(frames.get(entry.getKey()).typeId()));
+        List<PortalFrame> removed = PortalRegistryReconciler.prune(frames, links, remove, (a, b) ->
+            Bukkit.getWorld(a.worldId()) == null || Bukkit.getWorld(b.worldId()) == null || route(a, b));
+        if (frames.equals(oldFrames) && links.equals(oldLinks)) return;
+        try { save(); }
+        catch (IOException error) { frames.clear(); frames.putAll(oldFrames); links.clear(); links.putAll(oldLinks); throw error; }
+        selected.values().removeIf(key -> !frames.containsKey(key));
+        for (PortalFrame frame : removed) {
+            if (Bukkit.getWorld(frame.worldId()) == null) continue;
+            for (var c : FrameGeometry.interior()) {
+                Block block = frame.block(c.u(), c.v());
+                if (block.getType() == Material.NETHER_PORTAL) block.setType(Material.AIR, false);
+            }
+        }
+    }
+    private void checkAfterChange(Collection<Block> blocks) {
+        for (Block block : blocks) {
+            PortalFrame frame = at(block, true);
+            if (frame != null) pendingChecks.add(frame.key());
+        }
+        if (pendingChecks.isEmpty() || cleanupScheduled) return;
+        cleanupScheduled = true;
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            cleanupScheduled = false;
+            Set<String> keys = new HashSet<>(pendingChecks); pendingChecks.clear();
+            try { reconcile(frame -> keys.contains(frame.key()) && Bukkit.getWorld(frame.worldId()) != null && !frame.valid(true)); }
+            catch (IOException error) { plugin.getLogger().log(java.util.logging.Level.SEVERE, "Falha ao salvar limpeza de portais; registros preservados. Use /acp reload para tentar novamente.", error); }
+        });
+    }
     private PortalDefinitions.Definition definition(PortalFrame frame) {
         var type = definitions.get(frame.typeId());
         return type != null && type.spec().enabled() && type.frame() == frame.frameMaterial() ? type : null;
@@ -149,18 +207,27 @@ public final class PortalService implements Listener {
         selected.values().removeIf(frame.key()::equals);
     }
     private boolean activate(Player player, Block hit, Material item, PortalTypeSpec.ActivationMode mode) throws IOException {
-        if (!player.hasPermission("aeternumcustomportal.portal.activate")) return false;
         PortalFrame frame = null;
         for (var type : definitions.all()) {
-            if (type.item() != item || type.spec().mode() != mode || !allowed(type, hit.getWorld())) continue;
+            if (type.item() != item || type.spec().mode() != mode) continue;
             PortalFrame found = PortalFrame.detect(hit, type.spec().id(), type.frame());
             if (found != null) {
+                if (!type.spec().enabled()) { player.sendPlainMessage("Tipo " + type.spec().id() + " desativado: configure enabled: true e use /acp reload."); return true; }
+                if (!allowed(type, hit.getWorld())) { player.sendPlainMessage("Tipo " + type.spec().id() + ": mundo " + hit.getWorld().getName() + " não autorizado. Origens no YAML: " + type.spec().sourceWorlds()); return true; }
                 if (frame != null) throw new IllegalArgumentException("Estrutura de ativação ambígua.");
                 frame = found;
             }
         }
         if (frame == null) return false;
-        if (frames.containsKey(frame.key())) return true;
+        if (!player.hasPermission("aeternumcustomportal.portal.activate")) {
+            player.sendPlainMessage("Sem permissão aeternumcustomportal.portal.activate."); return true;
+        }
+        if (frames.containsKey(frame.key())) {
+            PortalFrame existing = frames.get(frame.key());
+            if (existing.equals(frame) && existing.valid(true) && definition(existing) != null) return true;
+            String key = frame.key();
+            reconcile(candidate -> candidate.key().equals(key));
+        }
         if (LoadedWorlds.resolve(definitions.get(frame.typeId()).spec().destinationWorld()) == null)
             throw new IllegalArgumentException("Mundo de destino não carregado; carregue-o pelo Aeternum ou gerenciador de mundos.");
         String denied = protections.denial(player, frame, false);
@@ -191,8 +258,15 @@ public final class PortalService implements Listener {
         // Vanilla may deny block-use for an inert frame even when the item is usable.
         // Respect item-use denial; configured protection plugins also block activation.
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK || e.getHand() != EquipmentSlot.HAND
-            || e.getClickedBlock() == null || e.getItem() == null
-            || e.useItemInHand() == Event.Result.DENY) return;
+            || e.getClickedBlock() == null || e.getItem() == null) return;
+        if (e.useItemInHand() == Event.Result.DENY) {
+            for (var type : definitions.all())
+                if (type.spec().mode() == PortalTypeSpec.ActivationMode.INTERACT && type.item() == e.getItem().getType()
+                    && type.frame() == e.getClickedBlock().getType()) {
+                    e.getPlayer().sendPlainMessage("Ativação cancelada pelo servidor/proteção antes do addon."); break;
+                }
+            return;
+        }
         try {
             if (activate(e.getPlayer(), e.getClickedBlock(), e.getItem().getType(), PortalTypeSpec.ActivationMode.INTERACT))
                 e.setCancelled(true); // Do not also ignite/place/use the activation item through vanilla.
@@ -203,6 +277,7 @@ public final class PortalService implements Listener {
         // Nether portal physics requires obsidian; only preserve intact registered custom frames.
         PortalFrame frame = at(e.getBlock(), false);
         if (frame != null && frame.valid(true)) e.setCancelled(true);
+        else if (frame != null) checkAfterChange(List.of(e.getBlock()));
     }
     private PortalFrame near(Location loc) {
         for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++)
@@ -340,22 +415,31 @@ public final class PortalService implements Listener {
     public void entityPortal(EntityPortalEvent e) {
         if (near(e.getFrom()) != null || unmanagedCustom(e.getFrom()) || (e.getTo() != null && (near(e.getTo()) != null || unmanagedCustom(e.getTo())))) e.setCancelled(true);
     }
-    // Registered frames remain protected until explicitly removed by an admin.
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void breakBlock(BlockBreakEvent e) { if (at(e.getBlock(), true) != null) e.setCancelled(true); }
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void placeBlock(BlockPlaceEvent e) { if (at(e.getBlock(), true) != null) e.setCancelled(true); }
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void explosion(EntityExplodeEvent e) { e.blockList().removeIf(b -> at(b, true) != null); }
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void explosion(BlockExplodeEvent e) { e.blockList().removeIf(b -> at(b, true) != null); }
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void piston(BlockPistonExtendEvent e) {
-        if (e.getBlocks().stream().anyMatch(b -> at(b, true) != null || at(b.getRelative(e.getDirection()), true) != null)) e.setCancelled(true);
+    // Observe the final event outcome; vanilla and protection plugins decide whether edits happen.
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void breakBlock(BlockBreakEvent e) { checkAfterChange(List.of(e.getBlock())); }
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void placeBlock(BlockPlaceEvent e) { checkAfterChange(List.of(e.getBlock())); }
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void explosion(EntityExplodeEvent e) { checkAfterChange(e.blockList()); }
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void explosion(BlockExplodeEvent e) { checkAfterChange(e.blockList()); }
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void piston(BlockPistonExtendEvent e) { checkPiston(e.getBlocks(), e.getDirection()); }
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void piston(BlockPistonRetractEvent e) { checkPiston(e.getBlocks(), e.getDirection()); }
+    private void checkPiston(List<Block> blocks, org.bukkit.block.BlockFace direction) {
+        List<Block> affected = new ArrayList<>(blocks);
+        for (Block block : blocks) {
+            affected.add(block.getRelative(direction)); affected.add(block.getRelative(direction.getOppositeFace()));
+        }
+        checkAfterChange(affected);
     }
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void piston(BlockPistonRetractEvent e) {
-        if (e.getBlocks().stream().anyMatch(b -> at(b, true) != null || at(b.getRelative(e.getDirection()), true) != null)) e.setCancelled(true);
+    @EventHandler public void worldLoaded(org.bukkit.event.world.WorldLoadEvent e) {
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            try { reconcileAll(); }
+            catch (IOException error) { plugin.getLogger().log(java.util.logging.Level.SEVERE, "Falha ao reconciliar portais carregados.", error); }
+        });
     }
     @EventHandler public void quit(PlayerQuitEvent e) { selected.remove(e.getPlayer().getUniqueId()); cooldown.remove(e.getPlayer().getUniqueId()); }
 }

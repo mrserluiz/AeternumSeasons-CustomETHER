@@ -1,4 +1,4 @@
-# AeternumCustomPortal 0.3.1
+# AeternumCustomPortal 0.3.2
 
 Addon independente de portais para Paper 26.2 / Java 25. AeternumSeasons é opcional: o addon usa mundos já carregados por ele ou por outro gerenciador. Não cria, carrega, renomeia nem migra dimensões. O módulo permanece na pasta `ethercraft-custom` para preservar o histórico do repositório.
 
@@ -6,9 +6,9 @@ Addon independente de portais para Paper 26.2 / Java 25. AeternumSeasons é opci
 
 1. Pare o servidor e faça backup das configurações e registros de portais.
 2. Remova o JAR `ethercraft-custom-*.jar` antigo. Mantenha o AeternumSeasons instalado e suas features Frost/Heat habilitadas para ele carregar os mundos.
-3. Instale `aeternum-custom-portal-0.3.1.jar` e reinicie.
+3. Instale `aeternum-custom-portal-0.3.2.jar` e reinicie.
 4. Configure `plugins/AeternumCustomPortal/portal-types.yaml`; use `/aeternumportal worlds` para conferir nomes, chaves, UUIDs e caminhos reais.
-5. Execute `/aeternumportal reload`.
+5. Execute `/aeternumportal reload` (ou `/acp reload`). O comando lê o arquivo da pasta nova, mostra o caminho e lista tipos, origens e situação dos destinos.
 
 Na primeira instalação, se a pasta nova não existir, o addon copia `config.yml`, `portal-types.yaml` e `portals.yml` de `plugins/EtherCraftCustom`, sem apagar a origem. Destinos e fontes antigos são preservados: ajuste o destino de Frost para `aeternum_frost` e Heat para `aeternum_heat`. Os mundos `ethercraft_*` antigos permanecem intactos. Não importa vínculos de portais do Aeternum; reconstrua/ative os novos frames e use select/link se necessário. Remoção do addon e alterações no Aeternum exigem reinício completo; PlugMan/hot unload não é suportado.
 
@@ -28,7 +28,7 @@ Comandos: `/aeternumportal status|worlds|types|reload|select|link|unlink|remove`
 
 `aeternum.take-over-portals: true` remove apenas os listeners conhecidos `Kinkin.aeternum.portal.FrostOverworldPortals`, `HeatOverworldPortals`, `HeatNetherPortals` e `VanillaPortalIsolation`. A reconciliação ocorre no início e a cada segundo, cobrindo re-registro após reload. Geração, estações, mobs e outros listeners ficam ativos. Integração limitada às classes auditadas do Aeternum 4.5; uma versão com outras classes requer nova adaptação. Não desabilite a tomada de controle se quiser que o YAML seja a única autoridade de portais.
 
-Interiores customizados sem registro são bloqueados no evento de portal para evitar rotas Nether vanilla. Portais antigos não são apagados. Portais registrados desativados continuam protegidos contra quebra até `/aeternumportal remove`. Nether vanilla com frame OBSIDIAN continua disponível.
+Interiores customizados sem registro são bloqueados no evento de portal para evitar rotas Nether vanilla. Portais antigos não são apagados. Frames podem ser quebrados normalmente, respeitando cancelamentos do WorldGuard/GriefPrevention e de outros plugins. Quebra, colocação no interior, explosão ou pistão que invalidem a estrutura apagam o interior e removem o registro/vínculo no próximo tick; o portal parceiro fica intacto e livre para novo vínculo. Nether vanilla com frame OBSIDIAN continua disponível.
 
 WorldGuard 7 e GriefPrevention são consultados na ativação/remoção; falhas de integração bloqueiam operações. Outros plugins de proteção configurados exigem integração ou opt-in explícito. Teleporte usa evento Bukkit cancelável para permitir proteções externas.
 
@@ -36,4 +36,10 @@ WorldGuard 7 e GriefPrevention são consultados na ativação/remoção; falhas 
 
 `mvn --batch-mode --file ethercraft-custom/pom.xml clean verify`
 
-Workflow `.github/workflows/ethercraft-custom.yml` usa Java 25 e publica o artefato `AeternumCustomPortal-0.3.1-Paper26.2` contendo o JAR. Testes cobrem geometria, autorização, conflitos, nomes/chaves, ida/volta sem vínculo e falhas nas proteções. A execução real com Paper/Aeternum/WorldGuard deve ser validada no servidor: criar um portal Frost, testar ida/volta, desativá-lo e conferir que o portal antigo do Aeternum não assume a rota.
+Workflow `.github/workflows/ethercraft-custom.yml` usa Java 25 e publica o artefato `AeternumCustomPortal-0.3.2-Paper26.2` contendo o JAR. Testes cobrem geometria, autorização, conflitos, nomes/chaves, ida/volta sem vínculo e falhas nas proteções. A execução real com Paper/Aeternum/WorldGuard deve ser validada no servidor: criar um portal Frost, testar ida/volta, desativá-lo e conferir que o portal antigo do Aeternum não assume a rota.
+
+## Correções 0.3.2
+
+Reload válido aplica novos blocos/itens/origens/destinos e limpa registros carregados desativados, de material antigo, estrutura quebrada ou mundo agora não autorizado. Alterar origens/destino/habilitação descarta vínculos antigos do tipo mesmo com parceiro descarregado. O frame físico é preservado para editar e reativar. Mundos descarregados são reconciliados ao carregar. Não altera os mundos nem os carrega automaticamente. Uma falha ao salvar a reconciliação restaura registros, vínculos e definições anteriores; YAML inválido também mantém os tipos ativos anteriores.
+
+Para habilitar Heat, edite **plugins/AeternumCustomPortal/portal-types.yaml**, usando `enabled: true`, `source-worlds: [world]` (ou o nome/chave real da origem) e `destination-world: aeternum_heat`. Use FLINT_AND_STEEL com clique direito no frame completo de NETHER_WART_BLOCK. `source-worlds: []` não autoriza o overworld, mesmo com enabled true. `/acp reload` configura tipos; não acende frames sozinho. `/acp worlds` confirma se o Aeternum carregou a dimensão. Ativação agora informa tipo desativado, origem não autorizada, falta de permissão e interação negada pelo servidor/proteção.

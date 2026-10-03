@@ -41,6 +41,11 @@ public record PortalTypeSpec(String id, boolean enabled, String frameBlock, Stri
         if (destination(name, key) && !source(name, key) && sourceWorlds.size() == 1) return sourceWorlds.getFirst();
         return null;
     }
+    public static boolean routingChanged(PortalTypeSpec before, PortalTypeSpec after) {
+        return before == null || after == null || before.enabled != after.enabled
+            || !before.destinationWorld.equals(after.destinationWorld)
+            || !new HashSet<>(before.sourceWorlds).equals(new HashSet<>(after.sourceWorlds));
+    }
     public static void validateDistinct(Collection<PortalTypeSpec> specs) {
         if (specs.size() > 64) throw new IllegalArgumentException("Limite de 64 tipos de portal.");
         List<PortalTypeSpec> all = new ArrayList<>(specs);
