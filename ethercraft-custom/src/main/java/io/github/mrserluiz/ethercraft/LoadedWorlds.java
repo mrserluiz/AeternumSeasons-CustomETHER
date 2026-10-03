@@ -24,7 +24,7 @@ public final class LoadedWorlds {
                     int y = spawn.getBlockY() + dy;
                     if (y <= world.getMinHeight() || y + 1 >= world.getMaxHeight()) continue;
                     Block feet = world.getBlockAt(spawn.getBlockX() + dx, y, spawn.getBlockZ() + dz);
-                    if (!feet.getType().isAir() || !feet.getRelative(0, 1, 0).getType().isAir()
+                    if (!safeSpace(feet) || !safeSpace(feet.getRelative(0, 1, 0))
                         || !safeFloor(feet.getRelative(0, -1, 0).getType())) continue;
                     Location exit = feet.getLocation().add(0.5, 0, 0.5);
                     if (!world.getWorldBorder().isInside(exit)) continue;
@@ -32,7 +32,13 @@ public final class LoadedWorlds {
                 }
         return null;
     }
-    private static boolean safeFloor(Material material) {
+    public static boolean safeSpace(Block block) {
+        Material m = block.getType();
+        return block.isPassable() && !block.isLiquid() && m != Material.FIRE && m != Material.SOUL_FIRE
+            && m != Material.POWDER_SNOW && m != Material.SWEET_BERRY_BUSH && m != Material.WITHER_ROSE
+            && m != Material.NETHER_PORTAL && m != Material.END_PORTAL;
+    }
+    public static boolean safeFloor(Material material) {
         return material.isSolid() && material != Material.MAGMA_BLOCK && material != Material.CACTUS
             && material != Material.CAMPFIRE && material != Material.SOUL_CAMPFIRE
             && material != Material.POWDER_SNOW && material != Material.NETHER_PORTAL;

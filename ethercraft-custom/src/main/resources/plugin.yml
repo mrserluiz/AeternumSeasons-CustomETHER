@@ -1,5 +1,5 @@
 name: AeternumCustomPortal
-version: '0.3.2'
+version: '0.3.3'
 main: io.github.mrserluiz.ethercraft.AeternumCustomPortalPlugin
 api-version: '26.2'
 author: Mrserluiz
@@ -9,7 +9,7 @@ commands:
   aeternumportal:
     aliases: [acp, ethercraft]
     description: Administra portais customizados e destinos carregados
-    usage: /aeternumportal status|worlds|select|link|unlink|remove|reload|types
+    usage: /aeternumportal status|worlds|select|link|unlink|remove|reload|types|enable <tipo>|disable <tipo>
     permission: aeternumcustomportal.admin
 permissions:
   aeternumcustomportal.admin:

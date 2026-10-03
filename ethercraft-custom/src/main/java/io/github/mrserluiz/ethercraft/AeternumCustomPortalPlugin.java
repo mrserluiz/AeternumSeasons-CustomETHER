@@ -24,7 +24,7 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
             bridge.reconcile();
             getServer().getPluginManager().registerEvents(bridge, this);
             getServer().getScheduler().runTaskTimer(this, bridge::reconcile, 20L, 20L);
-            getLogger().info("AeternumCustomPortal 0.3.2: mundos existentes, portais controlados por portal-types.yaml.");
+            getLogger().info("AeternumCustomPortal 0.3.3: mundos existentes, portais controlados por portal-types.yaml.");
         } catch (Exception error) {
             getLogger().log(java.util.logging.Level.SEVERE, "Inicialização bloqueada; dados preservados.", error);
             getServer().getPluginManager().disablePlugin(this);
@@ -44,15 +44,29 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
     }
     @Override public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("aeternumcustomportal.admin")) return true;
-        if (args.length != 1) return false;
+        if (args.length == 0) { sender.sendMessage("AeternumCustomPortal " + getDescription().getVersion() + " — /acp reload | /acp types | /acp enable heat | /acp worlds"); return true; }
         try {
+            if (args[0].equalsIgnoreCase("enable") || args[0].equalsIgnoreCase("disable")) {
+                if (args.length != 2) throw new IllegalArgumentException("Use /acp enable <tipo> ou /acp disable <tipo>.");
+                var file = getDataFolder().toPath().resolve("portal-types.yaml");
+                byte[] previous = Files.readAllBytes(file);
+                try {
+                    PortalTypeYaml.setEnabled(file.toFile(), args[1], args[0].equalsIgnoreCase("enable"), sender instanceof Player p ? p.getWorld().getName() : null);
+                    portals.reloadTypes();
+                } catch (Exception error) { PortalTypeYaml.write(file, previous); throw error; }
+                sender.sendMessage("Configuração salva e aplicada — AeternumCustomPortal " + getDescription().getVersion());
+                portals.describe(sender); return true;
+            }
+            if (args.length != 1) return false;
             switch (args[0].toLowerCase(java.util.Locale.ROOT)) {
-                case "status" -> sender.sendMessage("AeternumCustomPortal 0.3.2; tipos: " + definitions.size() + "; portais: " + portals.size());
+                case "status" -> sender.sendMessage("AeternumCustomPortal 0.3.3; tipos: " + definitions.size() + "; portais: " + portals.size());
                 case "worlds" -> getServer().getWorlds().forEach(w -> sender.sendMessage(w.getName() + " | " + w.getKey() + " | " + w.getUID() + " | " + w.getWorldPath()));
                 case "types" -> portals.describe(sender);
                 case "reload" -> {
+                    var configCheck = new org.bukkit.configuration.file.YamlConfiguration();
+                    configCheck.load(getDataFolder().toPath().resolve("config.yml").toFile());
                     portals.reloadTypes(); reloadConfig(); new AeternumPortalBridge(this).reconcile();
-                    sender.sendMessage("YAML recarregado: " + getDataFolder().toPath().resolve("portal-types.yaml"));
+                    sender.sendMessage("AeternumCustomPortal " + getDescription().getVersion() + " — YAML recarregado: " + getDataFolder().toPath().resolve("portal-types.yaml"));
                     portals.describe(sender);
                 }
                 case "select" -> { portals.select(player(sender)); sender.sendMessage("Origem selecionada."); }
@@ -63,6 +77,15 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
             }
         } catch (Exception error) { sender.sendMessage("Operação bloqueada: " + error.getMessage()); }
         return true;
+    }
+    @Override public java.util.List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (!sender.hasPermission("aeternumcustomportal.admin")) return java.util.List.of();
+        java.util.List<String> choices = args.length == 1
+            ? java.util.List.of("status", "worlds", "types", "reload", "enable", "disable", "select", "link", "unlink", "remove")
+            : args.length == 2 && (args[0].equalsIgnoreCase("enable") || args[0].equalsIgnoreCase("disable"))
+                ? definitions.all().stream().map(type -> type.spec().id()).toList() : java.util.List.of();
+        String prefix = args.length == 0 ? "" : args[args.length - 1].toLowerCase(java.util.Locale.ROOT);
+        return choices.stream().filter(value -> value.startsWith(prefix)).toList();
     }
     private Player player(CommandSender sender) {
         if (!(sender instanceof Player p)) throw new IllegalArgumentException("Execute este comando dentro do jogo.");

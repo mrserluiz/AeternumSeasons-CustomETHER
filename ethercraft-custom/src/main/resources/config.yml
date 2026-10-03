@@ -7,5 +7,12 @@ aeternum:
 allow-unintegrated-protections: false
 protection-plugins: [WorldGuard, GriefPrevention, Residence, Lands, Towny]
 
-# First crossing builds/links a return portal near destination spawn, without excavating.
+# First crossing builds/links a return portal at the corresponding coordinates using the dimensions' coordinate scales.
 auto-return-portal: true
+
+portal-placement:
+  # Existing portal search: default 16 in Nether environments, 128 elsewhere.
+  # search-radius: 128
+  creation-radius: 8
+  # Fallback clears only listed terrain blocks, after place/break protection checks.
+  allow-terrain-clearing: true

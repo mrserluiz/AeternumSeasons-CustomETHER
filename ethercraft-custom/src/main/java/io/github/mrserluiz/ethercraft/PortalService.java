@@ -34,7 +34,7 @@ public final class PortalService implements Listener {
         if (!Files.exists(file)) return;
         YamlConfiguration y = new YamlConfiguration(); y.load(file.toFile());
         int schema = y.getInt("schema");
-        if (schema != 1 && schema != 2) throw new IOException("Esquema de portais incompatível.");
+        if (schema != 1 && schema != 2 && schema != 3) throw new IOException("Esquema de portais incompatível.");
         for (Map<?, ?> row : y.getMapList("portals")) {
             PortalFrame frame = new PortalFrame(UUID.fromString(row.get("world").toString()),
                 ((Number) row.get("x")).intValue(), ((Number) row.get("y")).intValue(),
@@ -51,6 +51,12 @@ public final class PortalService implements Listener {
             if (!frames.containsKey(entry.getValue()) || entry.getKey().equals(entry.getValue())
                 || !entry.getKey().equals(links.get(entry.getValue())))
                 throw new IOException("Vínculos de portal inconsistentes; arquivo preservado.");
+        if (schema < 3) {
+            var backup = file.resolveSibling("portals-before-0.3.3.yml");
+            if (!Files.exists(backup)) Files.copy(file, backup);
+            links.clear(); save();
+            plugin.getLogger().info("Vínculos anteriores ao posicionamento por coordenadas descartados; frames preservados e backup criado.");
+        }
     }
     public int size() { return frames.size(); }
     public void describe(org.bukkit.command.CommandSender sender) {
@@ -129,7 +135,7 @@ public final class PortalService implements Listener {
     }
 
     private void save() throws IOException {
-        YamlConfiguration y = new YamlConfiguration(); y.set("schema", 2);
+        YamlConfiguration y = new YamlConfiguration(); y.set("schema", 3);
         List<Map<String, Object>> rows = new ArrayList<>();
         for (PortalFrame f : frames.values()) {
             Map<String, Object> row = new LinkedHashMap<>();
@@ -310,15 +316,19 @@ public final class PortalService implements Listener {
             Block inside = frame.block(u, 0);
             Block feet = inside.getRelative(frame.axis() == Axis.X ? 0 : side, 0, frame.axis() == Axis.X ? side : 0);
             Block floor = feet.getRelative(0, -1, 0), head = feet.getRelative(0, 1, 0);
-            if (feet.getType().isAir() && head.getType().isAir() && floor.getType().isSolid()
-                && floor.getType() != Material.MAGMA_BLOCK && floor.getType() != Material.CACTUS
-                && floor.getType() != Material.CAMPFIRE && floor.getType() != Material.SOUL_CAMPFIRE
-                && floor.getType() != Material.POWDER_SNOW) {
+            if (LoadedWorlds.safeSpace(feet) && LoadedWorlds.safeSpace(head) && LoadedWorlds.safeFloor(floor.getType())) {
                 Location exit = feet.getLocation().add(0.5, 0, 0.5);
                 if (exit.getWorld().getWorldBorder().isInside(exit)) {
                     exit.setYaw(from.getYaw()); exit.setPitch(from.getPitch()); return exit;
                 }
             }
+        }
+        // Vanilla-style arrival inside an intact portal: its bottom frame already supports the player.
+        if (frame.valid(true)) for (int u = 0; u < 2; u++) {
+            if (!LoadedWorlds.safeFloor(frame.block(u, -1).getType())) continue;
+            Location exit = frame.block(u, 0).getLocation().add(0.5, 0, 0.5);
+            if (!exit.getWorld().getWorldBorder().isInside(exit)) continue;
+            exit.setYaw(from.getYaw()); exit.setPitch(from.getPitch()); return exit;
         }
         return null;
     }
@@ -341,59 +351,88 @@ public final class PortalService implements Listener {
             catch (Exception error) { player.sendPlainMessage("Retorno não criado: " + error.getMessage()); return; }
             Location checked = destination(source, player.getLocation());
             if (checked == null) { player.sendPlainMessage("Destino não carregado, vínculo inválido ou saída insegura."); return; }
-            if (checked != null && player.teleport(checked, PlayerTeleportEvent.TeleportCause.PLUGIN))
+            if (player.teleport(checked, PlayerTeleportEvent.TeleportCause.PLUGIN)) {
+                player.setPortalCooldown(300);
                 cooldown.put(player.getUniqueId(), System.currentTimeMillis() + 5000);
+            }
         });
     }
     private void ensureReturnPortal(PortalFrame source, Player player) throws IOException {
         if (links.containsKey(source.key()) || !plugin.getConfig().getBoolean("auto-return-portal", true)) return;
-        if (safeExit(source, player.getLocation()) == null) throw new IOException("Prepare uma saída segura ao lado do portal de origem para permitir a volta.");
         var type = definition(source);
         if (!allowed(type, player.getWorld())) throw new IOException("Tipo desativado ou mundo não autorizado.");
         // Resolve target by loaded identity; explicit links make return unambiguous even with multiple sources.
         String reference = type.spec().unlinkedTarget(player.getWorld().getName(), player.getWorld().getKey().toString());
         World world = reference == null ? null : LoadedWorlds.resolve(reference);
         if (world == null || world.getUID().equals(source.worldId())) throw new IOException("Destino não carregado ou retorno ambíguo; configure/vincule os portais.");
-        for (PortalFrame candidate : frames.values()) {
-            if (!links.containsKey(candidate.key()) && candidate.valid(true) && route(source, candidate)
-                && safeExit(candidate, player.getLocation()) != null) {
-                bind(source, candidate); return;
-            }
-        }
+        Location center = corresponding(source, world);
+        int searchRadius = Math.max(1, Math.min(128, plugin.getConfig().getInt("portal-placement.search-radius", world.getEnvironment() == World.Environment.NETHER ? 16 : 128)));
+        PortalFrame nearest = frames.values().stream().filter(candidate -> !links.containsKey(candidate.key())
+            && candidate.valid(true) && route(source, candidate)
+            && PortalCoordinates.nearby(candidate.x(), candidate.z(), center.getX(), center.getZ(), searchRadius)
+            && safeExit(candidate, player.getLocation()) != null)
+            .min(Comparator.comparingDouble(candidate -> candidate.block(0, 0).getLocation().distanceSquared(center))).orElse(null);
+        if (nearest != null) { bind(source, nearest); return; }
+        int radiusLimit = Math.max(0, Math.min(16, plugin.getConfig().getInt("portal-placement.creation-radius", 8)));
+        int top = Math.min(world.getMaxHeight(), world.getMinHeight() + world.getLogicalHeight()) - 5;
+        int bottom = world.getMinHeight() + 2;
+        int preferred = Math.max(bottom, Math.min(top, center.getBlockY()));
         String denied = null;
-        Location spawn = world.getSpawnLocation();
-        for (int radius = 0; radius <= 8; radius++)
-            for (int dx = -radius; dx <= radius; dx++) for (int dz = -radius; dz <= radius; dz++) {
-                if (Math.max(Math.abs(dx), Math.abs(dz)) != radius) continue;
-                int x = spawn.getBlockX() + dx, z = spawn.getBlockZ() + dz;
-                int y = world.getHighestBlockYAt(x, z) + 2;
-                PortalFrame target = new PortalFrame(world.getUID(), x, y, z, source.axis(), source.typeId(), type.frame());
-                if (y <= world.getMinHeight() || y + 3 >= world.getMaxHeight()) continue;
-                List<Block> edits = ReturnPortalGeometry.edits().stream().map(c -> returnBlock(target, c)).toList();
-                if (edits.stream().anyMatch(b -> !b.getType().isAir() || !world.getWorldBorder().isInside(b.getLocation()) || at(b, true) != null)
-                    || ReturnPortalGeometry.clearance().stream().map(c -> returnBlock(target, c)).anyMatch(b -> !b.getType().isAir() || at(b, true) != null)) continue;
-                denied = protections.denial(player, edits, false, type.frame());
-                if (denied != null) continue;
-                var snapshots = edits.stream().map(Block::getBlockData).toList();
-                frames.put(target.key(), target);
-                links.put(source.key(), target.key()); links.put(target.key(), source.key());
-                try { save(); }
-                catch (IOException error) { frames.remove(target.key()); links.remove(source.key()); links.remove(target.key()); throw error; }
-                try {
-                    Orientable data = (Orientable) Bukkit.createBlockData(Material.NETHER_PORTAL); data.setAxis(target.axis());
-                    for (var c : ReturnPortalGeometry.edits()) returnBlock(target, c).setType(type.frame(), false);
-                    for (var c : FrameGeometry.interior()) target.block(c.u(), c.v()).setBlockData(data, false);
-                    if (safeExit(target, player.getLocation()) == null) throw new IllegalStateException("Saída inválida após montagem.");
-                } catch (RuntimeException error) {
-                    for (int i = 0; i < edits.size(); i++) edits.get(i).setBlockData(snapshots.get(i), false);
-                    frames.remove(target.key()); links.remove(source.key()); links.remove(target.key());
-                    try { save(); } catch (IOException rollback) { error.addSuppressed(rollback); }
-                    throw new IOException("Falha ao montar portal; alterações revertidas.", error);
+        // Prefer clear sites around the matching coordinates; fallback can clear limited terrain.
+        for (int phase = 0; phase < 2; phase++) {
+            if (phase == 1 && !plugin.getConfig().getBoolean("portal-placement.allow-terrain-clearing", true)) break;
+            for (int radius = 0; radius <= radiusLimit; radius++)
+                for (int dx = -radius; dx <= radius; dx++) for (int dz = -radius; dz <= radius; dz++) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != radius) continue;
+                    for (int offset = 0; offset <= 16; offset++) for (int sign : offset == 0 ? new int[]{1} : new int[]{1, -1}) {
+                        int y = preferred + offset * sign;
+                        if (y < bottom || y > top) continue;
+                        PortalFrame target = new PortalFrame(world.getUID(), center.getBlockX() + dx, y, center.getBlockZ() + dz,
+                            source.axis(), source.typeId(), type.frame());
+                        List<Block> edits = ReturnPortalGeometry.edits().stream().map(c -> returnBlock(target, c)).toList();
+                        List<Block> clearance = ReturnPortalGeometry.clearance().stream().map(c -> returnBlock(target, c)).toList();
+                        List<Block> all = new ArrayList<>(edits); all.addAll(clearance);
+                        final int sitePhase = phase;
+                        if (all.stream().anyMatch(block -> !world.getWorldBorder().isInside(block.getLocation()) || at(block, true) != null
+                            || !PortalTerrain.canReplace(block.getType().name()) || (sitePhase == 0 && !LoadedWorlds.safeSpace(block)))) continue;
+                        denied = protections.denial(player, all, false, type.frame());
+                        if (denied == null) denied = protections.denial(player, all.stream().filter(block -> !block.getType().isAir()).toList(), true);
+                        if (denied != null) continue;
+                        buildReturn(source, target, player, type, edits, clearance); return;
+                    }
                 }
-                player.sendPlainMessage("Portal de retorno " + target.typeId() + " criado e vinculado à origem.");
-                return;
-            }
-        throw new IOException(denied == null ? "Nenhum local livre e seguro próximo ao spawn. Prepare uma área ou use select/link." : "Proteção do destino: " + denied);
+        }
+        throw new IOException(denied == null ? "Sem local compatível nas coordenadas correspondentes " + center.getBlockX() + ", " + center.getBlockZ() + "." : "Proteção do destino: " + denied);
+    }
+    private Location corresponding(PortalFrame source, World destination) {
+        World origin = Bukkit.getWorld(source.worldId());
+        if (origin == null) throw new IllegalStateException("Origem descarregada.");
+        var border = destination.getWorldBorder(); var center = border.getCenter();
+        double x = PortalCoordinates.scale(source.x() + 0.5, origin.getCoordinateScale(), destination.getCoordinateScale());
+        double z = PortalCoordinates.scale(source.z() + 0.5, origin.getCoordinateScale(), destination.getCoordinateScale());
+        return new Location(destination, PortalCoordinates.clamp(x, center.getX(), border.getSize(), 4), source.y(),
+            PortalCoordinates.clamp(z, center.getZ(), border.getSize(), 4));
+    }
+    private void buildReturn(PortalFrame source, PortalFrame target, Player player, PortalDefinitions.Definition type,
+                             List<Block> edits, List<Block> clearance) throws IOException {
+        List<Block> all = new ArrayList<>(edits); all.addAll(clearance);
+        var snapshots = all.stream().map(Block::getBlockData).toList();
+        frames.put(target.key(), target); links.put(source.key(), target.key()); links.put(target.key(), source.key());
+        try { save(); }
+        catch (IOException error) { frames.remove(target.key()); links.remove(source.key()); links.remove(target.key()); throw error; }
+        try {
+            Orientable data = (Orientable) Bukkit.createBlockData(Material.NETHER_PORTAL); data.setAxis(target.axis());
+            for (Block block : clearance) block.setType(Material.AIR, false);
+            for (Block block : edits) block.setType(type.frame(), false);
+            for (var c : FrameGeometry.interior()) target.block(c.u(), c.v()).setBlockData(data, false);
+            if (safeExit(target, player.getLocation()) == null) throw new IllegalStateException("Saída inválida após montagem.");
+        } catch (RuntimeException error) {
+            for (int i = 0; i < all.size(); i++) all.get(i).setBlockData(snapshots.get(i), false);
+            frames.remove(target.key()); links.remove(source.key()); links.remove(target.key());
+            try { save(); } catch (IOException rollback) { error.addSuppressed(rollback); }
+            throw new IOException("Falha ao montar portal; alterações revertidas.", error);
+        }
+        player.sendPlainMessage("Portal " + target.typeId() + " criado em " + target.x() + ", " + target.y() + ", " + target.z() + "; retorno vinculado à origem.");
     }
     private Block returnBlock(PortalFrame frame, ReturnPortalGeometry.Cell cell) {
         return frame.block(cell.u(), cell.v()).getRelative(frame.axis() == Axis.X ? 0 : cell.side(), 0, frame.axis() == Axis.X ? cell.side() : 0);
@@ -412,7 +451,13 @@ public final class PortalService implements Listener {
         String target = type.spec().unlinkedTarget(from.getWorld().getName(), from.getWorld().getKey().toString());
         World world = target == null ? null : LoadedWorlds.resolve(target);
         if (world == null || world.getUID().equals(source.worldId())) return null;
-        return LoadedWorlds.safeSpawn(world, from);
+        // With automatic generation disabled, only an existing corresponding portal is usable.
+        Location center = corresponding(source, world);
+        int radius = Math.max(1, Math.min(128, plugin.getConfig().getInt("portal-placement.search-radius", 128)));
+        return frames.values().stream().filter(candidate -> candidate.valid(true) && route(source, candidate)
+            && PortalCoordinates.nearby(candidate.x(), candidate.z(), center.getX(), center.getZ(), radius))
+            .sorted(Comparator.comparingDouble(candidate -> candidate.block(0, 0).getLocation().distanceSquared(center)))
+            .map(candidate -> safeExit(candidate, from)).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
