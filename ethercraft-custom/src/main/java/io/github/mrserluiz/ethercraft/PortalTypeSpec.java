@@ -4,9 +4,19 @@ import java.util.*;
 
 /** Configuration and routing rules, independent of Bukkit for verification. */
 public record PortalTypeSpec(String id, boolean enabled, String frameBlock, String activationItem,
-                             ActivationMode mode, List<String> sourceWorlds, String destinationWorld) {
-    public enum ActivationMode { INTERACT, PROJECTILE }
+                             ActivationMode mode, List<String> sourceWorlds, String destinationWorld, Shape shape) {
+    public enum ActivationMode { INTERACT, PROJECTILE, DROP_ITEM }
+    public enum Shape { VERTICAL, HORIZONTAL_POOL }
+    public PortalTypeSpec(String id, boolean enabled, String frameBlock, String activationItem,
+                          ActivationMode mode, List<String> sourceWorlds, String destinationWorld) {
+        this(id, enabled, frameBlock, activationItem, mode, sourceWorlds, destinationWorld, Shape.VERTICAL);
+    }
     public PortalTypeSpec {
+        if (shape == null) throw new IllegalArgumentException("shape obrigatório.");
+        if (mode == ActivationMode.DROP_ITEM && shape != Shape.HORIZONTAL_POOL)
+            throw new IllegalArgumentException(id + ": DROP_ITEM requer HORIZONTAL_POOL.");
+        if (shape == Shape.HORIZONTAL_POOL && mode == ActivationMode.PROJECTILE)
+            throw new IllegalArgumentException(id + ": HORIZONTAL_POOL suporta INTERACT ou DROP_ITEM.");
         if (id == null || !id.matches("[a-z][a-z0-9_-]{0,39}"))
             throw new IllegalArgumentException("ID de portal inválido: " + id);
         if (frameBlock == null || frameBlock.isBlank() || activationItem == null || activationItem.isBlank() || mode == null)
@@ -54,7 +64,7 @@ public record PortalTypeSpec(String id, boolean enabled, String frameBlock, Stri
         for (int i = 0; i < all.size(); i++) for (int j = i + 1; j < all.size(); j++) {
             var a = all.get(i); var b = all.get(j);
             if (!a.enabled || !b.enabled || !a.frameBlock.equals(b.frameBlock)
-                || !a.activationItem.equals(b.activationItem) || a.mode != b.mode) continue;
+                || !a.activationItem.equals(b.activationItem) || a.mode != b.mode || a.shape != b.shape) continue;
             Set<String> worlds = new HashSet<>(a.sourceWorlds); worlds.add(a.destinationWorld);
             if (worlds.stream().anyMatch(b::acceptsWorld))
                 throw new IllegalArgumentException("Ativação ambígua entre " + a.id + " e " + b.id + ": mesmo bloco/item/modo no mesmo mundo.");

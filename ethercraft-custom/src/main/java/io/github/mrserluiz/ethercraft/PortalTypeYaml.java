@@ -26,9 +26,12 @@ public final class PortalTypeYaml {
                 throw new IllegalArgumentException(id + ": source-worlds deve ser lista de nomes/chaves de mundos.");
             PortalTypeSpec.ActivationMode mode;
             try { mode = PortalTypeSpec.ActivationMode.valueOf(p.getString("activation.mode", "INTERACT").toUpperCase(Locale.ROOT)); }
-            catch (IllegalArgumentException error) { throw new IllegalArgumentException(id + ": activation.mode deve ser INTERACT ou PROJECTILE."); }
+            catch (IllegalArgumentException error) { throw new IllegalArgumentException(id + ": activation.mode deve ser INTERACT, PROJECTILE ou DROP_ITEM."); }
+            PortalTypeSpec.Shape shape;
+            try { shape = PortalTypeSpec.Shape.valueOf(p.getString("shape", "VERTICAL").toUpperCase(Locale.ROOT)); }
+            catch (IllegalArgumentException error) { throw new IllegalArgumentException(id + ": shape deve ser VERTICAL ou HORIZONTAL_POOL."); }
             specs.add(new PortalTypeSpec(id, p.getBoolean("enabled", true), p.getString("frame-block"),
-                p.getString("activation.item"), mode, p.getStringList("source-worlds"), p.getString("destination-world")));
+                p.getString("activation.item"), mode, p.getStringList("source-worlds"), p.getString("destination-world"), shape));
         }
         return List.copyOf(specs);
     }

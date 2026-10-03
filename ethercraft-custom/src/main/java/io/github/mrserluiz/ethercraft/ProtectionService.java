@@ -13,14 +13,21 @@ public final class ProtectionService {
     public ProtectionService(AeternumCustomPortalPlugin plugin) { this.plugin = plugin; }
     public String denial(Player player, PortalFrame frame, boolean removing) {
         List<Block> points = new ArrayList<>();
-        for (var c : FrameGeometry.interior()) points.add(frame.block(c.u(), c.v()));
-        if (!removing) for (var c : FrameGeometry.border()) points.add(frame.block(c.u(), c.v()));
+        for (var c : frame.interior()) points.add(frame.block(c.u(), c.v()));
+        if (!removing) for (var c : frame.border()) points.add(frame.block(c.u(), c.v()));
+        if (frame.horizontal()) {
+            for (var c : frame.border()) points.add(frame.block(c.u(), c.v()).getRelative(0, 1, 0));
+            return denial(player, points, removing, frame.frameMaterial(), Material.WATER);
+        }
         return denial(player, points, removing);
     }
     public String denial(Player player, List<Block> points, boolean removing) {
         return denial(player, points, removing, Material.NETHER_PORTAL);
     }
     public String denial(Player player, List<Block> points, boolean removing, Material frameMaterial) {
+        return denial(player, points, removing, frameMaterial, Material.NETHER_PORTAL);
+    }
+    public String denial(Player player, List<Block> points, boolean removing, Material frameMaterial, Material interiorMaterial) {
         List<ProtectionGate.Provider<Block>> providers = new ArrayList<>();
         var worldGuard = Bukkit.getPluginManager().getPlugin("WorldGuard");
         if (worldGuard != null && worldGuard.isEnabled()) {
@@ -43,8 +50,8 @@ public final class ProtectionService {
                 providers.add(new ProtectionGate.Provider<>("GriefPrevention", b -> {
                     if (removing) return (String) method.invoke(griefPrevention, player, b, b.getLocation());
                     String denied = (String) method.invoke(griefPrevention, player, b.getLocation(), frameMaterial);
-                    return denied != null || frameMaterial == Material.NETHER_PORTAL ? denied
-                        : (String) method.invoke(griefPrevention, player, b.getLocation(), Material.NETHER_PORTAL);
+                    return denied != null || frameMaterial == interiorMaterial ? denied
+                        : (String) method.invoke(griefPrevention, player, b.getLocation(), interiorMaterial);
                 }));
             } catch (ReflectiveOperationException | RuntimeException | LinkageError error) {
                 plugin.getLogger().log(java.util.logging.Level.WARNING, "Falha na integração GriefPrevention.", error);

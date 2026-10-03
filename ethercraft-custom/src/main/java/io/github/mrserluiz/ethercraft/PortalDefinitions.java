@@ -29,7 +29,7 @@ public final class PortalDefinitions {
             if (!item.isItem() || item.isAir()) throw new IllegalArgumentException(id + ": activation.item deve ser item válido.");
             if (raw.mode() == PortalTypeSpec.ActivationMode.PROJECTILE && item != Material.SNOWBALL && item != Material.EGG)
                 throw new IllegalArgumentException(id + ": PROJECTILE suporta SNOWBALL ou EGG; para outros itens use INTERACT.");
-            PortalTypeSpec spec = new PortalTypeSpec(id, raw.enabled(), frame.name(), item.name(), raw.mode(), raw.sourceWorlds(), raw.destinationWorld());
+            PortalTypeSpec spec = new PortalTypeSpec(id, raw.enabled(), frame.name(), item.name(), raw.mode(), raw.sourceWorlds(), raw.destinationWorld(), raw.shape());
             candidate.put(id, new Definition(spec, frame, item));
         }
         PortalTypeSpec.validateDistinct(candidate.values().stream().map(Definition::spec).toList());

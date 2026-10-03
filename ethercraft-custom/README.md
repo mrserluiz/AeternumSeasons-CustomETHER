@@ -1,10 +1,10 @@
-# AeternumCustomPortal 0.3.3
+# AeternumCustomPortal 0.4.0
 
 Addon de portais para Paper 26.2 / Java 25. Usa mundos já carregados pelo AeternumSeasons ou outro gerenciador; não cria/carrega dimensões nem depende de caminhos antigos de saves. O módulo fica em `ethercraft-custom` para manter seu histórico.
 
 ## Instalação e atualização
 
-Pare o servidor, substitua o JAR anterior por `aeternum-custom-portal-0.3.3.jar` e reinicie. Não mantenha o EtherCraftCustom antigo instalado. Mantenha features Frost/Heat do Aeternum habilitadas para ele carregar os mundos.
+Pare o servidor, substitua o JAR anterior por `aeternum-custom-portal-0.4.0.jar` e reinicie. Não mantenha o EtherCraftCustom antigo instalado. Mantenha features Frost/Heat do Aeternum habilitadas para ele carregar os mundos.
 
 A configuração ativa está em **plugins/AeternumCustomPortal/portal-types.yaml**; `config.yml` controla integração, retorno automático e posicionamento. Configurações personalizadas não são sobrescritas. Na primeira migração EtherCraftCustom → AeternumCustomPortal, os três YAMLs antigos são copiados somente se a pasta nova não existe; ajuste os destinos antigos para aeternum_frost/aeternum_heat.
 
@@ -18,6 +18,30 @@ Para aplicar Heat diretamente no arquivo ativo, execute **no mundo de origem** `
 
 O YAML padrão habilita Frost BLUE_ICE + SNOWBALL/PROJECTILE, origem world, destino aeternum_frost. Heat continua desabilitado por padrão, NETHER_WART_BLOCK + FLINT_AND_STEEL/INTERACT, destino aeternum_heat. Aether é exemplo desabilitado e precisa de mundo existente. `enabled:false` bloqueia ativação/viagem; `source-worlds:[]` não autoriza origens. Nomes exatos e chaves namespace:key são aceitos; `/acp worlds` lista as identidades e os caminhos reais da API. Material deve existir no Bukkit. PROJECTILE aceita SNOWBALL/EGG; INTERACT usa a mão principal. Frame completo 4×5 incluindo cantos, interior 2×3, eixos X/Z; OBSIDIAN reservado ao Nether vanilla.
 
+## Portal horizontal de musgo e água (0.4.0)
+
+Adicione este tipo abaixo de `portals:` no arquivo **já existente** `plugins/AeternumCustomPortal/portal-types.yaml`. O addon preserva seus arquivos; atualizar o JAR não adiciona exemplos automaticamente. Substitua `SET_LOADED_WORLD_NAME` pelo nome/chave exato de um mundo carregado, ajuste as origens e então habilite/recarregue. O exemplo distribuído vem desativado, pois o novo destino ainda não foi definido.
+
+```yaml
+  twilight:
+    enabled: false
+    shape: HORIZONTAL_POOL
+    frame-block: MOSS_BLOCK
+    activation:
+      item: DIAMOND
+      mode: DROP_ITEM
+    source-worlds: [world]
+    destination-world: SET_LOADED_WORLD_NAME
+```
+
+Monte um quadrado horizontal 4×4 no chão: 12 blocos de musgo na borda, incluindo os quatro cantos, e uma piscina 2×2 de quatro fontes de água no centro. O fundo sob as quatro águas precisa ser sólido e seguro. Cada um dos 12 musgos deve ter uma flor de um bloco por cima; podem ser iguais ou variadas. Aceitas: dandelion, poppy, blue orchid, allium, azure bluet, tulipas, oxeye daisy, cornflower, lily of the valley, torchflower e eyeblossoms. Flores de dois blocos, wither rose, grama e moss carpet não contam.
+
+Depois de habilitar com `enabled: true` e `/acp reload`, jogue um diamante na água com Q. Somente uma unidade é consumida após ativação bem-sucedida; item incorreto, falta de permissão, destino não carregado, tipo desativado ou proteção negada não consomem o catalisador. O item lançado é acompanhado por até cinco segundos, sem alterar seu tempo de coleta; se for coletado/mesclado antes de alcançar a água, jogue novamente. A ativação produz um raio visual sem dano/fogo. A água permanece água; partículas de portal marcam a piscina ativa. Isso é uma mecânica do addon inspirada no Twilight Forest, não instala o mod nem cria o mundo dele.
+
+Entrar na água leva ao destino. Na primeira viagem o addon gera outra piscina com musgo, seis variedades de flores e fundo, nas coordenadas correspondentes, salva o par nos dois sentidos e posiciona o jogador sobre a borda segura. O retorno não exige outro diamante. Quebrar musgo, flor, fundo ou alterar as fontes de água invalida/desregistra o portal e desfaz o vínculo; a água restante permanece. Reparar a estrutura exige ativar novamente. Portais ativos persistem após reinício; `/acp disable twilight` ou remover o registro interrompe as partículas/viagem.
+
+`activation.mode: INTERACT` permite alternativamente clicar na estrutura com o item da mão principal e também consome um catalisador após sucesso. `DROP_ITEM` só é aceito em HORIZONTAL_POOL; PROJECTILE fica reservado aos portais verticais. Sem `shape`, os tipos anteriores continuam VERTICAL. O plano do retorno horizontal verifica 52 posições (32 edições e 20 espaços de passagem), respeitando borda/proteções e rollback; usa somente chunks já carregados para as partículas.
+
 ## Viagem e geração automática
 
 O jogador constrói e ativa somente o portal de origem. Na primeira travessia, o addon calcula X/Z do destino como **coordenada × escala da origem ÷ escala do destino**, com `World.getCoordinateScale()`. Escalas iguais preservam coordenadas; não há busca/teleporte pelo spawn. X/Z são limitados à borda, reservando espaço para o frame. Y começa na altura da origem, limitado à altura lógica da dimensão, e a busca examina ±16 blocos verticalmente.
@@ -26,7 +50,7 @@ Primeiro busca o portal registrado compatível e livre mais próximo do ponto co
 
 A chegada prefere saída lateral segura, aceitando vegetação baixa/neve passável. Se não houver, pode chegar dentro do portal intacto, apoiado no frame inferior, sem exigir uma plataforma lateral na origem. Líquidos, fogo e outros blocos perigosos continuam excluídos. Cooldown impede retorno imediato.
 
-A criação preferencial usa espaços livres e prepara quatro pisos de saída. Se não houver, `allow-terrain-clearing:true` permite limpar uma lista limitada de terreno (pedra, terra, netherrack, neve, gelo e afins), com checks de quebra/colocação para todos os 32 blocos do plano e snapshots para rollback. Não substitui líquidos, containers, bedrock, obsidian nem registros de outros portais. Construções sem proteção feitas com os materiais de terreno listados também podem ser afetadas por esse fallback, como na construção de um portal; desative a limpeza para exigir espaço livre.
+A criação preferencial usa espaços livres e prepara quatro pisos de saída. Se não houver, `allow-terrain-clearing:true` permite limpar uma lista limitada de terreno (pedra, terra, netherrack, neve, gelo e afins), com checks de quebra/colocação para todos os blocos do plano (32 posições no vertical, 52 no horizontal) e snapshots para rollback. Não substitui líquidos, containers, bedrock, obsidian nem registros de outros portais. Construções sem proteção feitas com os materiais de terreno listados também podem ser afetadas por esse fallback, como na construção de um portal; desative a limpeza para exigir espaço livre.
 
 WorldGuard/GriefPrevention são consultados para a criação/remoção; falhas bloqueiam a operação. Provedores configurados sem integração mantêm bloqueio por padrão. Nenhum mundo é carregado para satisfazer uma rota. Sem destino/área permitida, há mensagem de erro. Com `auto-return-portal:false`, não cria portais e só usa um destino existente nas coordenadas correspondentes; não há fallback ao spawn.
 
@@ -42,4 +66,4 @@ Comandos `/acp` (aliases aeternumportal/ethercraft): status, worlds, types, relo
 
 `mvn --batch-mode --file ethercraft-custom/pom.xml clean verify`
 
-Workflow usa Java 25 e publica AeternumCustomPortal-0.3.3-Paper26.2. Testes incluem leitura/edição/releitura do YAML real em disco, escalas/coordenadas positivas/negativas, borda, rejeição de portais distantes do ponto correspondente, terreno, geometria, limpeza e autorização. Não foi executado um servidor Paper real; validar a build com o Aeternum/WorldGuard instalados, incluindo viagem, retorno, quebra/reativação e reload. O fluxo de criação e posicionamento corresponde à intenção do Nether, mas o addon mantém frame fixo 4×5 e vínculos um-a-um; não reproduz toda a implementação interna do Vanilla.
+Workflow usa Java 25 e publica AeternumCustomPortal-0.4.0-Paper26.2. Testes incluem leitura/edição/releitura do YAML real em disco, escalas/coordenadas positivas/negativas, borda, rejeição de portais distantes do ponto correspondente, terreno, geometria, limpeza, autorização, geometria/validade da piscina, plano de retorno horizontal e compatibilidade de YAML antigo. Não foi executado um servidor Paper real; validar a build com o Aeternum/WorldGuard instalados, incluindo viagem, retorno, quebra/reativação e reload. O fluxo de criação e posicionamento corresponde à intenção do Nether, mas o addon mantém formatos fixos (vertical 4×5 ou piscina horizontal 4×4) e vínculos um-a-um; não reproduz toda a implementação interna do Vanilla.

@@ -1,5 +1,5 @@
 name: AeternumCustomPortal
-version: '0.3.3'
+version: '0.4.0'
 main: io.github.mrserluiz.ethercraft.AeternumCustomPortalPlugin
 api-version: '26.2'
 author: Mrserluiz

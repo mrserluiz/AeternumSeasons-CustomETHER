@@ -1,7 +1,8 @@
 # Add a unique section below portals to create another portal type.
 # Reload with /aeternumportal reload. Destination worlds must already be loaded.
 # Names of materials: Bukkit Material (e.g. BLUE_ICE, GLOWSTONE, AMETHYST_SHARD).
-# Full 4x5 frame including corners; 2x3 NETHER_PORTAL interior, X/Z axes.
+# Default shape VERTICAL: 4x5 frame with corners, 2x3 NETHER_PORTAL interior.
+# HORIZONTAL_POOL: 4x4 rim with 12 flowers, 2x2 source water, solid floor.
 schema: 1
 portals:
   frost:
@@ -32,3 +33,15 @@ portals:
       mode: INTERACT
     source-worlds: []
     destination-world: ethercraft_aether
+
+  # Twilight Forest style. Set the exact loaded destination, then enable/reload.
+  # Existing portal-types.yaml files are preserved: add this section manually.
+  twilight:
+    enabled: false
+    shape: HORIZONTAL_POOL
+    frame-block: MOSS_BLOCK
+    activation:
+      item: DIAMOND
+      mode: DROP_ITEM # Throw one diamond into the water (Q); INTERACT is also supported.
+    source-worlds: [world]
+    destination-world: SET_LOADED_WORLD_NAME
