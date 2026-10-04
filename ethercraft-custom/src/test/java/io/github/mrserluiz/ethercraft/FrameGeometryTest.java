@@ -15,4 +15,13 @@ class FrameGeometryTest {
             assertTrue(all.contains(new FrameGeometry.Cell(u, v)));
         assertEquals(20, all.size());
     }
+    @Test void cornersAreOptionalButEveryOtherFrameBlockIsRequired() {
+        assertEquals(10, FrameGeometry.requiredBorder().size());
+        assertTrue(FrameGeometry.validBorder(c -> !FrameGeometry.corner(c)));
+        for (var missing : FrameGeometry.requiredBorder())
+            assertFalse(FrameGeometry.validBorder(c -> !c.equals(missing)));
+        assertEquals(4, FrameGeometry.border().stream().filter(FrameGeometry::corner).count());
+        for (var corner : FrameGeometry.border().stream().filter(FrameGeometry::corner).toList())
+            assertTrue(ReturnPortalGeometry.edits().contains(new ReturnPortalGeometry.Cell(corner.u(), corner.v(), 0)));
+    }
 }

@@ -3,7 +3,7 @@ package io.github.mrserluiz.ethercraft;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Fixed 2x3 interior, full 4x5 frame including corners. Independent of Bukkit. */
+/** Fixed 2x3 interior, 4x5 frame; player-built corners are optional. Independent of Bukkit. */
 public final class FrameGeometry {
     public record Cell(int u, int v) {}
     private FrameGeometry() {}
@@ -11,6 +11,11 @@ public final class FrameGeometry {
         List<Cell> cells = new ArrayList<>();
         for (int u = 0; u < 2; u++) for (int v = 0; v < 3; v++) cells.add(new Cell(u, v));
         return List.copyOf(cells);
+    }
+    public static boolean corner(Cell cell) { return (cell.u() == -1 || cell.u() == 2) && (cell.v() == -1 || cell.v() == 3); }
+    public static List<Cell> requiredBorder() { return border().stream().filter(c -> !corner(c)).toList(); }
+    public static boolean validBorder(java.util.function.Predicate<Cell> materialMatches) {
+        return requiredBorder().stream().allMatch(materialMatches);
     }
     public static List<Cell> border() {
         List<Cell> cells = new ArrayList<>();

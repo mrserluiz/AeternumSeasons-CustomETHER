@@ -35,7 +35,7 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
             bridge.reconcile();
             getServer().getPluginManager().registerEvents(bridge, this);
             getServer().getScheduler().runTaskTimer(this, bridge::reconcile, 20L, 20L);
-            getLogger().info("AeternumCustomPortal 0.5.0: mundos existentes, portais controlados por portal-types.yaml.");
+            getLogger().info("AeternumCustomPortal 0.5.1: mundos existentes, portais controlados por portal-types.yaml.");
         } catch (Exception error) {
             getLogger().log(java.util.logging.Level.SEVERE, "Inicialização bloqueada; dados preservados.", error);
             getServer().getPluginManager().disablePlugin(this);

@@ -1,7 +1,7 @@
 # Add a unique section below portals to create another portal type.
 # Reload with /aeternumportal reload. Destination worlds must already be loaded.
 # Names of materials: Bukkit Material (e.g. BLUE_ICE, GLOWSTONE, AMETHYST_SHARD).
-# Default shape VERTICAL: 4x5 frame with corners, 2x3 NETHER_PORTAL interior.
+# Default shape VERTICAL: 4x5 frame; corners optional for player-built portals, 2x3 NETHER_PORTAL interior.
 # HORIZONTAL_POOL: 4x4 rim with 12 flowers, 2x2 source water, solid floor.
 schema: 1
 portals:

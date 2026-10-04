@@ -27,7 +27,7 @@ public record PortalFrame(UUID worldId, int x, int y, int z, Axis axis, String t
             c -> PoolGeometry.flower(block(c.u(), c.v()).getRelative(0, 1, 0).getType().name()),
             c -> sourceWater(block(c.u(), c.v())),
             c -> LoadedWorlds.safeFloor(block(c.u(), c.v()).getRelative(0, -1, 0).getType()));
-        for (var c : border()) if (block(c.u(), c.v()).getType() != frameMaterial) return false;
+        if (!FrameGeometry.validBorder(c -> block(c.u(), c.v()).getType() == frameMaterial)) return false;
         for (var c : interior()) {
             Block b = block(c.u(), c.v());
             if (b.getType() == Material.NETHER_PORTAL) {

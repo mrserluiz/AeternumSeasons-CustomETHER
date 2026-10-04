@@ -15,17 +15,17 @@ class PoolGeometryTest {
     }
     @Test void returnPlanCoversWaterFloorFlowersAndSafeHeadroomWithoutOverlap() {
         Set<PoolGeometry.Cell> edits = new HashSet<>(PoolGeometry.edits());
-        assertEquals(32, edits.size()); assertEquals(20, PoolGeometry.clearance().size());
+        assertEquals(28, edits.size()); assertEquals(48, PoolGeometry.clearance().size());
         assertTrue(Collections.disjoint(edits, PoolGeometry.clearance()));
         for (var c : PoolGeometry.border()) {
             assertTrue(edits.contains(new PoolGeometry.Cell(c.u(), c.v(), 0)));
             assertTrue(edits.contains(new PoolGeometry.Cell(c.u(), c.v(), 1)));
-            assertTrue(PoolGeometry.clearance().contains(new PoolGeometry.Cell(c.u(), c.v(), 2)));
+            for (int h = 2; h <= 4; h++) assertTrue(PoolGeometry.clearance().contains(new PoolGeometry.Cell(c.u(), c.v(), h)));
         }
         for (var c : PoolGeometry.interior()) {
-            assertTrue(edits.contains(new PoolGeometry.Cell(c.u(), c.v(), -1)));
+            assertFalse(edits.contains(new PoolGeometry.Cell(c.u(), c.v(), -1)), "Existing pool floor must be preserved");
             assertTrue(edits.contains(new PoolGeometry.Cell(c.u(), c.v(), 0)));
-            for (int h = 1; h <= 2; h++) assertTrue(PoolGeometry.clearance().contains(new PoolGeometry.Cell(c.u(), c.v(), h)));
+            for (int h = 1; h <= 3; h++) assertTrue(PoolGeometry.clearance().contains(new PoolGeometry.Cell(c.u(), c.v(), h)));
         }
     }
     @Test void breakingAnyRimFlowerWaterOrFloorInvalidatesPool() {

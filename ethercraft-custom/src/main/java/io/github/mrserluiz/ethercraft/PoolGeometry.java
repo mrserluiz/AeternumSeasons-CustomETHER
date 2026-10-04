@@ -33,13 +33,13 @@ public final class PoolGeometry {
     public static List<Cell> edits() {
         List<Cell> cells = new ArrayList<>();
         for (var c : border()) { cells.add(new Cell(c.u(), c.v(), 0)); cells.add(new Cell(c.u(), c.v(), 1)); }
-        for (var c : interior()) { cells.add(new Cell(c.u(), c.v(), 0)); cells.add(new Cell(c.u(), c.v(), -1)); }
+        for (var c : interior()) cells.add(new Cell(c.u(), c.v(), 0));
         return List.copyOf(cells);
     }
     public static List<Cell> clearance() {
         List<Cell> cells = new ArrayList<>();
-        for (var c : border()) cells.add(new Cell(c.u(), c.v(), 2));
-        for (var c : interior()) for (int h = 1; h <= 2; h++) cells.add(new Cell(c.u(), c.v(), h));
+        for (var c : border()) for (int h = 2; h <= 4; h++) cells.add(new Cell(c.u(), c.v(), h));
+        for (var c : interior()) for (int h = 1; h <= 3; h++) cells.add(new Cell(c.u(), c.v(), h));
         return List.copyOf(cells);
     }
 }

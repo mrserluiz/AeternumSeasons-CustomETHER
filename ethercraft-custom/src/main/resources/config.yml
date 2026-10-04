@@ -14,7 +14,7 @@ portal-placement:
   # Existing portal search: default 16 in Nether environments, 128 elsewhere.
   # search-radius: 128
   creation-radius: 8
-  # Fallback clears only listed terrain blocks, after place/break protection checks.
+  # Clear only replaceable vegetation in existing headroom; never excavate solid ceilings.
   allow-terrain-clearing: true
 
 # Test diagnostics are OFF by default. When enabled, chat diagnostics go ONLY to operators.

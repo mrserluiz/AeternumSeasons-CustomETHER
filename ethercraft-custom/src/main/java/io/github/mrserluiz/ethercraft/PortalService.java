@@ -456,25 +456,28 @@ public final class PortalService implements Listener {
         int bottom = world.getMinHeight() + 2;
         int preferred = Math.max(bottom, Math.min(top, center.getBlockY()));
         String denied = null;
-        // Prefer clear sites around the matching coordinates; fallback can clear limited terrain.
-        for (int phase = 0; phase < 2; phase++) {
-            if (phase == 1 && !plugin.getConfig().getBoolean("portal-placement.allow-terrain-clearing", true)) break;
+        // Find existing headroom; never excavate stone above the portal or paste an artificial floor.
+        boolean clearVegetation = plugin.getConfig().getBoolean("portal-placement.allow-terrain-clearing", true);
             for (int radius = 0; radius <= radiusLimit; radius++)
                 for (int dx = -radius; dx <= radius; dx++) for (int dz = -radius; dz <= radius; dz++) {
                     if (Math.max(Math.abs(dx), Math.abs(dz)) != radius) continue;
-                    for (int offset = 0; offset <= 16; offset++) for (int sign : offset == 0 ? new int[]{1} : new int[]{1, -1}) {
-                        int y = preferred + offset * sign;
-                        if (y < bottom || y > top) continue;
+                    int siteX = center.getBlockX() + dx, siteZ = center.getBlockZ() + dz;
+                    // Search the whole usable height, including cavern floors. Ground must already exist.
+                    for (int y : GroundedPlacement.heights(bottom, top, preferred,
+                        candidateY -> LoadedWorlds.safeFloor(world.getBlockAt(siteX, candidateY + (source.horizontal() ? 0 : -1), siteZ).getType())
+                            && LoadedWorlds.safeSpace(world.getBlockAt(siteX, candidateY + (source.horizontal() ? 1 : 0), siteZ)))) {
                         PortalFrame target = new PortalFrame(world.getUID(), center.getBlockX() + dx, y, center.getBlockZ() + dz,
                             source.axis(), source.typeId(), type.frame());
+                        if (!GroundedPlacement.grounded(target.horizontal(), c -> LoadedWorlds.safeFloor(groundBlock(target, c).getType()))) continue;
                         List<Block> edits = target.horizontal() ? PoolGeometry.edits().stream().map(c -> poolBlock(target, c)).toList()
                             : ReturnPortalGeometry.edits().stream().map(c -> returnBlock(target, c)).toList();
                         List<Block> clearance = target.horizontal() ? PoolGeometry.clearance().stream().map(c -> poolBlock(target, c)).toList()
                             : ReturnPortalGeometry.clearance().stream().map(c -> returnBlock(target, c)).toList();
                         List<Block> all = new ArrayList<>(edits); all.addAll(clearance);
-                        final int sitePhase = phase;
                         if (all.stream().anyMatch(block -> !world.getWorldBorder().isInside(block.getLocation()) || at(block, true) != null
-                            || !PortalTerrain.canReplace(block.getType().name()) || (sitePhase == 0 && !LoadedWorlds.safeSpace(block)))) continue;
+                            || !PortalTerrain.canReplace(block.getType().name())
+                            || (!(target.horizontal() ? block.getY() == target.y() : block.getY() == target.y() - 1)
+                                && (!LoadedWorlds.safeSpace(block) || (!clearVegetation && !block.getType().isAir()))))) continue;
                         denied = protections.denial(player, all, false, type.frame(), target.horizontal() ? Material.WATER : Material.NETHER_PORTAL);
                         if (denied == null && target.horizontal()) {
                             int flowerIndex = 0;
@@ -489,7 +492,6 @@ public final class PortalService implements Listener {
                         buildReturn(source, target, player, type, edits, clearance); return;
                     }
                 }
-        }
         throw new IOException(denied == null ? "Sem local compatível nas coordenadas correspondentes " + center.getBlockX() + ", " + center.getBlockZ() + "." : "Proteção do destino: " + denied);
     }
     private void poolEffects() {
@@ -543,6 +545,10 @@ public final class PortalService implements Listener {
             throw new IOException("Falha ao montar portal; alterações revertidas.", error);
         }
         plugin.messages().debug(player, "debug-created", target.typeId(), target.x(), target.y(), target.z());
+    }
+    private Block groundBlock(PortalFrame frame, GroundedPlacement.Cell cell) {
+        return frame.horizontal() ? frame.block(cell.u(), cell.v()).getRelative(0, cell.height(), 0)
+            : frame.block(cell.u(), cell.height()).getRelative(frame.axis() == Axis.X ? 0 : cell.v(), 0, frame.axis() == Axis.X ? cell.v() : 0);
     }
     private Block poolBlock(PortalFrame frame, PoolGeometry.Cell cell) {
         return frame.block(cell.u(), cell.v()).getRelative(0, cell.height(), 0);
