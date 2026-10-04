@@ -472,7 +472,8 @@ public final class PortalService implements Listener {
         Location center = corresponding(source, world);
         int searchRadius = Math.max(1, Math.min(128, plugin.getConfig().getInt("portal-placement.search-radius", world.getEnvironment() == World.Environment.NETHER ? 16 : 128)));
         // A close destination can be taken over by the newest entrance, even when already paired.
-        PortalFrame close = frames.values().stream().filter(candidate -> candidate.valid(true) && route(source, candidate)
+        PortalFrame close = frames.values().stream().filter(candidate -> candidate.worldId().equals(world.getUID())
+            && candidate.valid(true) && route(source, candidate)
             && candidate.block(0, 0).getLocation().distanceSquared(center) <= 25
             && safeExit(candidate, player.getLocation()) != null)
             .min(Comparator.comparingDouble(candidate -> candidate.block(0, 0).getLocation().distanceSquared(center))).orElse(null);
@@ -482,7 +483,7 @@ public final class PortalService implements Listener {
             if (previous == null || PortalLinks.newer(frames.keySet(), source.key(), previous)) bind(source, close);
             complete.run(); return;
         }
-        PortalFrame nearest = frames.values().stream().filter(candidate -> !links.containsKey(candidate.key())
+        PortalFrame nearest = frames.values().stream().filter(candidate -> candidate.worldId().equals(world.getUID()) && !links.containsKey(candidate.key())
             && candidate.valid(true) && route(source, candidate)
             && PortalCoordinates.nearby(candidate.x(), candidate.z(), center.getX(), center.getZ(), searchRadius)
             && safeExit(candidate, player.getLocation()) != null)
@@ -672,7 +673,7 @@ public final class PortalService implements Listener {
         // With automatic generation disabled, only an existing corresponding portal is usable.
         Location center = corresponding(source, world);
         int radius = Math.max(1, Math.min(128, plugin.getConfig().getInt("portal-placement.search-radius", 128)));
-        return frames.values().stream().filter(candidate -> candidate.valid(true) && route(source, candidate)
+        return frames.values().stream().filter(candidate -> candidate.worldId().equals(world.getUID()) && candidate.valid(true) && route(source, candidate)
             && PortalCoordinates.nearby(candidate.x(), candidate.z(), center.getX(), center.getZ(), radius))
             .sorted(Comparator.comparingDouble(candidate -> candidate.block(0, 0).getLocation().distanceSquared(center)))
             .map(candidate -> safeExit(candidate, from)).filter(Objects::nonNull).findFirst().orElse(null);
