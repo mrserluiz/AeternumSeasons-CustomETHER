@@ -16,3 +16,20 @@ portal-placement:
   creation-radius: 8
   # Fallback clears only listed terrain blocks, after place/break protection checks.
   allow-terrain-clearing: true
+
+# Test diagnostics are OFF by default. When enabled, chat diagnostics go ONLY to operators.
+# Normal players never receive technical diagnostics, even with admin permission.
+debug:
+  enabled: false
+  log-to-console: true
+
+messages:
+  # Brief gameplay feedback: ACTION_BAR (no chat spam), OFF (silent), or CHAT.
+  player-feedback: ACTION_BAR
+
+language:
+  default: pt_BR
+  # Optional client language detection; an explicit /acp language choice always wins.
+  use-client-locale: false
+# Players: /acp languages; /acp language en_US; /acp language auto.
+# Translations: languages/<locale>.yml; reload with /acp reload.

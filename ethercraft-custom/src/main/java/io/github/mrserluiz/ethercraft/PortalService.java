@@ -62,10 +62,9 @@ public final class PortalService implements Listener {
     }
     public int size() { return frames.size(); }
     public void describe(org.bukkit.command.CommandSender sender) {
-        for (var type : definitions.all()) sender.sendMessage(type.spec().id() + " [" + (type.spec().enabled() ? "ativo" : "desativado")
-            + "]: " + type.spec().shape() + " / " + type.frame() + " / " + type.item() + " / " + type.spec().mode()
-            + " | origens: " + type.spec().sourceWorlds() + " -> " + type.spec().destinationWorld()
-            + " [" + (LoadedWorlds.resolve(type.spec().destinationWorld()) == null ? "destino não carregado" : "carregado") + "]");
+        for (var type : definitions.all()) plugin.messages().send(sender, "type-line", type.spec().id(),
+            plugin.messages().text(sender, type.spec().enabled() ? "enabled" : "disabled"), type.spec().shape(), type.frame(), type.item(), type.spec().mode(),
+            type.spec().sourceWorlds(), type.spec().destinationWorld(), plugin.messages().text(sender, LoadedWorlds.resolve(type.spec().destinationWorld()) == null ? "unloaded" : "loaded"));
     }
     public void reloadTypes() throws Exception {
         var oldDefinitions = definitions.snapshot();
@@ -223,18 +222,18 @@ public final class PortalService implements Listener {
             if (type.item() != item || type.spec().mode() != mode) continue;
             PortalFrame found = PortalFrame.detect(hit, type.spec().id(), type.frame(), type.spec().shape());
             if (found != null) {
-                if (!type.spec().enabled()) { rejected = "Tipo " + type.spec().id() + " desativado: configure enabled: true e use /acp reload."; continue; }
-                if (!allowed(type, hit.getWorld())) { rejected = "Tipo " + type.spec().id() + ": mundo " + hit.getWorld().getName() + " não autorizado. Origens no YAML: " + type.spec().sourceWorlds(); continue; }
+                if (!type.spec().enabled()) { rejected = plugin.messages().text(player, "debug-disabled", type.spec().id()); continue; }
+                if (!allowed(type, hit.getWorld())) { rejected = plugin.messages().text(player, "debug-world", type.spec().id(), hit.getWorld().getName(), type.spec().sourceWorlds()); continue; }
                 if (frame != null) throw new IllegalArgumentException("Estrutura de ativação ambígua.");
                 frame = found;
             }
         }
         if (frame == null) {
-            if (rejected != null) { player.sendPlainMessage(rejected); return Activation.HANDLED; }
+            if (rejected != null) { plugin.messages().feedback(player, "inactive"); plugin.messages().debug(player, "debug-detail", rejected); return Activation.HANDLED; }
             return Activation.IGNORED;
         }
         if (!player.hasPermission("aeternumcustomportal.portal.activate")) {
-            player.sendPlainMessage("Sem permissão aeternumcustomportal.portal.activate."); return Activation.HANDLED;
+            plugin.messages().feedback(player, "permission"); return Activation.HANDLED;
         }
         if (frames.containsKey(frame.key())) {
             PortalFrame existing = frames.get(frame.key());
@@ -246,7 +245,7 @@ public final class PortalService implements Listener {
             throw new IllegalArgumentException("Mundo de destino não carregado; carregue-o pelo Aeternum ou gerenciador de mundos.");
         String denied = protections.denial(player, frame, false);
         if (denied != null) {
-            player.sendPlainMessage("Ativação bloqueada: " + denied); return Activation.HANDLED;
+            plugin.messages().feedback(player, "blocked"); plugin.messages().debug(player, "debug-detail", denied); return Activation.HANDLED;
         }
         for (PortalFrame existing : frames.values())
             for (var c : frame.interior()) if (existing.contains(frame.block(c.u(), c.v()), true))
@@ -258,7 +257,7 @@ public final class PortalService implements Listener {
             Orientable data = (Orientable) Bukkit.createBlockData(Material.NETHER_PORTAL); data.setAxis(frame.axis());
             for (var c : frame.interior()) frame.block(c.u(), c.v()).setBlockData(data, false);
         }
-        player.sendPlainMessage("Portal " + frame.typeId() + " ativado. Destino definido no YAML; select/link permitem vincular um portal específico.");
+        plugin.messages().debug(player, "debug-activated", frame.typeId());
         return Activation.ACTIVATED;
     }
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -267,7 +266,7 @@ public final class PortalService implements Listener {
         Material item = e.getEntity() instanceof Snowball ? Material.SNOWBALL : e.getEntity() instanceof Egg ? Material.EGG : null;
         if (item == null) return;
         try { if (activate(player, e.getHitBlock(), item, PortalTypeSpec.ActivationMode.PROJECTILE) != Activation.IGNORED) e.setCancelled(true); }
-        catch (Exception error) { e.setCancelled(true); player.sendPlainMessage("Falha ao ativar: " + error.getMessage()); }
+        catch (Exception error) { e.setCancelled(true); plugin.messages().failure(player, "activation-failed", error); }
     }
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void interact(PlayerInteractEvent e) {
@@ -287,7 +286,7 @@ public final class PortalService implements Listener {
             for (var type : definitions.all())
                 if (type.spec().mode() == PortalTypeSpec.ActivationMode.INTERACT && type.item() == e.getItem().getType()
                     && type.frame() == hit.getType()) {
-                    e.getPlayer().sendPlainMessage("Ativação cancelada pelo servidor/proteção antes do addon."); break;
+                    plugin.messages().feedback(e.getPlayer(), "blocked"); plugin.messages().debug(e.getPlayer(), "debug-server-cancelled"); break;
                 }
             return;
         }
@@ -304,7 +303,7 @@ public final class PortalService implements Listener {
                     pool.block(0, 0).getWorld().strikeLightningEffect(pool.block(0, 0).getLocation());
                 }
             }
-        } catch (Exception error) { e.setCancelled(true); e.getPlayer().sendPlainMessage("Falha ao ativar: " + error.getMessage()); }
+        } catch (Exception error) { e.setCancelled(true); plugin.messages().failure(e.getPlayer(), "activation-failed", error); }
     }
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void drop(PlayerDropItemEvent e) {
@@ -327,7 +326,7 @@ public final class PortalService implements Listener {
                         else { stack.setAmount(stack.getAmount() - 1); item.setItemStack(stack); }
                         water.getWorld().strikeLightningEffect(water.getLocation());
                     }
-                } catch (Exception error) { cancel(); player.sendPlainMessage("Falha ao ativar: " + error.getMessage()); }
+                } catch (Exception error) { cancel(); plugin.messages().failure(player, "activation-failed", error); }
             }
         }.runTaskTimer(plugin, 1, 2);
     }
@@ -419,7 +418,7 @@ public final class PortalService implements Listener {
         if (!player.hasPermission("aeternumcustomportal.portal.use") || cooldown.getOrDefault(id, 0L) > System.currentTimeMillis()
             || pendingTravel.contains(id)) return;
         if (!source.valid(true) || definition(source) == null || !allowed(definition(source), player.getWorld())) {
-            player.sendPlainMessage("Portal desativado ou não autorizado pelo YAML."); return;
+            plugin.messages().feedback(player, "inactive"); return;
         }
         pendingTravel.add(id);
         Bukkit.getScheduler().runTask(plugin, () -> {
@@ -427,9 +426,9 @@ public final class PortalService implements Listener {
             if (!player.isOnline() || frames.get(source.key()) != source || !source.valid(true)
                 || definition(source) == null || !allowed(definition(source), player.getWorld()) || !stillInside(player, source)) return;
             try { ensureReturnPortal(source, player); }
-            catch (Exception error) { player.sendPlainMessage("Retorno não criado: " + error.getMessage()); return; }
+            catch (Exception error) { plugin.messages().failure(player, "travel-failed", error); return; }
             Location checked = destination(source, player.getLocation());
-            if (checked == null) { player.sendPlainMessage("Destino não carregado, vínculo inválido ou saída insegura."); return; }
+            if (checked == null) { plugin.messages().feedback(player, "destination-unavailable"); return; }
             if (player.teleport(checked, PlayerTeleportEvent.TeleportCause.PLUGIN)) {
                 player.setPortalCooldown(300);
                 cooldown.put(id, System.currentTimeMillis() + 5000);
@@ -543,7 +542,7 @@ public final class PortalService implements Listener {
             try { save(); } catch (IOException rollback) { error.addSuppressed(rollback); }
             throw new IOException("Falha ao montar portal; alterações revertidas.", error);
         }
-        player.sendPlainMessage("Portal " + target.typeId() + " criado em " + target.x() + ", " + target.y() + ", " + target.z() + "; retorno vinculado à origem.");
+        plugin.messages().debug(player, "debug-created", target.typeId(), target.x(), target.y(), target.z());
     }
     private Block poolBlock(PortalFrame frame, PoolGeometry.Cell cell) {
         return frame.block(cell.u(), cell.v()).getRelative(0, cell.height(), 0);
@@ -610,5 +609,6 @@ public final class PortalService implements Listener {
             catch (IOException error) { plugin.getLogger().log(java.util.logging.Level.SEVERE, "Falha ao reconciliar portais carregados.", error); }
         });
     }
-    @EventHandler public void quit(PlayerQuitEvent e) { selected.remove(e.getPlayer().getUniqueId()); cooldown.remove(e.getPlayer().getUniqueId()); }
+    @EventHandler public void quit(PlayerQuitEvent e) {
+        plugin.messages().forget(e.getPlayer().getUniqueId()); selected.remove(e.getPlayer().getUniqueId()); cooldown.remove(e.getPlayer().getUniqueId()); }
 }

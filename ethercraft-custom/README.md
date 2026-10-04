@@ -1,10 +1,10 @@
-# AeternumCustomPortal 0.4.0
+# AeternumCustomPortal 0.5.0
 
 Addon de portais para Paper 26.2 / Java 25. Usa mundos já carregados pelo AeternumSeasons ou outro gerenciador; não cria/carrega dimensões nem depende de caminhos antigos de saves. O módulo fica em `ethercraft-custom` para manter seu histórico.
 
 ## Instalação e atualização
 
-Pare o servidor, substitua o JAR anterior por `aeternum-custom-portal-0.4.0.jar` e reinicie. Não mantenha o EtherCraftCustom antigo instalado. Mantenha features Frost/Heat do Aeternum habilitadas para ele carregar os mundos.
+Pare o servidor, substitua o JAR anterior por `aeternum-custom-portal-0.5.0.jar` e reinicie. Não mantenha o EtherCraftCustom antigo instalado. Mantenha features Frost/Heat do Aeternum habilitadas para ele carregar os mundos.
 
 A configuração ativa está em **plugins/AeternumCustomPortal/portal-types.yaml**; `config.yml` controla integração, retorno automático e posicionamento. Configurações personalizadas não são sobrescritas. Na primeira migração EtherCraftCustom → AeternumCustomPortal, os três YAMLs antigos são copiados somente se a pasta nova não existe; ajuste os destinos antigos para aeternum_frost/aeternum_heat.
 
@@ -66,4 +66,35 @@ Comandos `/acp` (aliases aeternumportal/ethercraft): status, worlds, types, relo
 
 `mvn --batch-mode --file ethercraft-custom/pom.xml clean verify`
 
-Workflow usa Java 25 e publica AeternumCustomPortal-0.4.0-Paper26.2. Testes incluem leitura/edição/releitura do YAML real em disco, escalas/coordenadas positivas/negativas, borda, rejeição de portais distantes do ponto correspondente, terreno, geometria, limpeza, autorização, geometria/validade da piscina, plano de retorno horizontal e compatibilidade de YAML antigo. Não foi executado um servidor Paper real; validar a build com o Aeternum/WorldGuard instalados, incluindo viagem, retorno, quebra/reativação e reload. O fluxo de criação e posicionamento corresponde à intenção do Nether, mas o addon mantém formatos fixos (vertical 4×5 ou piscina horizontal 4×4) e vínculos um-a-um; não reproduz toda a implementação interna do Vanilla.
+Workflow usa Java 25 e publica AeternumCustomPortal-0.5.0-Paper26.2. Testes incluem leitura/edição/releitura do YAML real em disco, escalas/coordenadas positivas/negativas, borda, rejeição de portais distantes do ponto correspondente, terreno, geometria, limpeza, autorização, geometria/validade da piscina, plano de retorno horizontal e compatibilidade de YAML antigo. Não foi executado um servidor Paper real; validar a build com o Aeternum/WorldGuard instalados, incluindo viagem, retorno, quebra/reativação e reload. O fluxo de criação e posicionamento corresponde à intenção do Nether, mas o addon mantém formatos fixos (vertical 4×5 ou piscina horizontal 4×4) e vínculos um-a-um; não reproduz toda a implementação interna do Vanilla.
+
+
+## Diagnósticos e idiomas (0.5.0)
+
+Os diagnósticos de ativação, autorização e construção de retorno ficam desligados por padrão.
+`debug.enabled: true` habilita o modo de testes; somente operadores recebem os detalhes no chat,
+mesmo que outro jogador possua a permissão de administrador. `debug.log-to-console` controla
+os diagnósticos no console durante os testes. Falhas administrativas continuam registradas no console.
+Mensagens repetidas têm intervalo de três segundos por jogador e categoria.
+
+`messages.player-feedback` aceita `ACTION_BAR` (padrão, aviso breve fora do chat), `OFF`
+(silêncio durante a jogabilidade) ou `CHAT`. Respostas a comandos permanecem no chat.
+As novas opções são adicionadas ao `config.yml` existente sem sobrescrever valores configurados.
+
+Qualquer jogador com `aeternumcustomportal.language` (padrão: todos) pode usar:
+
+- `/acp languages`: listar os idiomas.
+- `/acp language pt_BR`: salvar a própria preferência; aceita também `lang`.
+- `/acp language auto`: remover a preferência individual e usar a regra do servidor.
+
+Idiomas incluídos: `en_US`, `es_ES`, `id_ID`, `it_IT`, `fr_FR`, `de_DE`, `pt_BR`,
+`ru_RU`, `pl_PL`, `vi_VN`, `tr_TR`. O padrão é `language.default: pt_BR`.
+Com `language.use-client-locale: true`, o idioma do cliente é usado se suportado;
+a escolha explícita do jogador sempre tem prioridade. Idiomas de cliente não suportados
+usam o padrão do servidor. Preferências ficam em `player-languages.yml`, por UUID.
+
+Traduções podem ser editadas em `languages/<locale>.yml`; preserve os placeholders `{0}` etc.
+`/acp reload` reaplica configurações de portal e traduções. Mensagens ausentes nas traduções
+personalizadas usam a tradução incluída para aquele idioma. YAML inválido ou placeholders
+incompatíveis bloqueiam o reload e preservam o catálogo de idiomas em memória.
+Os nomes técnicos de materiais, mundos, tipos de portal e comandos permanecem intactos.
