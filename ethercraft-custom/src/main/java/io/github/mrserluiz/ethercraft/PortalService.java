@@ -471,6 +471,12 @@ public final class PortalService implements Listener {
         if (world == null || world.getUID().equals(source.worldId())) throw new IOException("Destino não carregado ou retorno ambíguo; configure/vincule os portais.");
         Location center = corresponding(source, world);
         int searchRadius = Math.max(1, Math.min(128, plugin.getConfig().getInt("portal-placement.search-radius", world.getEnvironment() == World.Environment.NETHER ? 16 : 128)));
+        // A close destination can be taken over by the newest entrance, even when already paired.
+        PortalFrame close = frames.values().stream().filter(candidate -> candidate.valid(true) && route(source, candidate)
+            && candidate.block(0, 0).getLocation().distanceSquared(center) <= 25
+            && safeExit(candidate, player.getLocation()) != null)
+            .min(Comparator.comparingDouble(candidate -> candidate.block(0, 0).getLocation().distanceSquared(center))).orElse(null);
+        if (close != null) { bind(source, close); complete.run(); return; }
         PortalFrame nearest = frames.values().stream().filter(candidate -> !links.containsKey(candidate.key())
             && candidate.valid(true) && route(source, candidate)
             && PortalCoordinates.nearby(candidate.x(), candidate.z(), center.getX(), center.getZ(), searchRadius)
@@ -644,8 +650,9 @@ public final class PortalService implements Listener {
         return frame.block(cell.u(), cell.v()).getRelative(frame.axis() == Axis.X ? 0 : cell.side(), 0, frame.axis() == Axis.X ? cell.side() : 0);
     }
     private void bind(PortalFrame source, PortalFrame target) throws IOException {
-        links.put(source.key(), target.key()); links.put(target.key(), source.key());
-        try { save(); } catch (IOException error) { links.remove(source.key()); links.remove(target.key()); throw error; }
+        Map<String, String> previous = new HashMap<>(links);
+        PortalLinks.rebind(links, source.key(), target.key());
+        try { save(); } catch (IOException error) { links.clear(); links.putAll(previous); throw error; }
     }
     private Location destination(PortalFrame source, Location from) {
         var type = definition(source);

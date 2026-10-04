@@ -1,10 +1,10 @@
-# AeternumCustomPortal 0.5.3
+# AeternumCustomPortal 0.5.4
 
 Addon de portais para Paper 26.2 / Java 25. Usa mundos já carregados pelo AeternumSeasons ou outro gerenciador; não cria/carrega dimensões nem depende de caminhos antigos de saves. O módulo fica em `ethercraft-custom` para manter seu histórico.
 
 ## Instalação e atualização
 
-Pare o servidor, substitua o JAR anterior por `aeternum-custom-portal-0.5.3.jar` e reinicie. Não mantenha o EtherCraftCustom antigo instalado. Mantenha features Frost/Heat do Aeternum habilitadas para ele carregar os mundos.
+Pare o servidor, substitua o JAR anterior por `aeternum-custom-portal-0.5.4.jar` e reinicie. Não mantenha o EtherCraftCustom antigo instalado. Mantenha features Frost/Heat do Aeternum habilitadas para ele carregar os mundos.
 
 A configuração ativa está em **plugins/AeternumCustomPortal/portal-types.yaml**; `config.yml` controla integração, retorno automático e posicionamento. Configurações personalizadas não são sobrescritas. Na primeira migração EtherCraftCustom → AeternumCustomPortal, os três YAMLs antigos são copiados somente se a pasta nova não existe; ajuste os destinos antigos para aeternum_frost/aeternum_heat.
 
@@ -66,7 +66,7 @@ Comandos `/acp` (aliases aeternumportal/ethercraft): status, worlds, types, relo
 
 `mvn --batch-mode --file ethercraft-custom/pom.xml clean verify`
 
-Workflow usa Java 25 e publica AeternumCustomPortal-0.5.3-Paper26.2. Testes incluem leitura/edição/releitura do YAML real em disco, escalas/coordenadas positivas/negativas, borda, rejeição de portais distantes do ponto correspondente, terreno, geometria, limpeza, autorização, geometria/validade da piscina, plano de retorno horizontal e compatibilidade de YAML antigo. Não foi executado um servidor Paper real; validar a build com o Aeternum/WorldGuard instalados, incluindo viagem, retorno, quebra/reativação e reload. O fluxo de criação e posicionamento corresponde à intenção do Nether, mas o addon mantém formatos fixos (vertical 4×5 ou piscina horizontal 4×4) e vínculos um-a-um; não reproduz toda a implementação interna do Vanilla.
+Workflow usa Java 25 e publica AeternumCustomPortal-0.5.4-Paper26.2. Testes incluem leitura/edição/releitura do YAML real em disco, escalas/coordenadas positivas/negativas, borda, rejeição de portais distantes do ponto correspondente, terreno, geometria, limpeza, autorização, geometria/validade da piscina, plano de retorno horizontal e compatibilidade de YAML antigo. Não foi executado um servidor Paper real; validar a build com o Aeternum/WorldGuard instalados, incluindo viagem, retorno, quebra/reativação e reload. O fluxo de criação e posicionamento corresponde à intenção do Nether, mas o addon mantém formatos fixos (vertical 4×5 ou piscina horizontal 4×4) e vínculos um-a-um; não reproduz toda a implementação interna do Vanilla.
 
 
 ## Diagnósticos e idiomas (0.5.0)
@@ -147,7 +147,7 @@ A busca não garante geração em vazio, terrenos totalmente incompatíveis ou �
 Não move portais antigos automaticamente, não escava obstáculos sólidos e não teleporta ao spawn.
 
 
-## Integração com flora sazonal (0.5.3)
+## Integração com flora sazonal (0.5.4)
 
 O SeasonalFloraController auditado do Aeternum 4.5 remove pequenas flores no outono/inverno
 por substituição direta com AIR, sem drops. Flores geradas por setType/setBlockData não recebem
@@ -167,3 +167,6 @@ Quebras e colocações reais continuam passando pelos eventos/proteções normai
 quebra de flores, não repõe flores apagadas e não altera plantas fora dos portais. Ao invalidar
 ou remover um portal, libera apenas marcas adicionadas pelo addon; marcas originais do jogador
 permanecem. Portais já desativados por falta de flores precisam ser reparados e reativados.
+
+### Reutilização de portais próximos (0.5.4)
+Na primeira travessia de uma entrada sem vínculo, um portal compatível e seguro a até 5 blocos (distância 3D das coordenadas correspondentes) é priorizado, mesmo que já esteja vinculado. O retorno passa a levar à entrada mais nova; a entrada anterior permanece construída, mas perde o vínculo. Fora dessa distância, a busca habitual reaproveita apenas portais sem vínculo. Não é necessário reconstruir o destino.
