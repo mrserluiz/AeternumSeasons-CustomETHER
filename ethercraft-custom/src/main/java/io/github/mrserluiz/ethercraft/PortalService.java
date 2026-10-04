@@ -452,7 +452,7 @@ public final class PortalService implements Listener {
             .min(Comparator.comparingDouble(candidate -> candidate.block(0, 0).getLocation().distanceSquared(center))).orElse(null);
         if (nearest != null) { bind(source, nearest); return; }
         int radiusLimit = Math.max(0, Math.min(16, plugin.getConfig().getInt("portal-placement.creation-radius", 8)));
-        int top = Math.min(world.getMaxHeight(), world.getMinHeight() + world.getLogicalHeight()) - 5;
+        int top = Math.min(world.getMaxHeight(), world.getMinHeight() + world.getLogicalHeight()) - (source.horizontal() ? 5 : 7);
         int bottom = world.getMinHeight() + 2;
         int preferred = Math.max(bottom, Math.min(top, center.getBlockY()));
         String denied = null;

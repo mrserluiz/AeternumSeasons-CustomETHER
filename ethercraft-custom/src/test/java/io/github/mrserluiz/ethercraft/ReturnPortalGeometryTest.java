@@ -19,6 +19,8 @@ class ReturnPortalGeometryTest {
             assertTrue(ReturnPortalGeometry.clearance().contains(new ReturnPortalGeometry.Cell(u, 1, side)));
             assertTrue(ReturnPortalGeometry.clearance().contains(new ReturnPortalGeometry.Cell(u, 2, side)));
         }
-        assertEquals(12, ReturnPortalGeometry.clearance().size());
+        for (int u = -1; u <= 2; u++) for (int v = 4; v <= 6; v++)
+            assertTrue(ReturnPortalGeometry.clearance().contains(new ReturnPortalGeometry.Cell(u, v, 0)));
+        assertEquals(24, ReturnPortalGeometry.clearance().size());
     }
 }

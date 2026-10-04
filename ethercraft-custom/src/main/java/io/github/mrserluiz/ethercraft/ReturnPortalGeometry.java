@@ -16,6 +16,7 @@ public final class ReturnPortalGeometry {
         List<Cell> cells = new ArrayList<>();
         for (int side : new int[]{-1, 1}) for (int u = 0; u < 2; u++)
             for (int v = 0; v < 3; v++) cells.add(new Cell(u, v, side));
+        for (int u = -1; u <= 2; u++) for (int v = 4; v <= 6; v++) cells.add(new Cell(u, v, 0));
         return List.copyOf(cells);
     }
 }

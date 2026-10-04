@@ -50,7 +50,7 @@ Primeiro busca o portal registrado compatível e livre mais próximo do ponto co
 
 A chegada prefere saída lateral segura, aceitando vegetação baixa/neve passável. Se não houver, pode chegar dentro do portal intacto, apoiado no frame inferior, sem exigir uma plataforma lateral na origem. Líquidos, fogo e outros blocos perigosos continuam excluídos. Cooldown impede retorno imediato.
 
-A criação exige apoio sólido existente e espaço livre acima. Preserva os pisos de saída e o fundo da piscina. O plano verifica 32 posições no vertical e 76 no horizontal, com proteção e rollback. A opção `allow-terrain-clearing` só permite limpar vegetação substituível; não escava paredes/tetos sólidos. A moldura é encaixada somente na superfície de terreno substituível. Líquidos, containers, bedrock, obsidian e registros de outros portais não são substituídos.
+A criação exige apoio sólido existente e espaço livre acima. Preserva os pisos de saída e o fundo da piscina. O plano verifica 44 posições no vertical e 76 no horizontal, com proteção e rollback. A opção `allow-terrain-clearing` só permite limpar vegetação substituível; não escava paredes/tetos sólidos. A moldura é encaixada somente na superfície de terreno substituível. Líquidos, containers, bedrock, obsidian e registros de outros portais não são substituídos.
 
 WorldGuard/GriefPrevention são consultados para a criação/remoção; falhas bloqueiam a operação. Provedores configurados sem integração mantêm bloqueio por padrão. Nenhum mundo é carregado para satisfazer uma rota. Sem destino/área permitida, há mensagem de erro. Com `auto-return-portal:false`, não cria portais e só usa um destino existente nas coordenadas correspondentes; não há fallback ao spawn.
 
@@ -112,7 +112,7 @@ configurado e próximo às coordenadas correspondentes. Não cria uma plataforma
 O chão das saídas verticais e o fundo das piscinas são preservados. Piscinas são encaixadas
 na camada do solo: toda a área 4×4 deve ter solo sólido e uma camada de apoio sólida abaixo.
 São reservados três blocos de ar acima da água e três acima das flores na borda.
-As saídas verticais também reservam três blocos de ar acima do chão.
+Os portais verticais reservam três blocos de ar acima do topo e três acima do chão das saídas.
 
 O addon altera somente os blocos do plano de construção, respeitando as verificações de proteção
 e a lista limitada de terreno substituível. Baús e materiais fora dessa lista são preservados;
