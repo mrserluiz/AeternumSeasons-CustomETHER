@@ -20,7 +20,7 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
             // Add new settings to existing installations without overwriting their values.
             boolean settingsAdded = false;
             var additions = java.util.Map.<String, Object>of("debug.enabled", false, "debug.log-to-console", true,
-                "messages.player-feedback", "ACTION_BAR", "language.default", "pt_BR", "language.use-client-locale", false);
+                "messages.player-feedback", "ACTION_BAR", "language.default", "pt_BR", "language.use-client-locale", false, "portal-placement.max-creation-radius", 128);
             for (var entry : additions.entrySet()) if (!getConfig().contains(entry.getKey(), true)) {
                 getConfig().set(entry.getKey(), entry.getValue()); settingsAdded = true;
             }
@@ -35,7 +35,7 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
             bridge.reconcile();
             getServer().getPluginManager().registerEvents(bridge, this);
             getServer().getScheduler().runTaskTimer(this, bridge::reconcile, 20L, 20L);
-            getLogger().info("AeternumCustomPortal 0.5.1: mundos existentes, portais controlados por portal-types.yaml.");
+            getLogger().info("AeternumCustomPortal 0.5.2: mundos existentes, portais controlados por portal-types.yaml.");
         } catch (Exception error) {
             getLogger().log(java.util.logging.Level.SEVERE, "Inicialização bloqueada; dados preservados.", error);
             getServer().getPluginManager().disablePlugin(this);

@@ -12,11 +12,6 @@ public final class ReturnPortalGeometry {
         for (var c : FrameGeometry.interior()) cells.add(new Cell(c.u(), c.v(), 0));
         return List.copyOf(cells);
     }
-    public static List<Cell> clearance() {
-        List<Cell> cells = new ArrayList<>();
-        for (int side : new int[]{-1, 1}) for (int u = 0; u < 2; u++)
-            for (int v = 0; v < 3; v++) cells.add(new Cell(u, v, side));
-        for (int u = -1; u <= 2; u++) for (int v = 4; v <= 6; v++) cells.add(new Cell(u, v, 0));
-        return List.copyOf(cells);
-    }
+    // Arrival inside the portal is safe; extra open land on BOTH sides is not required.
+    public static List<Cell> clearance() { return List.of(); }
 }

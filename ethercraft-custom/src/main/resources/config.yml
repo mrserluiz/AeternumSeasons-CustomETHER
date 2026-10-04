@@ -14,6 +14,8 @@ portal-placement:
   # Existing portal search: default 16 in Nether environments, 128 elsewhere.
   # search-radius: 128
   creation-radius: 8
+  # Expand the search up to this radius when nearby terrain does not fit (hard cap 128).
+  max-creation-radius: 128
   # Clear only replaceable vegetation in existing headroom; never excavate solid ceilings.
   allow-terrain-clearing: true
 

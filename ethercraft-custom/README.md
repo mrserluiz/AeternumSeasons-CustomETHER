@@ -1,10 +1,10 @@
-# AeternumCustomPortal 0.5.1
+# AeternumCustomPortal 0.5.2
 
 Addon de portais para Paper 26.2 / Java 25. Usa mundos já carregados pelo AeternumSeasons ou outro gerenciador; não cria/carrega dimensões nem depende de caminhos antigos de saves. O módulo fica em `ethercraft-custom` para manter seu histórico.
 
 ## Instalação e atualização
 
-Pare o servidor, substitua o JAR anterior por `aeternum-custom-portal-0.5.1.jar` e reinicie. Não mantenha o EtherCraftCustom antigo instalado. Mantenha features Frost/Heat do Aeternum habilitadas para ele carregar os mundos.
+Pare o servidor, substitua o JAR anterior por `aeternum-custom-portal-0.5.2.jar` e reinicie. Não mantenha o EtherCraftCustom antigo instalado. Mantenha features Frost/Heat do Aeternum habilitadas para ele carregar os mundos.
 
 A configuração ativa está em **plugins/AeternumCustomPortal/portal-types.yaml**; `config.yml` controla integração, retorno automático e posicionamento. Configurações personalizadas não são sobrescritas. Na primeira migração EtherCraftCustom → AeternumCustomPortal, os três YAMLs antigos são copiados somente se a pasta nova não existe; ajuste os destinos antigos para aeternum_frost/aeternum_heat.
 
@@ -50,7 +50,7 @@ Primeiro busca o portal registrado compatível e livre mais próximo do ponto co
 
 A chegada prefere saída lateral segura, aceitando vegetação baixa/neve passável. Se não houver, pode chegar dentro do portal intacto, apoiado no frame inferior, sem exigir uma plataforma lateral na origem. Líquidos, fogo e outros blocos perigosos continuam excluídos. Cooldown impede retorno imediato.
 
-A criação exige apoio sólido existente e espaço livre acima. Preserva os pisos de saída e o fundo da piscina. O plano verifica 44 posições no vertical e 76 no horizontal, com proteção e rollback. A opção `allow-terrain-clearing` só permite limpar vegetação substituível; não escava paredes/tetos sólidos. A moldura é encaixada somente na superfície de terreno substituível. Líquidos, containers, bedrock, obsidian e registros de outros portais não são substituídos.
+A criação exige apoio sólido existente e espaço livre acima. Preserva os pisos de saída e o fundo da piscina. O plano verifica 20 posições no vertical e 76 no horizontal, com proteção e rollback. A opção `allow-terrain-clearing` só permite limpar vegetação substituível; não escava paredes/tetos sólidos. A moldura é encaixada somente na superfície de terreno substituível. Líquidos, containers, bedrock, obsidian e registros de outros portais não são substituídos.
 
 WorldGuard/GriefPrevention são consultados para a criação/remoção; falhas bloqueiam a operação. Provedores configurados sem integração mantêm bloqueio por padrão. Nenhum mundo é carregado para satisfazer uma rota. Sem destino/área permitida, há mensagem de erro. Com `auto-return-portal:false`, não cria portais e só usa um destino existente nas coordenadas correspondentes; não há fallback ao spawn.
 
@@ -66,7 +66,7 @@ Comandos `/acp` (aliases aeternumportal/ethercraft): status, worlds, types, relo
 
 `mvn --batch-mode --file ethercraft-custom/pom.xml clean verify`
 
-Workflow usa Java 25 e publica AeternumCustomPortal-0.5.1-Paper26.2. Testes incluem leitura/edição/releitura do YAML real em disco, escalas/coordenadas positivas/negativas, borda, rejeição de portais distantes do ponto correspondente, terreno, geometria, limpeza, autorização, geometria/validade da piscina, plano de retorno horizontal e compatibilidade de YAML antigo. Não foi executado um servidor Paper real; validar a build com o Aeternum/WorldGuard instalados, incluindo viagem, retorno, quebra/reativação e reload. O fluxo de criação e posicionamento corresponde à intenção do Nether, mas o addon mantém formatos fixos (vertical 4×5 ou piscina horizontal 4×4) e vínculos um-a-um; não reproduz toda a implementação interna do Vanilla.
+Workflow usa Java 25 e publica AeternumCustomPortal-0.5.2-Paper26.2. Testes incluem leitura/edição/releitura do YAML real em disco, escalas/coordenadas positivas/negativas, borda, rejeição de portais distantes do ponto correspondente, terreno, geometria, limpeza, autorização, geometria/validade da piscina, plano de retorno horizontal e compatibilidade de YAML antigo. Não foi executado um servidor Paper real; validar a build com o Aeternum/WorldGuard instalados, incluindo viagem, retorno, quebra/reativação e reload. O fluxo de criação e posicionamento corresponde à intenção do Nether, mas o addon mantém formatos fixos (vertical 4×5 ou piscina horizontal 4×4) e vínculos um-a-um; não reproduz toda a implementação interna do Vanilla.
 
 
 ## Diagnósticos e idiomas (0.5.0)
@@ -112,7 +112,7 @@ configurado e próximo às coordenadas correspondentes. Não cria uma plataforma
 O chão das saídas verticais e o fundo das piscinas são preservados. Piscinas são encaixadas
 na camada do solo: toda a área 4×4 deve ter solo sólido e uma camada de apoio sólida abaixo.
 São reservados três blocos de ar acima da água e três acima das flores na borda.
-Os portais verticais reservam três blocos de ar acima do topo e três acima do chão das saídas.
+Na 0.5.2, o vertical exige somente o volume 4×5; a chegada pode usar seu interior, sem terreno plano dos dois lados.
 
 O addon altera somente os blocos do plano de construção, respeitando as verificações de proteção
 e a lista limitada de terreno substituível. Baús e materiais fora dessa lista são preservados;
@@ -120,3 +120,28 @@ se não houver local compatível, a viagem é bloqueada sem montar portal suspen
 O espaço acima deve estar livre: não escava paredes ou tetos sólidos para abrir uma sala.
 `portal-placement.allow-terrain-clearing: false` exige ar no espaço acima; com `true`,
 pode limpar vegetação substituível, mantendo o apoio e encaixando a estrutura na superfície. Não exige WorldEdit.
+
+
+## Busca ampliada e flores estáveis (0.5.2)
+
+Retornos horizontais montam borda e água antes das flores, sem usar blocos sólidos temporários
+na camada das flores. O local deve ter luz suficiente; após montar o musgo, `Block.canPlace`
+valida a sobrevivência real de cada flor e a colocação aplica física normal. Um local incompatível
+é revertido e a busca continua. As flores continuam quebráveis; não são repostas automaticamente.
+As piscinas continuam no solo, com fundo preservado e três blocos livres acima da água/flores.
+
+O vertical precisa de apoio sólido sob os dois blocos centrais da base e espaço para a moldura
+completa 4×5, sem exigir chão plano e passagem dos dois lados, nem três blocos extras acima do topo.
+Os cantos gerados continuam completos; os cantos dos portais construídos pelo jogador são opcionais.
+
+A busca ordena as posições pela distância horizontal às coordenadas correspondentes e avalia
+as alturas de solo mais próximas da altura de origem. `portal-placement.max-creation-radius`
+(padrão e limite máximo 128) expande a busca além de `creation-radius` existente. A opção nova
+é adicionada automaticamente ao config existente. O raio efetivo é o maior dos dois, limitado a 128.
+A varredura é dividida em lotes de oito colunas por tick, com carregamento assíncrono dos chunks.
+Todas as leituras de blocos, verificações de proteção e alterações permanecem na thread do servidor.
+Sair do portal, desconectar ou alterar as definições interrompe a busca. Dois jogadores que usam
+a mesma origem aproveitam o primeiro retorno criado, sem gerar um segundo par concorrente.
+
+A busca não garante geração em vazio, terrenos totalmente incompatíveis ou áreas protegidas.
+Não move portais antigos automaticamente, não escava obstáculos sólidos e não teleporta ao spawn.

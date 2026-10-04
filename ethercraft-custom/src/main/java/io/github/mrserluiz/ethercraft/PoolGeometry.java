@@ -11,6 +11,8 @@ public final class PoolGeometry {
     public static List<String> returnFlowers() {
         return List.of("DANDELION", "POPPY", "ALLIUM", "AZURE_BLUET", "CORNFLOWER", "OXEYE_DAISY");
     }
+    // Bush survival requires brightness or skylight; placing with physics disabled alone is insufficient.
+    public static boolean flowerLight(int sky, int brightness) { return sky >= 5 || brightness >= 8; }
     public static boolean flower(String material) { return FLOWERS.contains(material); }
     public static List<FrameGeometry.Cell> interior() {
         return List.of(new FrameGeometry.Cell(0, 0), new FrameGeometry.Cell(1, 0),
@@ -30,6 +32,15 @@ public final class PoolGeometry {
             && interior().stream().allMatch(c -> water.test(c) && floor.test(c));
     }
     public record Cell(int u, int v, int height) {}
+    public enum Part { FRAME, WATER, FLOWER }
+    public record Placement(Cell cell, Part part) {}
+    public static List<Placement> constructionPlan() {
+        var plan = new ArrayList<Placement>();
+        for (var c : border()) plan.add(new Placement(new Cell(c.u(), c.v(), 0), Part.FRAME));
+        for (var c : interior()) plan.add(new Placement(new Cell(c.u(), c.v(), 0), Part.WATER));
+        for (var c : border()) plan.add(new Placement(new Cell(c.u(), c.v(), 1), Part.FLOWER));
+        return List.copyOf(plan);
+    }
     public static List<Cell> edits() {
         List<Cell> cells = new ArrayList<>();
         for (var c : border()) { cells.add(new Cell(c.u(), c.v(), 0)); cells.add(new Cell(c.u(), c.v(), 1)); }

@@ -13,8 +13,7 @@ final class GroundedPlacement {
                 cells.add(new Cell(u, v, 0)); cells.add(new Cell(u, v, -1));
             }
         } else {
-            for (int u = -1; u <= 2; u++) cells.add(new Cell(u, 0, -1));
-            for (int side : new int[]{-1, 1}) for (int u = 0; u < 2; u++) cells.add(new Cell(u, side, -1));
+            for (int u = 0; u < 2; u++) cells.add(new Cell(u, 0, -1));
         }
         return List.copyOf(cells);
     }

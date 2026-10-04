@@ -45,4 +45,18 @@ class PoolGeometryTest {
         for (String rejected : List.of("WITHER_ROSE", "SUNFLOWER", "TALL_GRASS", "AIR", "MOSS_CARPET"))
             assertFalse(PoolGeometry.flower(rejected));
     }
+    @Test void flowersArePlacedOnlyAfterCompleteRimAndWaterWithoutTemporarySolidFlowerLayer() {
+        var plan = PoolGeometry.constructionPlan();
+        assertEquals(new HashSet<>(PoolGeometry.edits()), new HashSet<>(plan.stream().map(PoolGeometry.Placement::cell).toList()));
+        assertEquals(28, plan.size());
+        assertTrue(plan.subList(0, 12).stream().allMatch(p -> p.part() == PoolGeometry.Part.FRAME && p.cell().height() == 0));
+        assertTrue(plan.subList(12, 16).stream().allMatch(p -> p.part() == PoolGeometry.Part.WATER));
+        assertTrue(plan.subList(16, 28).stream().allMatch(p -> p.part() == PoolGeometry.Part.FLOWER && p.cell().height() == 1));
+    }
+    @Test void undergroundFlowersNeedLightAndNaturalSkylightWorksAtNight() {
+        assertFalse(PoolGeometry.flowerLight(0, 0));
+        assertFalse(PoolGeometry.flowerLight(0, 7));
+        assertTrue(PoolGeometry.flowerLight(0, 8));
+        assertTrue(PoolGeometry.flowerLight(15, 0));
+    }
 }

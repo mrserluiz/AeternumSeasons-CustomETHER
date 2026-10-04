@@ -422,21 +422,29 @@ public final class PortalService implements Listener {
         }
         pendingTravel.add(id);
         Bukkit.getScheduler().runTask(plugin, () -> {
-            pendingTravel.remove(id);
             if (!player.isOnline() || frames.get(source.key()) != source || !source.valid(true)
-                || definition(source) == null || !allowed(definition(source), player.getWorld()) || !stillInside(player, source)) return;
-            try { ensureReturnPortal(source, player); }
-            catch (Exception error) { plugin.messages().failure(player, "travel-failed", error); return; }
-            Location checked = destination(source, player.getLocation());
-            if (checked == null) { plugin.messages().feedback(player, "destination-unavailable"); return; }
-            if (player.teleport(checked, PlayerTeleportEvent.TeleportCause.PLUGIN)) {
-                player.setPortalCooldown(300);
-                cooldown.put(id, System.currentTimeMillis() + 5000);
+                || definition(source) == null || !allowed(definition(source), player.getWorld()) || !stillInside(player, source)) {
+                pendingTravel.remove(id); return;
             }
+            Runnable complete = () -> {
+                pendingTravel.remove(id);
+                if (!player.isOnline() || !stillInside(player, source)) return;
+                Location checked = destination(source, player.getLocation());
+                if (checked == null) { plugin.messages().feedback(player, "destination-unavailable"); return; }
+                if (player.teleport(checked, PlayerTeleportEvent.TeleportCause.PLUGIN)) {
+                    player.setPortalCooldown(300); cooldown.put(id, System.currentTimeMillis() + 5000);
+                }
+            };
+            java.util.function.Consumer<Exception> failed = error -> {
+                pendingTravel.remove(id); cooldown.put(id, System.currentTimeMillis() + 5000);
+                plugin.messages().failure(player, "travel-failed", error);
+            };
+            try { ensureReturnPortal(source, player, complete, failed); }
+            catch (Exception error) { failed.accept(error); }
         });
     }
-    private void ensureReturnPortal(PortalFrame source, Player player) throws IOException {
-        if (links.containsKey(source.key()) || !plugin.getConfig().getBoolean("auto-return-portal", true)) return;
+    private void ensureReturnPortal(PortalFrame source, Player player, Runnable complete, java.util.function.Consumer<Exception> failed) throws IOException {
+        if (links.containsKey(source.key()) || !plugin.getConfig().getBoolean("auto-return-portal", true)) { complete.run(); return; }
         var type = definition(source);
         if (!allowed(type, player.getWorld())) throw new IOException("Tipo desativado ou mundo não autorizado.");
         // Resolve target by loaded identity; explicit links make return unambiguous even with multiple sources.
@@ -450,24 +458,67 @@ public final class PortalService implements Listener {
             && PortalCoordinates.nearby(candidate.x(), candidate.z(), center.getX(), center.getZ(), searchRadius)
             && safeExit(candidate, player.getLocation()) != null)
             .min(Comparator.comparingDouble(candidate -> candidate.block(0, 0).getLocation().distanceSquared(center))).orElse(null);
-        if (nearest != null) { bind(source, nearest); return; }
-        int radiusLimit = Math.max(0, Math.min(16, plugin.getConfig().getInt("portal-placement.creation-radius", 8)));
-        int top = Math.min(world.getMaxHeight(), world.getMinHeight() + world.getLogicalHeight()) - (source.horizontal() ? 5 : 7);
+        if (nearest != null) { bind(source, nearest); complete.run(); return; }
+        int radiusLimit = PortalSiteSearch.radius(plugin.getConfig().getInt("portal-placement.creation-radius", 8),
+            plugin.getConfig().getInt("portal-placement.max-creation-radius", 128));
+        int top = Math.min(world.getMaxHeight(), world.getMinHeight() + world.getLogicalHeight()) - (source.horizontal() ? 5 : 4);
         int bottom = world.getMinHeight() + 2;
         int preferred = Math.max(bottom, Math.min(top, center.getBlockY()));
-        String denied = null;
-        // Find existing headroom; never excavate stone above the portal or paste an artificial floor.
         boolean clearVegetation = plugin.getConfig().getBoolean("portal-placement.allow-terrain-clearing", true);
-            for (int radius = 0; radius <= radiusLimit; radius++)
-                for (int dx = -radius; dx <= radius; dx++) for (int dz = -radius; dz <= radius; dz++) {
-                    if (Math.max(Math.abs(dx), Math.abs(dz)) != radius) continue;
-                    int siteX = center.getBlockX() + dx, siteZ = center.getBlockZ() + dz;
-                    // Search the whole usable height, including cavern floors. Ground must already exist.
-                    for (int y : GroundedPlacement.heights(bottom, top, preferred,
-                        candidateY -> LoadedWorlds.safeFloor(world.getBlockAt(siteX, candidateY + (source.horizontal() ? 0 : -1), siteZ).getType())
-                            && LoadedWorlds.safeSpace(world.getBlockAt(siteX, candidateY + (source.horizontal() ? 1 : 0), siteZ)))) {
-                        PortalFrame target = new PortalFrame(world.getUID(), center.getBlockX() + dx, y, center.getBlockZ() + dz,
+        var candidates = PortalSiteSearch.offsets(radiusLimit).iterator();
+        new org.bukkit.scheduler.BukkitRunnable() {
+            boolean waiting, stopped;
+            String denied;
+            boolean current() {
+                return !stopped && player.isOnline() && Bukkit.getWorld(world.getUID()) == world && frames.get(source.key()) == source
+                    && source.valid(true) && definition(source) == type && allowed(type, player.getWorld()) && stillInside(player, source);
+            }
+            void stop(Exception error) { stopped = true; cancel(); if (error == null) pendingTravel.remove(player.getUniqueId()); else failed.accept(error); }
+            @Override public void run() {
+                if (!current()) { stop(null); return; }
+                if (links.containsKey(source.key())) { stopped = true; cancel(); complete.run(); return; }
+                if (waiting) return;
+                if (!candidates.hasNext()) {
+                    stop(new IOException(denied == null ? "Sem área compatível em até " + radiusLimit + " blocos das coordenadas correspondentes."
+                        : "Destino: " + denied)); return;
+                }
+                var batch = new ArrayList<PortalSiteSearch.Offset>();
+                var chunks = new HashSet<Long>();
+                while (batch.size() < 8 && candidates.hasNext()) {
+                    var offset = candidates.next(); batch.add(offset);
+                    int x = center.getBlockX() + offset.x(), z = center.getBlockZ() + offset.z();
+                    for (int cx : new int[]{(x-1)>>4, (x+2)>>4}) for (int cz : new int[]{(z-1)>>4, (z+2)>>4})
+                        chunks.add(((long)cx << 32) | (cz & 0xffffffffL));
+                }
+                waiting = true;
+                var futures = chunks.stream().map(key -> world.getChunkAtAsync((int)(key >> 32), (int)(long)key, true))
+                    .toArray(java.util.concurrent.CompletableFuture[]::new);
+                java.util.concurrent.CompletableFuture.allOf(futures).whenComplete((ignored, error) -> {
+                    if (!plugin.isEnabled()) return;
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (stopped) return;
+                        if (!current()) { stop(null); return; }
+                        if (error != null) { stop(new IOException("Falha ao carregar a área do destino.", error)); return; }
+                        if (links.containsKey(source.key())) { stopped = true; cancel(); complete.run(); return; }
+                        try {
+                            for (var offset : batch) if (tryColumn(center.getBlockX() + offset.x(), center.getBlockZ() + offset.z())) {
+                                stopped = true; cancel(); complete.run(); return;
+                            }
+                            waiting = false;
+                        } catch (Exception failure) { stop(failure); }
+                    });
+                });
+            }
+            boolean tryColumn(int siteX, int siteZ) throws IOException {
+                for (int y : GroundedPlacement.heights(bottom, top, preferred,
+                    candidateY -> LoadedWorlds.safeFloor(world.getBlockAt(siteX, candidateY + (source.horizontal() ? 0 : -1), siteZ).getType())
+                        && LoadedWorlds.safeSpace(world.getBlockAt(siteX, candidateY + (source.horizontal() ? 1 : 0), siteZ)))) {
+                        PortalFrame target = new PortalFrame(world.getUID(), siteX, y, siteZ,
                             source.axis(), source.typeId(), type.frame());
+                        if (target.horizontal() && target.border().stream().anyMatch(c -> {
+                            Block flower = target.block(c.u(), c.v()).getRelative(0, 1, 0);
+                            return !PoolGeometry.flowerLight(flower.getLightFromSky(), flower.getLightLevel());
+                        })) continue;
                         if (!GroundedPlacement.grounded(target.horizontal(), c -> LoadedWorlds.safeFloor(groundBlock(target, c).getType()))) continue;
                         List<Block> edits = target.horizontal() ? PoolGeometry.edits().stream().map(c -> poolBlock(target, c)).toList()
                             : ReturnPortalGeometry.edits().stream().map(c -> returnBlock(target, c)).toList();
@@ -489,10 +540,12 @@ public final class PortalService implements Listener {
                         }
                         if (denied == null) denied = protections.denial(player, all.stream().filter(block -> !block.getType().isAir()).toList(), true);
                         if (denied != null) continue;
-                        buildReturn(source, target, player, type, edits, clearance); return;
+                        try { buildReturn(source, target, player, type, edits, clearance); return true; }
+                        catch (UnsuitableSiteException rejected) { denied = rejected.getMessage(); }
                     }
-                }
-        throw new IOException(denied == null ? "Sem local compatível nas coordenadas correspondentes " + center.getBlockX() + ", " + center.getBlockZ() + "." : "Proteção do destino: " + denied);
+                return false;
+            }
+        }.runTaskTimer(plugin, 0, 1);
     }
     private void poolEffects() {
         for (PortalFrame frame : frames.values()) {
@@ -517,6 +570,9 @@ public final class PortalService implements Listener {
         return new Location(destination, PortalCoordinates.clamp(x, center.getX(), border.getSize(), 4), source.y(),
             PortalCoordinates.clamp(z, center.getZ(), border.getSize(), 4));
     }
+    private static final class UnsuitableSiteException extends IOException {
+        UnsuitableSiteException(String message, Throwable cause) { super(message, cause); }
+    }
     private void buildReturn(PortalFrame source, PortalFrame target, Player player, PortalDefinitions.Definition type,
                              List<Block> edits, List<Block> clearance) throws IOException {
         List<Block> all = new ArrayList<>(edits); all.addAll(clearance);
@@ -526,13 +582,24 @@ public final class PortalService implements Listener {
         catch (IOException error) { frames.remove(target.key()); links.remove(source.key()); links.remove(target.key()); throw error; }
         try {
             for (Block block : clearance) block.setType(Material.AIR, false);
-            for (Block block : edits) block.setType(type.frame(), false);
             if (target.horizontal()) {
+                // Never fill the flower layer with temporary solid blocks: that changes lighting/support.
+                for (var c : target.border()) target.block(c.u(), c.v()).getRelative(0, 1, 0).setType(Material.AIR, false);
                 int index = 0;
-                for (var c : target.border()) target.block(c.u(), c.v()).getRelative(0, 1, 0).setType(
-                    Material.valueOf(PoolGeometry.returnFlowers().get(index++ % PoolGeometry.returnFlowers().size())), false);
-                for (var c : target.interior()) target.block(c.u(), c.v()).setType(Material.WATER, false);
+                for (var placement : PoolGeometry.constructionPlan()) {
+                    Block block = poolBlock(target, placement.cell());
+                    switch (placement.part()) {
+                        case FRAME -> block.setType(type.frame(), false);
+                        case WATER -> block.setType(Material.WATER, false);
+                        case FLOWER -> {
+                            var data = Bukkit.createBlockData(Material.valueOf(PoolGeometry.returnFlowers().get(index++ % PoolGeometry.returnFlowers().size())));
+                            if (!block.canPlace(data)) throw new IllegalArgumentException("Flores não sobrevivem neste local (solo/luz).");
+                            block.setBlockData(data, true);
+                        }
+                    }
+                }
             } else {
+                for (Block block : edits) block.setType(type.frame(), false);
                 Orientable data = (Orientable) Bukkit.createBlockData(Material.NETHER_PORTAL); data.setAxis(target.axis());
                 for (var c : target.interior()) target.block(c.u(), c.v()).setBlockData(data, false);
             }
@@ -542,7 +609,8 @@ public final class PortalService implements Listener {
             for (int i = 0; i < all.size(); i++) all.get(i).setBlockData(snapshots.get(i), false);
             frames.remove(target.key()); links.remove(source.key()); links.remove(target.key());
             try { save(); } catch (IOException rollback) { error.addSuppressed(rollback); }
-            throw new IOException("Falha ao montar portal; alterações revertidas.", error);
+            if (error.getSuppressed().length == 0) throw new UnsuitableSiteException("Local incompatível; montagem revertida.", error);
+            throw new IOException("Falha ao reverter montagem do portal.", error);
         }
         plugin.messages().debug(player, "debug-created", target.typeId(), target.x(), target.y(), target.z());
     }
