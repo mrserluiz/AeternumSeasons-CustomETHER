@@ -10,7 +10,11 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
     private PortalService portals;
     private PortalDefinitions definitions;
     private Messages messages;
+    private AeternumPortalBridge bridge;
     Messages messages() { return messages; }
+    java.util.Map<String, org.bukkit.block.Block> portalFlowers() { return portals == null ? java.util.Map.of() : portals.portalFlowers(); }
+    void protectPortalFlowers() { if (bridge != null) bridge.protectFlowers(); }
+    @Override public void onDisable() { if (bridge != null) bridge.releaseFlowers(); }
     @Override public void onEnable() {
         try {
             if (getServer().getPluginManager().isPluginEnabled("EtherCraftCustom"))
@@ -20,7 +24,7 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
             // Add new settings to existing installations without overwriting their values.
             boolean settingsAdded = false;
             var additions = java.util.Map.<String, Object>of("debug.enabled", false, "debug.log-to-console", true,
-                "messages.player-feedback", "ACTION_BAR", "language.default", "pt_BR", "language.use-client-locale", false, "portal-placement.max-creation-radius", 128);
+                "messages.player-feedback", "ACTION_BAR", "language.default", "pt_BR", "language.use-client-locale", false, "portal-placement.max-creation-radius", 128, "aeternum.protect-portal-flowers", true);
             for (var entry : additions.entrySet()) if (!getConfig().contains(entry.getKey(), true)) {
                 getConfig().set(entry.getKey(), entry.getValue()); settingsAdded = true;
             }
@@ -31,11 +35,11 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
             portals.reconcileAll();
             Objects.requireNonNull(getCommand("aeternumportal")).setExecutor(this);
             getServer().getPluginManager().registerEvents(portals, this);
-            var bridge = new AeternumPortalBridge(this);
+            bridge = new AeternumPortalBridge(this);
             bridge.reconcile();
             getServer().getPluginManager().registerEvents(bridge, this);
             getServer().getScheduler().runTaskTimer(this, bridge::reconcile, 20L, 20L);
-            getLogger().info("AeternumCustomPortal 0.5.2: mundos existentes, portais controlados por portal-types.yaml.");
+            getLogger().info("AeternumCustomPortal 0.5.3: mundos existentes, portais controlados por portal-types.yaml.");
         } catch (Exception error) {
             getLogger().log(java.util.logging.Level.SEVERE, "Inicialização bloqueada; dados preservados.", error);
             getServer().getPluginManager().disablePlugin(this);
@@ -96,7 +100,7 @@ public final class AeternumCustomPortalPlugin extends JavaPlugin implements Comm
                     var configCheck = new org.bukkit.configuration.file.YamlConfiguration();
                     configCheck.load(getDataFolder().toPath().resolve("config.yml").toFile());
                     var languageCheck = messages.prepareReload();
-                    portals.reloadTypes(); reloadConfig(); messages.applyReload(languageCheck); new AeternumPortalBridge(this).reconcile();
+                    portals.reloadTypes(); reloadConfig(); messages.applyReload(languageCheck); bridge.reconcile();
                     messages.send(sender, "reloaded", getDescription().getVersion());
                     portals.describe(sender);
                 }

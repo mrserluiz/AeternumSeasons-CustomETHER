@@ -1,10 +1,10 @@
-# AeternumCustomPortal 0.5.2
+# AeternumCustomPortal 0.5.3
 
 Addon de portais para Paper 26.2 / Java 25. Usa mundos já carregados pelo AeternumSeasons ou outro gerenciador; não cria/carrega dimensões nem depende de caminhos antigos de saves. O módulo fica em `ethercraft-custom` para manter seu histórico.
 
 ## Instalação e atualização
 
-Pare o servidor, substitua o JAR anterior por `aeternum-custom-portal-0.5.2.jar` e reinicie. Não mantenha o EtherCraftCustom antigo instalado. Mantenha features Frost/Heat do Aeternum habilitadas para ele carregar os mundos.
+Pare o servidor, substitua o JAR anterior por `aeternum-custom-portal-0.5.3.jar` e reinicie. Não mantenha o EtherCraftCustom antigo instalado. Mantenha features Frost/Heat do Aeternum habilitadas para ele carregar os mundos.
 
 A configuração ativa está em **plugins/AeternumCustomPortal/portal-types.yaml**; `config.yml` controla integração, retorno automático e posicionamento. Configurações personalizadas não são sobrescritas. Na primeira migração EtherCraftCustom → AeternumCustomPortal, os três YAMLs antigos são copiados somente se a pasta nova não existe; ajuste os destinos antigos para aeternum_frost/aeternum_heat.
 
@@ -46,7 +46,7 @@ Entrar na água leva ao destino. Na primeira viagem o addon gera outra piscina c
 
 O jogador constrói e ativa somente o portal de origem. Na primeira travessia, o addon calcula X/Z do destino como **coordenada × escala da origem ÷ escala do destino**, com `World.getCoordinateScale()`. Escalas iguais preservam coordenadas; não há busca/teleporte pelo spawn. X/Z são limitados à borda, reservando espaço para o frame. A busca examina os solos com espaço livre em toda a altura utilizável, priorizando a altura correspondente da origem.
 
-Primeiro busca o portal registrado compatível e livre mais próximo do ponto correspondente (16 blocos por padrão em ambiente Nether, 128 nos outros; `portal-placement.search-radius` pode substituir). Se não houver, procura/cria o frame com mesmo material/eixo num raio horizontal de 8 (`creation-radius`, máximo 16). Acende e salva o vínculo nos dois sentidos. O retorno leva ao portal exato de origem; vários portais não convergem arbitrariamente para o primeiro portal perto do spawn.
+Primeiro busca o portal registrado compatível e livre mais próximo do ponto correspondente (16 blocos por padrão em ambiente Nether, 128 nos outros; `portal-placement.search-radius` pode substituir). Se não houver, procura/cria o frame com mesmo material/eixo com busca por distância, expandida até `max-creation-radius` (padrão e limite 128). Acende e salva o vínculo nos dois sentidos. O retorno leva ao portal exato de origem; vários portais não convergem arbitrariamente para o primeiro portal perto do spawn.
 
 A chegada prefere saída lateral segura, aceitando vegetação baixa/neve passável. Se não houver, pode chegar dentro do portal intacto, apoiado no frame inferior, sem exigir uma plataforma lateral na origem. Líquidos, fogo e outros blocos perigosos continuam excluídos. Cooldown impede retorno imediato.
 
@@ -66,7 +66,7 @@ Comandos `/acp` (aliases aeternumportal/ethercraft): status, worlds, types, relo
 
 `mvn --batch-mode --file ethercraft-custom/pom.xml clean verify`
 
-Workflow usa Java 25 e publica AeternumCustomPortal-0.5.2-Paper26.2. Testes incluem leitura/edição/releitura do YAML real em disco, escalas/coordenadas positivas/negativas, borda, rejeição de portais distantes do ponto correspondente, terreno, geometria, limpeza, autorização, geometria/validade da piscina, plano de retorno horizontal e compatibilidade de YAML antigo. Não foi executado um servidor Paper real; validar a build com o Aeternum/WorldGuard instalados, incluindo viagem, retorno, quebra/reativação e reload. O fluxo de criação e posicionamento corresponde à intenção do Nether, mas o addon mantém formatos fixos (vertical 4×5 ou piscina horizontal 4×4) e vínculos um-a-um; não reproduz toda a implementação interna do Vanilla.
+Workflow usa Java 25 e publica AeternumCustomPortal-0.5.3-Paper26.2. Testes incluem leitura/edição/releitura do YAML real em disco, escalas/coordenadas positivas/negativas, borda, rejeição de portais distantes do ponto correspondente, terreno, geometria, limpeza, autorização, geometria/validade da piscina, plano de retorno horizontal e compatibilidade de YAML antigo. Não foi executado um servidor Paper real; validar a build com o Aeternum/WorldGuard instalados, incluindo viagem, retorno, quebra/reativação e reload. O fluxo de criação e posicionamento corresponde à intenção do Nether, mas o addon mantém formatos fixos (vertical 4×5 ou piscina horizontal 4×4) e vínculos um-a-um; não reproduz toda a implementação interna do Vanilla.
 
 
 ## Diagnósticos e idiomas (0.5.0)
@@ -145,3 +145,25 @@ a mesma origem aproveitam o primeiro retorno criado, sem gerar um segundo par co
 
 A busca não garante geração em vazio, terrenos totalmente incompatíveis ou áreas protegidas.
 Não move portais antigos automaticamente, não escava obstáculos sólidos e não teleporta ao spawn.
+
+
+## Integração com flora sazonal (0.5.3)
+
+O SeasonalFloraController auditado do Aeternum 4.5 remove pequenas flores no outono/inverno
+por substituição direta com AIR, sem drops. Flores geradas por setType/setBlockData não recebem
+a marca nativa de plantas colocadas por jogadores. Assim, a flora sazonal pode apagar uma
+parte obrigatória dos portais horizontais, mesmo quando musgo, água, solo e luz estão corretos.
+
+`aeternum.protect-portal-flowers: true` (padrão) usa essa mesma isenção nativa somente nas flores
+de portais horizontais ativos e válidos. Aplica imediatamente na ativação/geração, reaplica ao
+carregar chunks, iniciar e detectar reload/recriação do controller. Funciona independentemente
+de `aeternum.take-over-portals`. Não desliga flora sazonal nem altera configurações do Aeternum.
+
+O Aeternum precisa estar com `seasonal_flora.protect_player_placed: true` (padrão no arquivo analisado).
+Se estiver false ou o hook da versão for incompatível, o addon informa no console; não muda a
+opção global silenciosamente. A integração é limitada à classe e aos métodos auditados do 4.5.
+
+Quebras e colocações reais continuam passando pelos eventos/proteções normais. Não cancela
+quebra de flores, não repõe flores apagadas e não altera plantas fora dos portais. Ao invalidar
+ou remover um portal, libera apenas marcas adicionadas pelo addon; marcas originais do jogador
+permanecem. Portais já desativados por falta de flores precisam ser reparados e reativados.

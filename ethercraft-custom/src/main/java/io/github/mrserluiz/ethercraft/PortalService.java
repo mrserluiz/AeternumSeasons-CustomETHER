@@ -61,6 +61,23 @@ public final class PortalService implements Listener {
         }
     }
     public int size() { return frames.size(); }
+    public Map<String, Block> portalFlowers() {
+        var flowers = new LinkedHashMap<String, Block>();
+        for (var frame : frames.values()) {
+            if (!frame.horizontal()) continue;
+            World world = Bukkit.getWorld(frame.worldId());
+            if (world == null || !world.isChunkLoaded((frame.x()-1)>>4, (frame.z()-1)>>4)
+                || !world.isChunkLoaded((frame.x()+2)>>4, (frame.z()-1)>>4)
+                || !world.isChunkLoaded((frame.x()-1)>>4, (frame.z()+2)>>4)
+                || !world.isChunkLoaded((frame.x()+2)>>4, (frame.z()+2)>>4)
+                || definition(frame) == null || !allowed(definition(frame), world) || !frame.valid(true)) continue;
+            for (var cell : frame.border()) {
+                Block flower = frame.block(cell.u(), cell.v()).getRelative(0,1,0);
+                flowers.put(AeternumPortalBridge.key(flower), flower);
+            }
+        }
+        return flowers;
+    }
     public void describe(org.bukkit.command.CommandSender sender) {
         for (var type : definitions.all()) plugin.messages().send(sender, "type-line", type.spec().id(),
             plugin.messages().text(sender, type.spec().enabled() ? "enabled" : "disabled"), type.spec().shape(), type.frame(), type.item(), type.spec().mode(),
@@ -257,6 +274,7 @@ public final class PortalService implements Listener {
             Orientable data = (Orientable) Bukkit.createBlockData(Material.NETHER_PORTAL); data.setAxis(frame.axis());
             for (var c : frame.interior()) frame.block(c.u(), c.v()).setBlockData(data, false);
         }
+        plugin.protectPortalFlowers();
         plugin.messages().debug(player, "debug-activated", frame.typeId());
         return Activation.ACTIVATED;
     }
@@ -612,6 +630,7 @@ public final class PortalService implements Listener {
             if (error.getSuppressed().length == 0) throw new UnsuitableSiteException("Local incompatível; montagem revertida.", error);
             throw new IOException("Falha ao reverter montagem do portal.", error);
         }
+        plugin.protectPortalFlowers();
         plugin.messages().debug(player, "debug-created", target.typeId(), target.x(), target.y(), target.z());
     }
     private Block groundBlock(PortalFrame frame, GroundedPlacement.Cell cell) {
@@ -677,9 +696,13 @@ public final class PortalService implements Listener {
     public void bucket(PlayerBucketEmptyEvent e) { checkAfterChange(List.of(e.getBlockClicked(), e.getBlockClicked().getRelative(e.getBlockFace()))); }
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void flow(BlockFromToEvent e) { checkAfterChange(List.of(e.getBlock(), e.getToBlock())); }
+    @EventHandler public void chunkLoaded(org.bukkit.event.world.ChunkLoadEvent event) {
+        // Restore exemptions before the next native seasonal scan; do not force other chunks to load.
+        plugin.protectPortalFlowers();
+    }
     @EventHandler public void worldLoaded(org.bukkit.event.world.WorldLoadEvent e) {
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try { reconcileAll(); }
+            try { reconcileAll(); plugin.protectPortalFlowers(); }
             catch (IOException error) { plugin.getLogger().log(java.util.logging.Level.SEVERE, "Falha ao reconciliar portais carregados.", error); }
         });
     }

@@ -4,6 +4,8 @@ aeternum:
   # Disable only the known Aeternum portal listeners, preserving generation/seasons/mobs.
   # Keep Aeternum frost/heat features enabled so its worlds are loaded.
   take-over-portals: true
+  # Exempt active portal flowers from the audited Aeternum 4.5 seasonal flora purge.
+  protect-portal-flowers: true
 allow-unintegrated-protections: false
 protection-plugins: [WorldGuard, GriefPrevention, Residence, Lands, Towny]
 
