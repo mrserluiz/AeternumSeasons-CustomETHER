@@ -20,6 +20,11 @@ class PortalLinksTest {
         PortalLinks.rebind(links, "a", "c");
         assertEquals(Map.of("a", "c", "c", "a"), links);
     }
+    @Test void olderEntranceCannotStealTheNewerReturnRoute() {
+        var order = java.util.List.of("old", "return", "new");
+        assertTrue(PortalLinks.newer(order, "new", "old"));
+        assertFalse(PortalLinks.newer(order, "old", "new"));
+    }
     @Test void selfLinkLeavesExistingPairUntouched() {
         var links = new HashMap<>(Map.of("a", "b", "b", "a"));
         assertThrows(IllegalArgumentException.class, () -> PortalLinks.rebind(links, "a", "a"));

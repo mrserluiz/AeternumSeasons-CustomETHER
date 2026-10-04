@@ -11,6 +11,14 @@ final class PortalLinks {
         links.put(source, target);
         links.put(target, source);
     }
+    static boolean newer(Iterable<String> registrationOrder, String source, String previous) {
+        boolean sawPrevious = false;
+        for (String key : registrationOrder) {
+            if (key.equals(previous)) sawPrevious = true;
+            if (key.equals(source)) return sawPrevious;
+        }
+        return false;
+    }
     private static void disconnect(Map<String, String> links, String key) {
         String previous = links.remove(key);
         if (previous != null && key.equals(links.get(previous))) links.remove(previous);

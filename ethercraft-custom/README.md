@@ -170,3 +170,4 @@ permanecem. Portais já desativados por falta de flores precisam ser reparados e
 
 ### Reutilização de portais próximos (0.5.4)
 Na primeira travessia de uma entrada sem vínculo, um portal compatível e seguro a até 5 blocos (distância 3D das coordenadas correspondentes) é priorizado, mesmo que já esteja vinculado. O retorno passa a levar à entrada mais nova; a entrada anterior permanece construída, mas perde o vínculo. Fora dessa distância, a busca habitual reaproveita apenas portais sem vínculo. Não é necessário reconstruir o destino.
+A ordem de registro é preservada após reiniciar: atravessar uma entrada antiga não toma de volta o retorno de uma entrada mais nova.

@@ -476,7 +476,12 @@ public final class PortalService implements Listener {
             && candidate.block(0, 0).getLocation().distanceSquared(center) <= 25
             && safeExit(candidate, player.getLocation()) != null)
             .min(Comparator.comparingDouble(candidate -> candidate.block(0, 0).getLocation().distanceSquared(center))).orElse(null);
-        if (close != null) { bind(source, close); complete.run(); return; }
+        if (close != null) {
+            String previous = links.get(close.key());
+            // Older entrances may still use the destination, but cannot steal the newer return route.
+            if (previous == null || PortalLinks.newer(frames.keySet(), source.key(), previous)) bind(source, close);
+            complete.run(); return;
+        }
         PortalFrame nearest = frames.values().stream().filter(candidate -> !links.containsKey(candidate.key())
             && candidate.valid(true) && route(source, candidate)
             && PortalCoordinates.nearby(candidate.x(), candidate.z(), center.getX(), center.getZ(), searchRadius)
