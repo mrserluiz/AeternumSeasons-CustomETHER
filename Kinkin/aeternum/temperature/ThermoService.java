@@ -286,6 +286,7 @@ public final class ThermoService implements Listener, Runnable {
             if (world != null && !this.disabledWorlds.contains(world.getName()) && !this.plugin.isWorldDisabled(world)) {
                Location loc = p.getLocation();
                Biome biome = world.getBiome(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+               biome = this.seasons.climateBiome(world, biome);
                TemperatureZone zone = this.resolveZone(biome);
                ThermoService.PlayerClimateContext ctx = this.buildContext(p, zone, state);
                int targetC = this.computeTargetC(zone, ctx);
@@ -715,3 +716,4 @@ public final class ThermoService implements Listener, Runnable {
       private boolean fullArmor;
    }
 }
+

@@ -76,6 +76,9 @@ public final class SeasonBiomeFixSpringJungleCommand implements CommandExecutor,
          }
       }
 
+      if(targetWorld != null && this.plugin.getSeasons().preservesWorldBiomes(targetWorld)) {
+         sender.sendMessage("§e[BiomeFix] Mundo com perfil climático: biomas preservados."); return true;
+      }
       final boolean wasEnabled = this.biomeSpoof != null && this.biomeSpoof.isEnabled();
       if (this.biomeSpoof != null) {
          this.biomeSpoof.setEnabled(false);
@@ -85,7 +88,7 @@ public final class SeasonBiomeFixSpringJungleCommand implements CommandExecutor,
       final List<SeasonBiomeFixSpringJungleCommand.ChunkPos> work = new ArrayList<>();
       if (allWorlds) {
          for (World w : Bukkit.getWorlds()) {
-            if (w.getEnvironment() == Environment.NORMAL) {
+            if (w.getEnvironment() == Environment.NORMAL && !this.plugin.getSeasons().preservesWorldBiomes(w)) {
                for (Chunk ch : w.getLoadedChunks()) {
                   work.add(new SeasonBiomeFixSpringJungleCommand.ChunkPos(w.getUID(), ch.getX(), ch.getZ()));
                }
@@ -175,6 +178,7 @@ public final class SeasonBiomeFixSpringJungleCommand implements CommandExecutor,
    }
 
    private boolean applyBiomeGrid(World w, int cx, int cz, Biome target) {
+      if(this.plugin.getSeasons().preservesWorldBiomes(w)) return false;
       int bx = cx << 4;
       int bz = cz << 4;
       int minY = w.getMinHeight();
@@ -243,7 +247,7 @@ public final class SeasonBiomeFixSpringJungleCommand implements CommandExecutor,
 
    private World firstNormalWorld() {
       for (World w : Bukkit.getWorlds()) {
-         if (w.getEnvironment() == Environment.NORMAL) {
+         if (w.getEnvironment() == Environment.NORMAL && !this.plugin.getSeasons().preservesWorldBiomes(w)) {
             return w;
          }
       }
@@ -266,3 +270,4 @@ public final class SeasonBiomeFixSpringJungleCommand implements CommandExecutor,
    private record ChunkPos(UUID worldId, int cx, int cz) {
    }
 }
+

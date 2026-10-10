@@ -42,6 +42,7 @@ public final class SeasonService implements Listener {
    private static final long CUSTOM_CLOCK_UPDATE_PERIOD_TICKS = 5L;
    private final EnumMap<CalendarChannel, SeasonService.ChannelRuntime> runtimes = new EnumMap<>(CalendarChannel.class);
    private final Map<String, CalendarChannel> explicitWorldChannels = new HashMap<>();
+   private volatile Map<String, WorldClimateProfile> climateProfiles = Map.of();
    private boolean registered;
    private long lastFrostManualAdvanceMs = 0L;
    private final Map<UUID, SeasonService.SleepSnapshot> sleepSnapshots = new HashMap<>();
@@ -91,6 +92,19 @@ public final class SeasonService implements Listener {
    }
 
    private void rebuildFromConfig() {
+      Map<String, WorldClimateProfile> profiles = new HashMap<>();
+      ConfigurationSection climate = this.plugin.cfg.climate.getConfigurationSection("world_climate.profiles");
+      if(climate != null) for(String worldName : climate.getKeys(false)) {
+         ConfigurationSection profile = climate.getConfigurationSection(worldName);
+         if(profile == null || !profile.getBoolean("enabled", true)) continue;
+         WorldClimateProfile definition = new WorldClimateProfile(profile.getString("season", "WINTER"),
+             profile.getString("climate-biome", "minecraft:snowy_plains"));
+         if(org.bukkit.Registry.BIOME.get(org.bukkit.NamespacedKey.fromString(definition.climateBiome())) == null)
+            throw new IllegalArgumentException("Unknown vanilla climate biome: " + definition.climateBiome());
+         String key = worldName.toLowerCase(Locale.ROOT);
+         if(profiles.putIfAbsent(key, definition) != null) throw new IllegalArgumentException("Duplicate climate world: " + worldName);
+      }
+      this.climateProfiles = Map.copyOf(profiles);
       this.runtimes.clear();
       this.explicitWorldChannels.clear();
       SeasonService.ChannelRuntime overworld = this.buildRuntime(CalendarChannel.OVERWORLD);
@@ -323,7 +337,22 @@ public final class SeasonService implements Listener {
    }
 
    public boolean isPermanentWinterWorld(World world) {
-      return world != null && world.getName().equalsIgnoreCase("aeternum_frost");
+      WorldClimateProfile profile = this.climateProfile(world);
+      return profile != null ? profile.winter() : world != null && world.getName().equalsIgnoreCase("aeternum_frost");
+   }
+
+   public WorldClimateProfile climateProfile(World world) {
+      return world == null ? null : this.climateProfiles.get(world.getName().toLowerCase(Locale.ROOT));
+   }
+
+   /** These worlds may have climate effects, but must never enter the biome-paint/restore pipeline. */
+   public boolean preservesWorldBiomes(World world) { return this.climateProfile(world) != null; }
+
+   public org.bukkit.block.Biome climateBiome(World world, org.bukkit.block.Biome actual) {
+      WorldClimateProfile profile = this.climateProfile(world);
+      if(profile == null) return actual;
+      org.bukkit.block.Biome reference = org.bukkit.Registry.BIOME.get(org.bukkit.NamespacedKey.fromString(profile.climateBiome()));
+      return reference == null ? actual : reference;
    }
 
    public boolean isChannelEnabled(CalendarChannel channel) {
@@ -365,9 +394,9 @@ public final class SeasonService implements Listener {
    public synchronized CalendarState getStateCopy(World world) {
       CalendarChannel channel = this.resolveChannel(world);
       CalendarState state = channel != null ? this.getStateCopy(channel) : this.getStateCopy(CalendarChannel.OVERWORLD);
-      if (this.isPermanentWinterWorld(world)) {
-         state.season = Season.WINTER;
-      }
+      WorldClimateProfile profile = this.climateProfile(world);
+      if(profile != null) state.season = Season.valueOf(profile.season());
+      else if(this.isPermanentWinterWorld(world)) state.season = Season.WINTER;
 
       return state;
    }
@@ -1496,3 +1525,4 @@ public final class SeasonService implements Listener {
       }
    }
 }
+

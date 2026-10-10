@@ -164,7 +164,7 @@ public final class CanopySnowPainter implements Runnable {
 
    private boolean isNaturallySnowyBiome(World w, int x, int z) {
       int y = w.getHighestBlockYAt(x, z);
-      Biome biome = w.getBiome(x, y, z);
+      Biome biome = this.seasons.climateBiome(w, w.getBiome(x, y, z));
       String name = biome.name().toUpperCase();
       return name.contains("SNOW")
          || name.contains("FROZEN")
@@ -175,3 +175,4 @@ public final class CanopySnowPainter implements Runnable {
          || name.contains("MOUNTAIN");
    }
 }
+

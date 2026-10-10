@@ -346,3 +346,12 @@ illusioner_spawning:
   mansion_replacement_chance: 0.35  # Reemplazo mansión / Mansion replacement
   village_spawn_chance: 0.03        # Spawn en aldea / Village spawn
   village_check_radius: 32          # Radio aldea / Village check radius
+
+
+# Climate interpretation only. Profiles never paint/restore biomes in their worlds.
+world_climate:
+  profiles:
+    aeternum_frost:
+      enabled: true
+      season: WINTER
+      climate-biome: minecraft:snowy_plains

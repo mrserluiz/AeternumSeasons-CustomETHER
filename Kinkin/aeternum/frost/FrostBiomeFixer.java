@@ -28,6 +28,7 @@ public final class FrostBiomeFixer implements Listener {
    @EventHandler
    public void onChunkLoad(ChunkLoadEvent e) {
       World w = e.getWorld();
+      if(this.plugin.getSeasons().preservesWorldBiomes(w)) return;
       if (w.getName().equalsIgnoreCase("aeternum_frost")) {
          Chunk chunk = e.getChunk();
          int worldMinY = w.getMinHeight();
@@ -55,3 +56,4 @@ public final class FrostBiomeFixer implements Listener {
       };
    }
 }
+

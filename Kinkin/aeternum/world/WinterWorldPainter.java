@@ -391,8 +391,8 @@ public final class WinterWorldPainter implements Listener, Runnable {
          } else {
             this.meltAccumulatedTicks = 0L;
             this.restoreSeasonalCalciteStep(Math.max(32, Math.min(200, this.meltBudgetPerTick)));
-            this.spawnWinterSnowAndIce();
          }
+         this.spawnWinterSnowAndIce(); // per-world season: fixed winter is independent of the main calendar
       }
    }
 
@@ -700,7 +700,7 @@ public final class WinterWorldPainter implements Listener, Runnable {
                }
 
                World w = p.getWorld();
-               if (w.getEnvironment() == Environment.NORMAL) {
+               if (w.getEnvironment() == Environment.NORMAL && this.seasons.getStateCopy(w).season == Season.WINTER) {
                   Location playerLocation = p.getLocation();
                   boolean anyCold = this.isColdAround(w, playerLocation, Math.min(24, this.radius));
                   boolean stormingForBoost = w.hasStorm() && anyCold;
@@ -867,7 +867,7 @@ public final class WinterWorldPainter implements Listener, Runnable {
                      for (int y = topY; y >= minY; y--) {
                         Block b = w.getBlockAt(x, y, z);
                         if (this.isTargetLeaf(b.getType())) {
-                           Biome biome = w.getBiome(x, y, z);
+                           Biome biome = this.seasons.climateBiome(w, w.getBiome(x, y, z));
                            if (this.isTaigaOrBirchBiome(biome)) {
                               found = b;
                               break;
@@ -1480,7 +1480,7 @@ public final class WinterWorldPainter implements Listener, Runnable {
          return true;
       }
 
-      Biome biome = w.getBiome(x, y, z);
+      Biome biome = this.seasons.climateBiome(w, w.getBiome(x, y, z));
       return this.isNaturallySnowyBiomeName(biome, y);
    }
 
@@ -1590,9 +1590,9 @@ public final class WinterWorldPainter implements Listener, Runnable {
 
       Biome biome;
       try {
-         biome = w.getBiome(x, y, z);
+         biome = this.seasons.climateBiome(w, w.getBiome(x, y, z));
       } catch (Throwable ignored) {
-         biome = w.getBiome(x, z);
+         biome = this.seasons.climateBiome(w, w.getBiome(x, z));
       }
 
       return this.excludedSnowBiomes.contains(biome);
@@ -1725,10 +1725,15 @@ public final class WinterWorldPainter implements Listener, Runnable {
    }
 
    private boolean isColdAt(World w, int x, int z) {
+      if(this.seasons.climateProfile(w) != null) {
+         Biome reference = this.seasons.climateBiome(w, Biome.PLAINS);
+         String name = reference.getKey().getKey();
+         return name.contains("snow") || name.contains("frozen") || name.contains("grove") || name.equals("ice_spikes");
+      }
       try {
          return w.getTemperature(x, z) <= 0.15;
       } catch (Throwable ignored) {
-         Biome b = w.getBiome(x, w.getHighestBlockYAt(x, z), z);
+         Biome b = this.seasons.climateBiome(w, w.getBiome(x, w.getHighestBlockYAt(x, z), z));
          String name = b.name();
          return name.contains("SNOW") || name.contains("FROZEN") || name.contains("GROVE") || name.contains("TAIGA");
       }
@@ -1866,3 +1871,4 @@ public final class WinterWorldPainter implements Listener, Runnable {
    private record StartupSnapshot(int generation, UUID worldId, int chunkX, int chunkZ, int minY, int maxY, ChunkSnapshot snapshot) {
    }
 }
+

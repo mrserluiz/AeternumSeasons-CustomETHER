@@ -581,7 +581,7 @@ public final class BiomeSpoofAdapter implements Listener, Runnable {
    }
 
    private void enqueueChunk(World world, int chunkX, int chunkZ) {
-      if (world.isChunkLoaded(chunkX, chunkZ)) {
+      if (!this.seasons.preservesWorldBiomes(world) && world.isChunkLoaded(chunkX, chunkZ)) {
          BiomeSpoofAdapter.ChunkWork work = new BiomeSpoofAdapter.ChunkWork(world.getUID(), chunkX, chunkZ);
          if (this.queuedChunks.add(work)) {
             this.pendingChunks.addLast(work);
@@ -703,7 +703,7 @@ public final class BiomeSpoofAdapter implements Listener, Runnable {
    }
 
    private boolean isWorldDisabled(World world) {
-      return this.disabledWorldNames.contains(world.getName().toLowerCase(Locale.ROOT));
+      return this.seasons.preservesWorldBiomes(world) || this.disabledWorldNames.contains(world.getName().toLowerCase(Locale.ROOT));
    }
 
    private void processQueuedChunk(BiomeSpoofAdapter.ChunkWork work) {
@@ -820,7 +820,7 @@ public final class BiomeSpoofAdapter implements Listener, Runnable {
                }
 
                World w = p.getWorld();
-               if (w.getEnvironment() == Environment.NORMAL) {
+               if (w.getEnvironment() == Environment.NORMAL && !this.seasons.preservesWorldBiomes(w)) {
                   List<String> disabled = this.plugin.getConfig().getStringList("worlds.disabled_season_fx");
                   if (disabled == null || !disabled.stream().anyMatch(s -> s != null && s.equalsIgnoreCase(w.getName()))) {
                      CalendarChannel channel = this.seasons.resolveChannel(w);
@@ -1310,6 +1310,7 @@ public final class BiomeSpoofAdapter implements Listener, Runnable {
    }
 
    private BiomeSpoofAdapter.BiomeApplyResult captureAndApply(Chunk ch, Biome target, Season season) {
+      if(this.seasons.preservesWorldBiomes(ch.getWorld())) return new BiomeSpoofAdapter.BiomeApplyResult(null, null, false, false);
       try {
          World w = ch.getWorld();
          int bx = ch.getX() << 4;
@@ -1479,6 +1480,7 @@ public final class BiomeSpoofAdapter implements Listener, Runnable {
    }
 
    private boolean revertChunk(Chunk ch, boolean refreshClientImmediately) {
+      if(this.seasons.preservesWorldBiomes(ch.getWorld())) return false;
       long k = this.key(ch);
       Biome[] old = this.backups.get(k);
       if (old == null) {
@@ -1929,3 +1931,4 @@ public final class BiomeSpoofAdapter implements Listener, Runnable {
    private record PlayerScanState(UUID worldId, int chunkX, int chunkZ, int radius, long visualStamp) {
    }
 }
+

@@ -61,6 +61,7 @@ public final class BiomeBackupStore {
    private final Map<UUID, BiomeBackupStore.WorldContainer> containers = new ConcurrentHashMap<>();
    private final AtomicBoolean restoreInProgress = new AtomicBoolean(false);
    private final Object legacyOperationLock = new Object();
+   private final Set<String> warnedMissingBiomes = ConcurrentHashMap.newKeySet();
 
    public BiomeBackupStore(AeternumSeasonsPlugin plugin) {
       this.plugin = plugin;
@@ -118,6 +119,8 @@ public final class BiomeBackupStore {
 
          try {
             result = this.loadOriginalGrid(worldId, cx, cz, expectedStepXZ, expectedStepY, minY, maxY);
+         } catch (BiomePaletteResolver.UnresolvedBiome unavailable) {
+            this.warnMissingBiome(unavailable.key());
          } catch (Throwable t) {
             this.plugin.getLogger().warning("[BiomeBackup] Could not read " + worldId + " " + cx + "," + cz + ": " + t.getMessage());
          }
@@ -163,6 +166,7 @@ public final class BiomeBackupStore {
 
       BiomeBackupStore.BackupData data = this.decodeBackup(payload);
       if (data.stepXZ == expectedStepXZ && data.stepY == expectedStepY && data.minY == expectedMinY && data.maxY == expectedMaxY) {
+         List<Biome> palette = this.resolvePalette(data);
          Biome[] grid = new Biome[data.indices.length];
 
          for (int i = 0; i < data.indices.length; i++) {
@@ -171,7 +175,7 @@ public final class BiomeBackupStore {
                throw new IOException("Invalid palette index in biome backup");
             }
 
-            grid[i] = this.safeBiome(data.palette[paletteIndex]);
+            grid[i] = palette.get(paletteIndex);
          }
 
          return grid;
@@ -231,7 +235,7 @@ public final class BiomeBackupStore {
       int[] indices = new int[grid.length];
 
       for (int i = 0; i < grid.length; i++) {
-         String name = grid[i].name();
+         String name = grid[i].getKey().toString();
          Integer index = paletteMap.get(name);
          if (index == null) {
             index = palette.size();
@@ -525,6 +529,8 @@ public final class BiomeBackupStore {
       LinkedHashMap<BiomeBackupStore.ChunkRef, BiomeBackupStore.RestoreEntry> unique = new LinkedHashMap<>();
 
       for (UUID worldId : this.findPackedWorlds()) {
+         World loaded = Bukkit.getWorld(worldId);
+         if(loaded != null && this.plugin.getSeasons().preservesWorldBiomes(loaded)) continue;
          BiomeBackupStore.WorldContainer state = this.container(worldId);
 
          try {
@@ -546,6 +552,8 @@ public final class BiomeBackupStore {
       for (Path file : this.findLegacyFiles()) {
          BiomeBackupStore.LegacyRef legacy = this.parseLegacyFile(file);
          if (legacy != null) {
+            World loaded = Bukkit.getWorld(legacy.worldId);
+            if(loaded != null && this.plugin.getSeasons().preservesWorldBiomes(loaded)) continue;
             BiomeBackupStore.ChunkRef ref = new BiomeBackupStore.ChunkRef(legacy.worldId, legacy.cx, legacy.cz);
             BiomeBackupStore.RestoreEntry existing = unique.get(ref);
             if (existing == null) {
@@ -716,7 +724,10 @@ public final class BiomeBackupStore {
       }
    }
 
-   private void applyBackup(World world, int cx, int cz, BiomeBackupStore.BackupData data) {
+   private void applyBackup(World world, int cx, int cz, BiomeBackupStore.BackupData data) throws IOException {
+      if(this.plugin.getSeasons().preservesWorldBiomes(world)) throw new IOException("Climate profile preserves world biomes; backup retained");
+      List<Biome> palette = this.resolvePalette(data);
+      for(int value : data.indices) if(value < 0 || value >= palette.size()) throw new IOException("Invalid palette index");
       world.getChunkAt(cx, cz);
       int baseX = cx << 4;
       int baseZ = cz << 4;
@@ -730,7 +741,7 @@ public final class BiomeBackupStore {
             for (int y = data.minY; y < data.maxY && index < data.indices.length; y += data.stepY) {
                int paletteIndex = data.indices[index++];
                if (paletteIndex >= 0 && paletteIndex < data.palette.length && y >= currentMin && y < currentMax) {
-                  world.setBiome(baseX + x, y, baseZ + z, this.safeBiome(data.palette[paletteIndex]));
+                  world.setBiome(baseX + x, y, baseZ + z, palette.get(paletteIndex));
                }
             }
          }
@@ -741,13 +752,16 @@ public final class BiomeBackupStore {
       world.refreshChunk(cx, cz);
    }
 
-   private Biome safeBiome(String name) {
-      try {
-         return Biome.valueOf(name.toUpperCase(Locale.ROOT));
-      } catch (IllegalArgumentException ex) {
-         this.plugin.getLogger().warning("[BiomeBackup] Bioma desconocido '" + name + "', usando PLAINS");
-         return Biome.PLAINS;
-      }
+   private List<Biome> resolvePalette(BiomeBackupStore.BackupData data) throws BiomePaletteResolver.UnresolvedBiome {
+      return BiomePaletteResolver.resolve(data.palette, key -> {
+         org.bukkit.NamespacedKey parsed = org.bukkit.NamespacedKey.fromString(key);
+         return parsed == null ? null : org.bukkit.Registry.BIOME.get(parsed);
+      });
+   }
+
+   private void warnMissingBiome(String key) {
+      if(this.warnedMissingBiomes.size() < 128 && this.warnedMissingBiomes.add(key))
+         this.plugin.getLogger().warning("[BiomeBackup] Biome unavailable: '" + key + "'. Backup preserved; no PLAINS substitution. Further warnings for this ID suppressed.");
    }
 
    private Set<UUID> findPackedWorlds() {
@@ -958,6 +972,7 @@ public final class BiomeBackupStore {
                return false;
             }
 
+            if(BiomeBackupStore.this.plugin.getSeasons().preservesWorldBiomes(world)) return false;
             byte[] payload;
             if (entry.packed) {
                payload = BiomeBackupStore.this.readPackedPayload(BiomeBackupStore.this.container(entry.ref.worldId), entry.ref.cx, entry.ref.cz);
@@ -968,6 +983,9 @@ public final class BiomeBackupStore {
             BiomeBackupStore.BackupData data = BiomeBackupStore.this.decodeBackup(payload);
             BiomeBackupStore.this.applyBackup(world, entry.ref.cx, entry.ref.cz, data);
             return true;
+         } catch (BiomePaletteResolver.UnresolvedBiome unavailable) {
+            BiomeBackupStore.this.warnMissingBiome(unavailable.key());
+            return false;
          } catch (Throwable t) {
             BiomeBackupStore.this.plugin
                .getLogger()
@@ -992,3 +1010,4 @@ public final class BiomeBackupStore {
       }
    }
 }
+
