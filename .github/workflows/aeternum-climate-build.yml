@@ -1,0 +1,25 @@
+name: Recovered Aeternum climate build
+on:
+  push:
+    paths: ['Kinkin/**', 'aeternum-build/**', '*.yml', '.github/workflows/aeternum-climate-build.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+          cache-dependency-path: aeternum-build/pom.xml
+      - run: bash tools/test-climate-compatibility.sh
+      - run: mvn --batch-mode --no-transfer-progress --file aeternum-build/pom.xml clean verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AeternumSeasons-4.5.1-CLIMATE-BETA
+          path: aeternum-build/target/AeternumSeasons-4.5.1-CLIMATE-BETA.jar
+          if-no-files-found: error
