@@ -73,3 +73,34 @@ RESERVED
 2322 → RESERVED
 2323 → RESERVED
 ...
+
+============================================================
+BREWERYX — BEBIDAS (CMD RESERVADOS; TEXTURAS PENDENTES)
+============================================================
+
+2500 → Cerveja de Trigo (BreweryX: wheatbeer)
+2501 → Cerveja (BreweryX: beer)
+2502 → Cerveja Escura (BreweryX: darkbeer)
+2503 → Vinho Tinto Suave (BreweryX: wine)
+2504 → Hidromel (BreweryX: mead)
+2505 → Hidromel de Maçã (BreweryX: ap_mead)
+2506 → Sidra de Maçã (BreweryX: cidre)
+2507 → Licor de Maçã (BreweryX: apple_liquor)
+2508 → Whiskey (BreweryX: whiskey)
+2509 → Rum (BreweryX: rum)
+2510 → Vodka (BreweryX: vodka)
+2511 → Vodka de Cogumelo (BreweryX: shroom_vodka)
+2512 → Gin (BreweryX: gin)
+2513 → Tequila (BreweryX: tequila)
+2514 → Absinto (BreweryX: absinthe)
+2515 → Absinto Verde (BreweryX: gr_absinthe)
+2516 → Sopa de Batata (BreweryX: potato_soup)
+2517 → Café (BreweryX: coffee)
+2518 → Gemada (BreweryX: eggnog)
+2519 → Vodka Dourada (BreweryX: g_vodka)
+2520 → Whiskey Especial (BreweryX: fire_whiskey)
+2521 → Chocolate Quente (BreweryX: hot_choc)
+2522 → Café Gelado (BreweryX: iced_coffee)
+
+Status: CMDs atribuídos às receitas; integração visual Java/Bedrock ainda pendente.
+Atenção: registrar novos CMDs aqui antes de utilizá-los; não reutilizar IDs existentes.
