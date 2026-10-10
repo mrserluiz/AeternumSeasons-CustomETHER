@@ -18,6 +18,17 @@ jobs:
           cache-dependency-path: aeternum-build/pom.xml
       - run: bash tools/test-climate-compatibility.sh
       - run: mvn --batch-mode --no-transfer-progress --file aeternum-build/pom.xml clean verify
+      - name: Prepare runtime probe classpath
+        run: mvn --batch-mode --no-transfer-progress --file aeternum-build/pom.xml dependency:build-classpath -Dmdep.outputFile=target/compile-classpath.txt
+      - name: Verify isolated Paper startup and restart
+        run: python3 tools/test-paper-climate.py
+      - name: Save runtime diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Aeternum-climate-runtime-logs
+          path: aeternum-build/target/runtime-smoke/run-*.log
+          if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         with:
           name: AeternumSeasons-4.5.1-CLIMATE-BETA
