@@ -53,6 +53,7 @@ public final class Configs {
    }
 
    public void save(String name, FileConfiguration cfg) {
+      if (cfg == null) return;
       try {
          cfg.options().copyDefaults(true);
          cfg.save(new File(this.plugin.getDataFolder(), name));

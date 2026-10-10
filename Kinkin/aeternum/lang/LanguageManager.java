@@ -50,6 +50,12 @@ public final class LanguageManager implements Listener {
       for (String code : this.enabled) {
          File f = new File(this.plugin.getDataFolder(), "lang/" + code + ".yml");
          if (!f.exists()) {
+            try (var resource = this.plugin.getResource("lang/" + code + ".yml")) {
+               if(resource == null) {
+                  this.plugin.getLogger().info("Translation " + code + " is not bundled; using English fallback.");
+                  continue;
+               }
+            } catch (java.io.IOException error) { throw new java.io.UncheckedIOException(error); }
             this.plugin.saveResource("lang/" + code + ".yml", false);
          }
 
