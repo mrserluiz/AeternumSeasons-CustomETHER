@@ -172,3 +172,63 @@ Book CMD 2400–2442 → Reserved to EtherCraft enchanted-book scanner per serve
 BreweryX 2500–2522 → Reserved in this registry, NOT present in the analyzed Java ZIP; textures/models pending.
 
 Important: range_dispatch thresholds may act as interval boundaries and fallback selectors. Do not treat every threshold as an assignable isolated CMD. The identical number may legally occur on different base item types. Audit exact material + CMD + active dispatch when investigating real conflicts.
+
+
+============================================================
+CROPS — AETERNUM / ETHER TEXTURE ASSETS (ZIP AUDIT)
+============================================================
+
+Tomato: stages 0–3
+Onion: stages 0–3
+Rice: seedling, stalk, young_top, ripe_top
+Crop stages are separate model/texture assets (assets/aeternum and assets/ether); do NOT reserve one CMD per growth stage without evidence of a CMD dispatch. Crop item IDs already tracked: Tomato 2301, Onion 2302, Rice 2303.
+
+============================================================
+ENCHANTED BOOK COVERS — SCANNER REGISTRY (43 TYPES)
+============================================================
+
+2400 → aqua_affinity
+2401 → bane_of_arthropods
+2402 → breach
+2403 → blast_protection
+2404 → channeling
+2405 → binding_curse
+2406 → density
+2407 → depth_strider
+2408 → efficiency
+2409 → feather_falling
+2410 → fire_aspect
+2411 → fire_protection
+2412 → flame
+2413 → fortune
+2414 → frost_walker
+2415 → impaling
+2416 → infinity
+2417 → knockback
+2418 → looting
+2419 → loyalty
+2420 → luck_of_the_sea
+2421 → lure
+2422 → mending
+2423 → multishot
+2424 → piercing
+2425 → power
+2426 → projectile_protection
+2427 → protection
+2428 → punch
+2429 → quick_charge
+2430 → respiration
+2431 → riptide
+2432 → sharpness
+2433 → smite
+2434 → silk_touch
+2435 → soul_speed
+2436 → sweeping_edge
+2437 → swift_sneak
+2438 → thorns
+2439 → unbreaking
+2440 → wind_burst
+2441 → vanishing_curse
+2442 → lunge
+
+These 43 CMDs are assigned by the EtherCraft scanner and used for Bedrock mapping. Java ZIP v0.0.8 also contains assets/minecraft/items/enchanted_book.json with enchantment-driven cases (not necessarily CMD dispatch). Distinguish selector-based Java book models from scanner-assigned CMDs; do not equate their presence with Java CMD 2400–2442 dispatch.
