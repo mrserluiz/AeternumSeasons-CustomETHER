@@ -114,7 +114,7 @@ public final class SeasonalFloraController implements Listener, Runnable {
       this.allowInView = this.plugin.cfg.climate.getBoolean("seasonal_flora.allow_in_view", true);
       this.surfaceScanDepth = Math.max(1, this.plugin.cfg.climate.getInt("seasonal_flora.surface_scan_depth", 8));
       List<String> list = this.plugin.getConfig().getStringList("worlds.disabled_season_fx");
-      this.disabledSeasonFxWorlds = (list == null ? List.of() : list)
+      this.disabledSeasonFxWorlds = (list == null ? List.<String>of() : list)
          .stream()
          .filter(Objects::nonNull)
          .map(s -> s.trim().toLowerCase(Locale.ROOT))

@@ -471,7 +471,7 @@ public final class StableBarnService implements Listener {
       if (this.fauna.getBoolean("horse_stable.regen_in_barn.enabled", true) && inBarn) {
          double heal = this.fauna.getDouble("horse_stable.regen_in_barn.heal_amount", 1.0);
          boolean onlyIfNotFull = this.fauna.getBoolean("horse_stable.regen_in_barn.only_if_not_full", true);
-         AttributeInstance healthAttr = h.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+         AttributeInstance healthAttr = h.getAttribute(Attribute.MAX_HEALTH);
          if (healthAttr != null) {
             double maxHp = healthAttr.getValue();
             if (!onlyIfNotFull || h.getHealth() < maxHp) {
@@ -501,7 +501,7 @@ public final class StableBarnService implements Listener {
             affinity += gainInBarn;
          }
 
-         AttributeInstance healthAttr = h.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+         AttributeInstance healthAttr = h.getAttribute(Attribute.MAX_HEALTH);
          if (healthAttr != null) {
             double currentMaxHealth = healthAttr.getValue();
             if (h.getHealth() >= Math.max(1.0, currentMaxHealth - 1.0)) {
@@ -543,7 +543,7 @@ public final class StableBarnService implements Listener {
       progress = this.clamp(progress, 0.0, 1.0);
       double speedBonusAtMax = Math.max(0.0, this.fauna.getDouble("horse_stable.affinity.speed_bonus_at_max", 0.12));
       double healthBonusAtMax = Math.max(0.0, this.fauna.getDouble("horse_stable.affinity.health_bonus_at_max", 6.0));
-      AttributeInstance speedAttr = h.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+      AttributeInstance speedAttr = h.getAttribute(Attribute.MOVEMENT_SPEED);
       if (speedAttr != null) {
          this.removeModifier(speedAttr, AFFINITY_SPEED_MOD_UUID);
          double amount = speedBonusAtMax * progress;
@@ -552,7 +552,7 @@ public final class StableBarnService implements Listener {
          }
       }
 
-      AttributeInstance healthAttr = h.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+      AttributeInstance healthAttr = h.getAttribute(Attribute.MAX_HEALTH);
       if (healthAttr != null) {
          double oldMax = healthAttr.getValue();
          this.removeModifier(healthAttr, AFFINITY_HEALTH_MOD_UUID);
@@ -571,7 +571,7 @@ public final class StableBarnService implements Listener {
    }
 
    private void applyTiredSpeed(Horse h, double multiplier) {
-      AttributeInstance a = h.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+      AttributeInstance a = h.getAttribute(Attribute.MOVEMENT_SPEED);
       if (a != null) {
          this.removeModifier(a, TIRED_MOD_UUID);
          double amount = multiplier - 1.0;
@@ -581,14 +581,14 @@ public final class StableBarnService implements Listener {
    }
 
    private void clearTiredSpeed(Horse h) {
-      AttributeInstance a = h.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+      AttributeInstance a = h.getAttribute(Attribute.MOVEMENT_SPEED);
       if (a != null) {
          this.removeModifier(a, TIRED_MOD_UUID);
       }
    }
 
    private void removeModifier(AttributeInstance attr, UUID uuid) {
-      for (AttributeModifier mod : new ArrayList(attr.getModifiers())) {
+      for (AttributeModifier mod : new ArrayList<>(attr.getModifiers())) {
          if (uuid.equals(mod.getUniqueId())) {
             attr.removeModifier(mod);
          }

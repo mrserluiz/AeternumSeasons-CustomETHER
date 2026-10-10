@@ -249,7 +249,7 @@ public final class WitherLooseEvent implements SeasonalEvent {
          if (w != null && w.getEnvironment() == Environment.NETHER) {
             Wither wither = (Wither)w.spawnEntity(spawn, EntityType.WITHER);
             wither.getPersistentDataContainer().set(this.witherMarkKey, PersistentDataType.BYTE, (byte)1);
-            AttributeInstance maxHp = wither.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            AttributeInstance maxHp = wither.getAttribute(Attribute.MAX_HEALTH);
             if (maxHp != null) {
                maxHp.setBaseValue(this.witherMaxHealth);
             }

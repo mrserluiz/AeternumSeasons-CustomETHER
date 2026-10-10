@@ -420,7 +420,7 @@ public final class SeasonFoods implements Listener {
             if (resultId != null) {
                ItemStack[] matrix = inv.getMatrix();
                switch (resultId) {
-                  case "tomato_salad":
+                  case "tomato_salad": {
                      int tomatoCount = 0;
                      int bowls = 0;
                      ItemStack[] var28 = matrix;
@@ -455,7 +455,8 @@ public final class SeasonFoods implements Listener {
                      this.applyDishLocalization(p, result, "tomato_salad");
                      inv.setResult(result);
                      break;
-                  case "vegetable_bread":
+                  }
+                  case "vegetable_bread": {
                      int bread = 0;
                      int tomato = 0;
                      int onion = 0;
@@ -489,7 +490,8 @@ public final class SeasonFoods implements Listener {
                      this.applyDishLocalization(p, result, "vegetable_bread");
                      inv.setResult(result);
                      break;
-                  case "meat_sandwich":
+                  }
+                  case "meat_sandwich": {
                      int bread = 0;
                      int tomato = 0;
                      int onion = 0;
@@ -526,7 +528,8 @@ public final class SeasonFoods implements Listener {
                      this.applyDishLocalization(p, result, "meat_sandwich");
                      inv.setResult(result);
                      break;
-                  case "beef_rice_stew":
+                  }
+                  case "beef_rice_stew": {
                      int bowl = 0;
                      int rice = 0;
                      int meat = 0;
@@ -558,6 +561,7 @@ public final class SeasonFoods implements Listener {
                      this.applyDishLocalization(p, result, "beef_rice_stew");
                      inv.setResult(result);
                      break;
+                  }
                   default:
                      this.applyDishLocalization(p, result, resultId);
                      inv.setResult(result);

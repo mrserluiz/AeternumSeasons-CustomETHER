@@ -288,7 +288,7 @@ public final class HolidayEvent implements SeasonalEvent {
 
             for (Entity e : w.getNearbyEntities(loc, this.christmasHealRadius, this.christmasHealRadius, this.christmasHealRadius)) {
                if (e instanceof Player other && !(other.getHealth() <= 0.0)) {
-                  double max = Objects.requireNonNull(other.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue();
+                  double max = Objects.requireNonNull(other.getAttribute(Attribute.MAX_HEALTH)).getValue();
                   double newHealth = Math.min(max, other.getHealth() + this.christmasHealAmount);
                   other.setHealth(newHealth);
                }

@@ -330,7 +330,7 @@ public final class GolemUpgrades implements Listener, Runnable {
       String name = this.plugin.lang.tr(owner, "golem.guardian.name");
       iron.setCustomName(name);
       iron.setCustomNameVisible(true);
-      AttributeInstance dmg = iron.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+      AttributeInstance dmg = iron.getAttribute(Attribute.MAX_HEALTH);
       if (dmg != null) {
          double vanilla = dmg.getBaseValue();
          double mult = this.plugin.getConfig().getDouble("golems.guardian.base_damage_multiplier", 1.2);
@@ -339,7 +339,7 @@ public final class GolemUpgrades implements Listener, Runnable {
    }
 
    private void setMaxHealth(LivingEntity ent, double value) {
-      AttributeInstance max = ent.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+      AttributeInstance max = ent.getAttribute(Attribute.MAX_HEALTH);
       if (max != null) {
          max.setBaseValue(Math.max(1.0, value));
       }
@@ -365,14 +365,14 @@ public final class GolemUpgrades implements Listener, Runnable {
                if (type == GolemUpgrades.GolemType.FROSTBOUND && ent instanceof Snowman snow) {
                   double mul = season == Season.WINTER ? frostWinMul : frostOtherMul;
                   this.setMaxHealth(snow, frostBase * mul);
-                  AttributeInstance max = snow.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                  AttributeInstance max = snow.getAttribute(Attribute.MAX_HEALTH);
                   if (max != null && snow.getHealth() > max.getBaseValue()) {
                      snow.setHealth(max.getBaseValue());
                   }
                } else if (type == GolemUpgrades.GolemType.GUARDIAN && ent instanceof IronGolem iron) {
                   double mul = season == Season.WINTER ? guardWinMul : 1.0;
                   this.setMaxHealth(iron, guardBase * mul);
-                  AttributeInstance max = iron.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                  AttributeInstance max = iron.getAttribute(Attribute.MAX_HEALTH);
                   if (max != null && iron.getHealth() > max.getBaseValue()) {
                      iron.setHealth(max.getBaseValue());
                   }

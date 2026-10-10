@@ -59,7 +59,7 @@ public final class SeasonalEventService implements Listener, Runnable {
       this.requirePlayers = cfg.getBoolean("events.require_players.enabled", false);
       this.minPlayers = Math.max(0, cfg.getInt("events.require_players.players", 3));
       List<String> list = this.plugin.getConfig().getStringList("worlds.disabled_season_fx");
-      this.disabledSeasonFxWorlds = (list == null ? List.of() : list)
+      this.disabledSeasonFxWorlds = (list == null ? List.<String>of() : list)
          .stream()
          .filter(Objects::nonNull)
          .map(s -> s.trim().toLowerCase(Locale.ROOT))

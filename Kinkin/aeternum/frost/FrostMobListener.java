@@ -127,7 +127,7 @@ public final class FrostMobListener implements Listener {
    }
 
    private void buffMonster(LivingEntity ent) {
-      AttributeInstance maxHealth = ent.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+      AttributeInstance maxHealth = ent.getAttribute(Attribute.MAX_HEALTH);
       if (maxHealth != null) {
          double base = maxHealth.getBaseValue();
          double newMax = base * 2.0;
@@ -143,12 +143,12 @@ public final class FrostMobListener implements Listener {
          ent.setHealth(newMax);
       }
 
-      AttributeInstance attack = ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+      AttributeInstance attack = ent.getAttribute(Attribute.ATTACK_DAMAGE);
       if (attack != null) {
          attack.setBaseValue(attack.getBaseValue() * 1.5);
       }
 
-      AttributeInstance movement = ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+      AttributeInstance movement = ent.getAttribute(Attribute.MOVEMENT_SPEED);
       if (movement != null) {
          movement.setBaseValue(movement.getBaseValue() * 1.1);
       }
@@ -161,7 +161,7 @@ public final class FrostMobListener implements Listener {
             if (e.getEntity() instanceof LivingEntity victim) {
                World var12 = spider.getWorld();
                Location loc = victim.getLocation();
-               ArrayList placed = new ArrayList();
+               ArrayList<Block> placed = new ArrayList<>();
 
                for (int p = -1; p <= 1; p++) {
                   for (int dz = -1; dz <= 1; dz++) {

@@ -170,18 +170,18 @@ public final class FrostBossManager implements Listener {
    }
 
    private void buffBossStats(LivingEntity ent) {
-      AttributeInstance maxHealth = ent.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+      AttributeInstance maxHealth = ent.getAttribute(Attribute.MAX_HEALTH);
       if (maxHealth != null) {
          maxHealth.setBaseValue(600.0);
          ent.setHealth(maxHealth.getBaseValue());
       }
 
-      AttributeInstance attack = ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+      AttributeInstance attack = ent.getAttribute(Attribute.ATTACK_DAMAGE);
       if (attack != null) {
          attack.setBaseValue(20.0);
       }
 
-      AttributeInstance movement = ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+      AttributeInstance movement = ent.getAttribute(Attribute.MOVEMENT_SPEED);
       if (movement != null) {
          movement.setBaseValue(movement.getBaseValue() * 1.2);
       }

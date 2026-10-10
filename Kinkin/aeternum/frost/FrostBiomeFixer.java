@@ -50,10 +50,9 @@ public final class FrostBiomeFixer implements Listener {
    }
 
    private boolean isColdBiome(Biome b) {
-      return switch (b) {
-         case SNOWY_PLAINS, SNOWY_TAIGA, GROVE, SNOWY_SLOPES, JAGGED_PEAKS, FROZEN_PEAKS, FROZEN_RIVER, FROZEN_OCEAN, DEEP_FROZEN_OCEAN -> true;
-         default -> false;
-      };
+      return b == Biome.SNOWY_PLAINS || b == Biome.SNOWY_TAIGA || b == Biome.GROVE
+         || b == Biome.SNOWY_SLOPES || b == Biome.JAGGED_PEAKS || b == Biome.FROZEN_PEAKS
+         || b == Biome.FROZEN_RIVER || b == Biome.FROZEN_OCEAN || b == Biome.DEEP_FROZEN_OCEAN;
    }
 }
 

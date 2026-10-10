@@ -57,13 +57,13 @@ public final class HeatMobScaler implements Listener {
             PersistentDataContainer pdc = le.getPersistentDataContainer();
             if (!pdc.has(this.TAG_KEY, PersistentDataType.BYTE)) {
                pdc.set(this.TAG_KEY, PersistentDataType.BYTE, (byte)1);
-               AttributeInstance maxHp = le.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+               AttributeInstance maxHp = le.getAttribute(Attribute.MAX_HEALTH);
                if (maxHp != null) {
                   maxHp.setBaseValue(maxHp.getBaseValue() * 4.0);
                   le.setHealth(maxHp.getBaseValue());
                }
 
-               AttributeInstance speed = le.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+               AttributeInstance speed = le.getAttribute(Attribute.MOVEMENT_SPEED);
                if (speed != null) {
                   speed.setBaseValue(speed.getBaseValue() * 1.2);
                }

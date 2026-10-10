@@ -1,7 +1,7 @@
 name: AeternumSeasons
 main: Kinkin.aeternum.AeternumSeasonsPlugin
-version: "4.5"
-api-version: '1.21'
+version: "4.5.1-CLIMATE-BETA"
+api-version: '26.2'
 author: [Kinkin, MD (salvador)]
 description: "A completely independent seasons plugin! For more information, visit: https://github.com/KinkinxD12/Aeternum-Seasons"
 

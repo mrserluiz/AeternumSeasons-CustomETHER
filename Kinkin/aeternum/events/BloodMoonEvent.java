@@ -195,7 +195,7 @@ public final class BloodMoonEvent implements SeasonalEvent, Listener {
 
    private void saveAndBuffAttributes(LivingEntity le) {
       PersistentDataContainer pdc = le.getPersistentDataContainer();
-      AttributeInstance maxHealth = le.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+      AttributeInstance maxHealth = le.getAttribute(Attribute.MAX_HEALTH);
       if (maxHealth != null) {
          if (!pdc.has(this.K_MAX_HEALTH, PersistentDataType.DOUBLE)) {
             pdc.set(this.K_MAX_HEALTH, PersistentDataType.DOUBLE, maxHealth.getBaseValue());
@@ -210,7 +210,7 @@ public final class BloodMoonEvent implements SeasonalEvent, Listener {
          le.setHealth(finalValue);
       }
 
-      AttributeInstance dmg = le.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+      AttributeInstance dmg = le.getAttribute(Attribute.ATTACK_DAMAGE);
       if (dmg != null) {
          if (!pdc.has(this.K_ATTACK_DMG, PersistentDataType.DOUBLE)) {
             pdc.set(this.K_ATTACK_DMG, PersistentDataType.DOUBLE, dmg.getBaseValue());
@@ -240,7 +240,7 @@ public final class BloodMoonEvent implements SeasonalEvent, Listener {
 
             if (pdc.has(this.K_MAX_HEALTH, PersistentDataType.DOUBLE)) {
                Double prevMax = (Double)pdc.get(this.K_MAX_HEALTH, PersistentDataType.DOUBLE);
-               AttributeInstance maxHealth = m.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+               AttributeInstance maxHealth = m.getAttribute(Attribute.MAX_HEALTH);
                if (prevMax != null && maxHealth != null) {
                   maxHealth.setBaseValue(prevMax);
                   m.setHealth(Math.min(m.getHealth(), prevMax));
@@ -251,7 +251,7 @@ public final class BloodMoonEvent implements SeasonalEvent, Listener {
 
             if (pdc.has(this.K_ATTACK_DMG, PersistentDataType.DOUBLE)) {
                Double prevDmg = (Double)pdc.get(this.K_ATTACK_DMG, PersistentDataType.DOUBLE);
-               AttributeInstance dmg = m.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+               AttributeInstance dmg = m.getAttribute(Attribute.ATTACK_DAMAGE);
                if (prevDmg != null && dmg != null) {
                   dmg.setBaseValue(prevDmg);
                }

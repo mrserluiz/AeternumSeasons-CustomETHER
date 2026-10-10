@@ -95,7 +95,7 @@ public final class HeatVariantListener implements Listener {
                le.getWorld().spawnParticle(Particle.FLAME, le.getLocation().add(0.0, 1.0, 0.0), 16, 0.4, 0.4, 0.4, 0.02);
             }
 
-            AttributeInstance hp = le.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            AttributeInstance hp = le.getAttribute(Attribute.MAX_HEALTH);
             if (hp != null && hp.getBaseValue() < 1.0) {
                hp.setBaseValue(20.0);
                le.setHealth(20.0);

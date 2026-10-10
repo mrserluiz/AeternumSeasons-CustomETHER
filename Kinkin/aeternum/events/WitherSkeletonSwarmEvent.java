@@ -135,7 +135,7 @@ public final class WitherSkeletonSwarmEvent implements SeasonalEvent {
                if (rnd.nextDouble() < this.buffChance && !ws.getScoreboardTags().contains("asevent_wss_buffed")) {
                   ws.addScoreboardTag("asevent_wss_buffed");
                   ws.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 6000, 0, true, false, true));
-                  AttributeInstance maxHp = ws.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                  AttributeInstance maxHp = ws.getAttribute(Attribute.MAX_HEALTH);
                   if (maxHp != null) {
                      double base = maxHp.getBaseValue();
                      double newMax = base * 2.0;
@@ -143,7 +143,7 @@ public final class WitherSkeletonSwarmEvent implements SeasonalEvent {
                      ws.setHealth(Math.min(newMax, ws.getHealth() > 0.0 ? newMax : newMax));
                   }
 
-                  AttributeInstance dmg = ws.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+                  AttributeInstance dmg = ws.getAttribute(Attribute.ATTACK_DAMAGE);
                   if (dmg != null) {
                      double base = dmg.getBaseValue();
                      dmg.setBaseValue(base * 2.0);

@@ -116,7 +116,7 @@ public final class BlazeSurgeEvent implements SeasonalEvent {
             if (!(Math.random() > this.buffedBlazeChance)) {
                blaze.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 3600, 0, true, false, true));
                blaze.setGlowing(true);
-               AttributeInstance maxHp = blaze.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+               AttributeInstance maxHp = blaze.getAttribute(Attribute.MAX_HEALTH);
                if (maxHp != null) {
                   maxHp.setBaseValue(Math.max(maxHp.getBaseValue(), 24.0));
                   blaze.setHealth(Math.min(blaze.getHealth(), (float)maxHp.getBaseValue()));
