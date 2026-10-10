@@ -27,7 +27,7 @@ AETERNUM SEASONS
 ============================================================
 
 2301 → Tomato
-2302.0 → Onion
+2302 → Onion
 2303 → Rice
 
 ============================================================
@@ -38,6 +38,7 @@ FOODS
 2305 → Vegetable Bread
 2306 → Meat Sandwich
 2307 → Beef Rice Stew
+2308 → Vanilla rabbit_stew restoration threshold (not a custom item)
 
 ============================================================
 DRINKS
@@ -104,3 +105,70 @@ BREWERYX — BEBIDAS (CMD RESERVADOS; TEXTURAS PENDENTES)
 
 Status: CMDs atribuídos às receitas; integração visual Java/Bedrock ainda pendente.
 Atenção: registrar novos CMDs aqui antes de utilizá-los; não reutilizar IDs existentes.
+
+============================================================
+ZIP AUDIT — EtherTexture Java v0.0.8 (2026-10-10)
+============================================================
+
+Source: EtherTexture-Java-v0.0.8.zip (user-supplied Java resource pack)
+Scope: JSON item dispatch, override and Theosis manifest. These values are observed in the ZIP, not automatically confirmed as active on a running server.
+
+Legacy / nonstandard CMD (exception to 2300+ policy; preserve unless migration planned):
+1–125 → Enchanted-book legacy overrides in assets/minecraft/models/item/enchanted_book.json; NOT the EtherCraft scanner's 2400–2442 book range.
+1001 → Oak stairs custom model (chair), assets/ether/models/item/oak_stairs.json.
+60010 → EpicJourney disc fragment model, assets/minecraft/models/item/disc_fragment_5.json.json (verify filename / activation before use).
+
+Confirmed model dispatch IDs (2300 range):
+2301 → Tomato
+2302 → Onion (also vanilla beetroot_seeds restoration threshold)
+2303 → Rice (also vanilla wheat_seeds restoration threshold)
+2304 → Tomato Salad (also vanilla beetroot_seeds restoration threshold)
+2305 → Vegetable Bread (also vanilla mushroom_stew restoration threshold)
+2306 → Meat Sandwich
+2307 → Beef Rice Stew (also vanilla bread restoration threshold)
+2308 → Vanilla rabbit_stew restoration threshold only
+2310–2313 → Coffee, Herbal Tea, Energy Drink, Hot Chocolate
+2314 → Vanilla honey_bottle restoration threshold
+2315–2318 → Ruby, Sapphire, Topaz, Emerald (legacy Echo Shard representations)
+2319 → Vanilla echo_shard restoration threshold
+2320–2321 → Horse/Goat Horn custom states; intentionally reused on two base items
+2330 → Experience bottle custom model (additional observed CMD)
+
+Theosis Gems v1.2 (item models from manifest, 73 gem models):
+730021–730023 → ruby (tiers 1–3)
+730031–730033 → onyx (tiers 1–3)
+730041–730043 → amber (tiers 1–3)
+730051–730053 → garnet (tiers 1–3)
+730061–730063 → jade (tiers 1–3)
+730071–730073 → sapphire (tiers 1–3)
+730081–730083 → hematite (tiers 1–3)
+730091–730093 → aquamarine (tiers 1–3)
+730101–730103 → peridot (tiers 1–3)
+730111–730113 → quartz (tiers 1–3)
+730121–730123 → obsidian (tiers 1–3)
+730131–730133 → topaz (tiers 1–3)
+730141–730143 → emerald (tiers 1–3)
+730141 → socket_core (single tier)
+730161–730163 → magnetite (tiers 1–3)
+730171–730173 → cryonite (tiers 1–3)
+730181–730183 → pyrite (tiers 1–3)
+730191–730193 → lapis_core (tiers 1–3)
+730201–730203 → amethyst (tiers 1–3)
+730211–730213 → citrine (tiers 1–3)
+730221–730223 → malachite (tiers 1–3)
+730231–730233 → smoky_quartz (tiers 1–3)
+730241–730243 → sunstone (tiers 1–3)
+730251–730253 → beryl (tiers 1–3)
+730261–730263 → fluorite (tiers 1–3)
+Note: each range is associated with Theosis model identifiers, and the ZIP contains other fallback/threshold entries using some of these numbers across sherd item bases. Multiple occurrences are not by themselves cross-plugin CMD collisions.
+
+Theosis Arcane Dust (4 model IDs):
+731001 → Arcane Dust crude
+731002 → Arcane Dust refined
+731003 → Arcane Dust pure
+731004 → Arcane Dust fallback/restoration threshold (glowstone_dust only; verify intended handling)
+
+Book CMD 2400–2442 → Reserved to EtherCraft enchanted-book scanner per server implementation, but NOT found as those numbers in this particular Java ZIP; legacy book override values 1–125 are present instead. Verify Java/Bedrock and scanner consistency before changing either system.
+BreweryX 2500–2522 → Reserved in this registry, NOT present in the analyzed Java ZIP; textures/models pending.
+
+Important: range_dispatch thresholds may act as interval boundaries and fallback selectors. Do not treat every threshold as an assignable isolated CMD. The identical number may legally occur on different base item types. Audit exact material + CMD + active dispatch when investigating real conflicts.
