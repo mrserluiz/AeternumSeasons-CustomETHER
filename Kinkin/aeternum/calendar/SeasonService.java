@@ -43,6 +43,14 @@ public final class SeasonService implements Listener {
    private final EnumMap<CalendarChannel, SeasonService.ChannelRuntime> runtimes = new EnumMap<>(CalendarChannel.class);
    private final Map<String, CalendarChannel> explicitWorldChannels = new HashMap<>();
    private volatile Map<String, WorldClimateProfile> climateProfiles = Map.of();
+   private final ExternalWorldClimate externalClimate = new ExternalWorldClimate();
+
+   /** Optional integration API 1. Provider supplies read-only metadata, never a biome rewrite. */
+   public void registerWorldClimateProvider(org.bukkit.plugin.Plugin owner,
+           java.util.function.Function<World, Map<String, String>> source) {
+      this.externalClimate.register(owner, source);
+   }
+   public void unregisterWorldClimateProvider(org.bukkit.plugin.Plugin owner) { this.externalClimate.unregister(owner); }
    private boolean registered;
    private long lastFrostManualAdvanceMs = 0L;
    private final Map<UUID, SeasonService.SleepSnapshot> sleepSnapshots = new HashMap<>();
@@ -65,6 +73,7 @@ public final class SeasonService implements Listener {
    }
 
    public void unregister() {
+      this.externalClimate.clear();
       for (SeasonService.ChannelRuntime rt : this.runtimes.values()) {
          rt.unregisterTasks();
       }
@@ -342,6 +351,8 @@ public final class SeasonService implements Listener {
    }
 
    public WorldClimateProfile climateProfile(World world) {
+      WorldClimateProfile external = this.externalClimate.profile(world);
+      if(external != null) return external;
       return world == null ? null : this.climateProfiles.get(world.getName().toLowerCase(Locale.ROOT));
    }
 

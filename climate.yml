@@ -348,10 +348,7 @@ illusioner_spawning:
   village_check_radius: 32          # Radio aldea / Village check radius
 
 
-# Climate interpretation only. Profiles never paint/restore biomes in their worlds.
+# Optional local overrides only. Terra2 profiles belong in Terra2/terra2-settings.yml
+# and are delivered by the separate Terra2AeternumBridge addon.
 world_climate:
-  profiles:
-    aeternum_frost:
-      enabled: true
-      season: WINTER
-      climate-biome: minecraft:snowy_plains
+  profiles: {}

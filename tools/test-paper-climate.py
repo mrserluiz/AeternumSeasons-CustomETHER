@@ -14,7 +14,7 @@ binary=fetch(download['url'])
 assert hashlib.sha256(binary).hexdigest()==download['checksums']['sha256']
 (SERVER/'paper.jar').write_bytes(binary)
 plugins=SERVER/'plugins';plugins.mkdir(exist_ok=True)
-shutil.copy(ROOT/'aeternum-build/target/AeternumSeasons-4.5.1-CLIMATE-BETA.jar',plugins)
+shutil.copy(ROOT/'aeternum-build/target/AeternumSeasons-4.5.2-CLIMATE-API-BETA.jar',plugins)
 data=plugins/'AeternumSeasons';data.mkdir(exist_ok=True)
 (data/'config.yml').write_text('features:\n  portals:\n    frost:\n      enabled: false\n    heat:\n      enabled: false\n')
 (data/'climate.yml').write_text('biome_spoof:\n  enabled: true\nworld_climate:\n  profiles:\n    world:\n      enabled: true\n      season: WINTER\n      climate-biome: minecraft:snowy_plains\n')
@@ -38,3 +38,4 @@ for attempt in (1,2):
     if 'AETERNUM_CLIMATE_RUNTIME_OK' not in text or 'AETERNUM_CLIMATE_RUNTIME_FAILED' in text:
         print(text[-24000:]);raise RuntimeError('Climate runtime check failed')
 print('AETERNUM_SAVE_RESTART_OK')
+
